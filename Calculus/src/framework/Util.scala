@@ -231,6 +231,27 @@ object Util extends StandardTokenParsers with PackratParsers {
         }
       }
     }
+    override val eval : Env => Option[Value] = env => {
+      val eVal = e.eval(env)
+      val argsVal = args.map{x => x.eval(env)}
+      if (eVal.isEmpty || argsVal.exists{x => x.isEmpty}) None else {
+        val dynamicT = eVal.get.dynamicType
+        val staticT = sup
+        val set = env.info.mBody(dynamicT)(m)
+        val specific = if (set.size == 1) Some(set.head)
+                       else if (set.size > 1 && set.contains(staticT)) Some(staticT)
+                       else None
+        if (specific.isEmpty) None else {
+          val sets = env.info.methodMap.get(dynamicT).get.find{x => x.name == m && x.updateTrait == specific.get}
+          val meth = if (sets.isEmpty) env.info.methodMap.get(specific.get).get
+                                          .find{x => x.name == m && x.updateTrait.isEmpty()}.get
+                     else sets.get
+          meth.returnExpr.trans(meth.parameters.zip(argsVal.map{x => {
+            val expr : Expr = new Object(new Type(x.get.dynamicType))
+            expr}}).map{x => (x._1._2, {val expr = x._2; expr.staticType = Some(x._1._1.toString); expr})}.toMap).eval(env)
+        }
+      }
+    }
   }
   
   class SuperCall(sup : String, m : String, args : List[Expr]) extends Expr {
@@ -251,6 +272,22 @@ object Util extends StandardTokenParsers with PackratParsers {
                                   .map{x => x._2.checkType(env).exists{t => env.info.subType(t, x._1._1.toString)}}
                                   .foldLeft(true)((x, y) => x && y)
           if (checkArgsNum && checkArgsType) Some(meth.returnType.toString) else None
+        }
+      }
+    }
+    override val eval : Env => Option[Value] = env => {
+      val argsVal = args.map{x => x.eval(env)}
+      if (argsVal.exists{x => x.isEmpty}) None else {
+        val set = env.info.mBody(sup)(m)
+        val specific = if (set.size == 1) Some(set.head) else None
+        if (specific.isEmpty) None else {
+          val sets = env.info.methodMap.get(sup).get.find{x => x.name == m && x.updateTrait == specific.get}
+          val meth = if (sets.isEmpty) env.info.methodMap.get(specific.get).get
+                                          .find{x => x.name == m && x.updateTrait.isEmpty()}.get
+                     else sets.get
+          meth.returnExpr.trans(meth.parameters.zip(argsVal.map{x => {
+            val expr : Expr = new Object(new Type(x.get.dynamicType))
+            expr}}).map{x => (x._1._2, {val expr = x._2; expr.staticType = Some(x._1._1.toString); expr})}.toMap).eval(env)
         }
       }
     }
