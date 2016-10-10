@@ -14,9 +14,9 @@ object Util extends StandardTokenParsers with PackratParsers {
       noOL : Boolean) {
     val traits = ts
     val directUpMap = dMap
-    val methodMap = mMap
-    val methodNameMap = mMap.mapValues{x => x.map{y => y.name}}
-    val noOverloading : Boolean = noOL
+    val methodMap = mMap // TO BE DEBUGGED, ALL CODE RELATED TO methodMap
+    val methodNameMap = mMap.mapValues{x => x.filter{y => y.updateTrait.isEmpty()}.map{y => y.name}}
+    val noOverloading : Boolean = noOL // TO BE DEBUGGED
     lazy val upMapOption : Option[Map[String, Set[String]]] = {
       def f : (String, Set[String]) => Option[Set[String]] = (x, s) => {
         val setX : Set[String] = directUpMap.getOrElse(x, Set())
@@ -118,6 +118,7 @@ object Util extends StandardTokenParsers with PackratParsers {
     val returnType = t
     val name = n
     val parameters = paras
+    val updateTrait = update
     val returnExpr = e
     override val toString = {
       val f = (x : String, y : String) => x + ", " + y 
@@ -130,7 +131,8 @@ object Util extends StandardTokenParsers with PackratParsers {
       paras.forall{p => p._1.isBounded(env)} &&
       (update.isEmpty() || (env.thisTrait.isDefined && env.thisTrait.get != update
           && env.info.subType(env.thisTrait.get, update)
-          && !env.info.methodMap.get(update).get.filter{meth => meth.name == n && canOverride(meth)}.isEmpty)) &&
+          && !env.info.methodMap.get(update).get
+                 .filter{meth => meth.name == n && meth.updateTrait.isEmpty() && canOverride(meth)}.isEmpty)) &&
       e.checkType(env.addVars(paras)).exists{x => env.info.subType(x, t.toString)}
     }
     def canOverride(m : MethDef) : Boolean =
@@ -147,10 +149,13 @@ object Util extends StandardTokenParsers with PackratParsers {
   class Expr {
     val checkType : Env => Option[String] = _ => None
     val eval : Env => Option[Value] = _ => None
+    var staticType : Option[String] = None
+    def trans(map : Map[String, Expr]) : Expr = this
   }
   
   class Var(n : String) extends Expr {
     override val toString = n
+    override def trans(map : Map[String, Expr]) = map.get(n).get
     override val checkType : Env => Option[String] = env => env.vars.get(n)
   }
   
@@ -167,6 +172,7 @@ object Util extends StandardTokenParsers with PackratParsers {
       val x = if (args.isEmpty) "" else args.map{x => x.toString}.reduce(f)
       e.toString + "." + m + "(" + x + ")"
     }
+    override def trans(map : Map[String, Expr]) = new MethCall(e.trans(map), m, args.map{x => x.trans(map)})
     override val checkType : Env => Option[String] = env => {
       val eT = e.checkType(env)
       if (eT.isEmpty || !env.info.mBody(eT.get).contains(m)) None else {
@@ -175,12 +181,33 @@ object Util extends StandardTokenParsers with PackratParsers {
           val meth = env.info.methodMap(set.head).find{x => x.name == m}.get
           val checkArgsNum = meth.parameters.size == args.size
           val checkArgsType = meth.parameters.zip(args)
-                                  .map{x => x._2.checkType(env).contains(x._1._1.toString)}
+                                  .map{x => x._2.checkType(env).exists{t => env.info.subType(t, x._1._1.toString)}}
                                   .foldLeft(true)((x, y) => x && y)
           if (checkArgsNum && checkArgsType) Some(meth.returnType.toString) else None
         }
       }
-    } 
+    }
+    override val eval : Env => Option[Value] = env => {
+      val eVal = e.eval(env)
+      val argsVal = args.map{x => x.eval(env)}
+      if (eVal.isEmpty || argsVal.exists{x => x.isEmpty}) None else {
+        val dynamicT = eVal.get.dynamicType
+        val staticT = if (e.staticType.isEmpty) e.checkType(env).get else e.staticType.get
+        val set = env.info.mBody(dynamicT)(m)
+        val specific = if (set.size == 1) Some(set.head)
+                       else if (set.size > 1 && set.contains(staticT)) Some(staticT)
+                       else None
+        if (specific.isEmpty) None else {
+          val sets = env.info.methodMap.get(dynamicT).get.find{x => x.name == m && x.updateTrait == specific.get}
+          val meth = if (sets.isEmpty) env.info.methodMap.get(specific.get).get
+                                          .find{x => x.name == m && x.updateTrait.isEmpty()}.get
+                     else sets.get
+          meth.returnExpr.trans(meth.parameters.zip(argsVal.map{x => {
+            val expr : Expr = new Object(new Type(x.get.dynamicType))
+            expr}}).map{x => (x._1._2, {val expr = x._2; expr.staticType = Some(x._1._1.toString); expr})}.toMap).eval(env)
+        }
+      }
+    }
   }
   
   class MethSuperCall(e : Expr, sup : String, m : String, args : List[Expr]) extends Expr {
@@ -189,6 +216,7 @@ object Util extends StandardTokenParsers with PackratParsers {
       val x = if (args.isEmpty) "" else args.map{x => x.toString}.reduce(f)
       e.toString + "." + sup + "::" + m + "(" + x + ")"
     }
+    override def trans(map : Map[String, Expr]) = new MethSuperCall(e.trans(map), sup, m, args.map{x => x.trans(map)})
     override val checkType : Env => Option[String] = env => {
       val eT = e.checkType(env)
       if (eT.isEmpty || !env.info.subType(eT.get, sup) || !env.info.mBody(sup).contains(m)) None else {
@@ -197,7 +225,7 @@ object Util extends StandardTokenParsers with PackratParsers {
           val meth = env.info.methodMap(set.head).find{x => x.name == m}.get
           val checkArgsNum = meth.parameters.size == args.size
           val checkArgsType = meth.parameters.zip(args)
-                                  .map{x => x._2.checkType(env).contains(x._1._1.toString)}
+                                  .map{x => x._2.checkType(env).exists{t => env.info.subType(t, x._1._1.toString)}}
                                   .foldLeft(true)((x, y) => x && y)
           if (checkArgsNum && checkArgsType) Some(meth.returnType.toString) else None
         }
@@ -211,6 +239,7 @@ object Util extends StandardTokenParsers with PackratParsers {
       val x = if (args.isEmpty) "" else args.map{x => x.toString}.reduce(f)
       "super." + sup + "::" + m + "(" + x + ")"
     }
+    override def trans(map : Map[String, Expr]) = new SuperCall(sup, m, args.map{x => x.trans(map)})
     override val checkType : Env => Option[String] = env => {
       val thisT = env.thisTrait
       if (thisT.isEmpty || !env.info.subType(thisT.get, sup) || !env.info.mBody(sup).contains(m)) None else {
@@ -219,7 +248,7 @@ object Util extends StandardTokenParsers with PackratParsers {
           val meth = env.info.methodMap(set.head).find{x => x.name == m}.get
           val checkArgsNum = meth.parameters.size == args.size
           val checkArgsType = meth.parameters.zip(args)
-                                  .map{x => x._2.checkType(env).contains(x._1._1.toString)}
+                                  .map{x => x._2.checkType(env).exists{t => env.info.subType(t, x._1._1.toString)}}
                                   .foldLeft(true)((x, y) => x && y)
           if (checkArgsNum && checkArgsType) Some(meth.returnType.toString) else None
         }
@@ -227,11 +256,14 @@ object Util extends StandardTokenParsers with PackratParsers {
     }
   }
   
-  class Value {}
+  class Value {
+    val dynamicType = ""
+  }
   
   class ObjValue(n : String) extends Value {
     val name = n
     override val toString = n
+    override val dynamicType = n
   }
   
   lexical.reserved += ("interface", "extends", "return", "new", "override", "super")
@@ -267,19 +299,24 @@ object Util extends StandardTokenParsers with PackratParsers {
       case t                 => scala.sys.error(t.toString)
   }
   def main(args : Array[String]) = {
-    val p = parse("interface A{}" +
-        "interface B extends A{B n(){return new B();} C p(C x, B y) { return x.m(y.n()); }}" +
-        "interface C extends B{C m(B x){return new C();} B n()override B{return new C();}}" +
-        "new C().B::p(new C(), new B())")
+//    val p = parse("interface A{}" +
+//        "interface B extends A{B n(){return new B();} C p(C x, B y) { return x.m(y.n()); }}" +
+//        "interface C extends B{C m(B x){return new C();} B n()override B{return new C();}}" +
+//        "new C().n()")
+//        "new C().B::p(new C(), new B())")
+    val p = parse("interface A { D m() {return new E();}}" +
+        "interface B {D m() {return new D();}}" +
+        "interface C extends A, B { D func(A a) { return a.m(); }}" +
+        "interface D {} interface E extends D {}" + " new C().func(new C())")
     println(p.toString)
     println("-----------")
     var str = "Type-check failed!"
     if (p.env.isDefined && p.checkType.isDefined) {
       val t = p.checkType
       if (t.isDefined) str = p.expr.toString + " :: " + t.get
-      // println("eval = " + p.eval.toString)
     }
     println(str)
+    println("eval = " + p.eval.toString)
   }
   
 }
