@@ -1,0 +1,150 @@
+\documentclass[a4paper]{article}
+
+\usepackage[top=.2in, bottom=.2in, left=.2in, right=.2in]{geometry}
+
+\input{others/preamble.tex}
+
+\newcommand{\authornote}[3]{{\color{#2} {\sc #1}: #3}}
+\newcommand\bruno[1]{\authornote{bruno}{red}{#1}}
+\newcommand\yanlin[1]{\authornote{george}{blue}{#1}}
+\newcommand\haoyuan[1]{\authornote{bruno}{green}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+% Define macros immediately before the \begin{document} command
+\input{macros/common_pl_macros.tex}
+
+\input{f-and/base.tex}
+\input{f-and/orthogonality.tex}
+\input{f-and/wellformedness.tex}
+\input{f-and/subtyping.tex}
+\input{f-and/select.tex}
+\input{f-and/restrict.tex}
+\input{f-and/typing.tex}
+
+\input{algebra/syntax.tex}
+
+\input{mim/syntax.tex}
+
+\begin{document}
+
+\section{Syntax}
+
+\subsection{Syntax}
+\begin{displaymath}
+    \begin{array}{l}
+        \begin{array}{llrl}
+        \text{Interfaces}   & IL & \Coloneqq & \interface{I}{I}{M} \\
+        \text{Methods}      & M  & \Coloneqq & \method{I}{m}{I}{x}{J}{e} \\
+        \text{Expressions}  & e  & \Coloneqq & x \mid
+                                               e.m(\overline{e}) \mid
+                                               \new{I} \mid
+                                               e.I::m(\overline{e}) \mid
+                                               \kwsuper.I::m(e) \\
+        \text{Context}  & \Gamma & \Coloneqq & x_1:I_1 ... x_n:I_n
+        \end{array}
+    \end{array}
+\end{displaymath}
+
+\subsection{Subtyping}
+\begin{mathpar}
+    \subid \\
+    \subtrans \\
+    \subextends
+\end{mathpar}
+
+\subsection{Typing Rules}
+\begin{mathpar}
+    \tvar \\
+    \tinvk \\
+    \tpathinvk \\
+    \tsuperinvk \\
+    \tnew \\
+    \tmethod \\
+    \tintf
+\end{mathpar}
+
+\subsection{Small-step Semantics}
+\begin{mathpar}
+    \sinvk \\
+    \spathinvk \\
+    \ssuperinvk
+\end{mathpar}
+
+
+\subsection{Congruence}
+\begin{mathpar}
+    \creceiver \\
+    \cargs \\
+    \cstatictype \\
+\end{mathpar}
+
+
+
+
+\subsection{Auxilary Definitions}
+
+
+\subsubsection{\mbody}
+\begin{mathpar}
+\inferrule* [left=]
+{C \{ m() \; \kwoverride \; A ... \} }
+{\mbody(m, C, A) = (\overline{X} \; \overline{x}, E \; e_0) \text{ IN } C}
+
+\inferrule* [left=]
+{   \mbody(m, C) = \{ A.m(), B.m(), ...\}
+ \\ \nexists \; C.m()}
+{\mbody(m, C, A) = (\overline{X} \; \overline{x}, E \; e_0) \text{ IN } A}
+\end{mathpar}
+
+$$\interface{I}{I}{M}$$
+
+$mbody(m, I)$ algorithm:
+\begin{itemize}
+ \item If m is defined in I directly, then return I.m()
+ \item Else, let $\overline{I'} = mdefined(fathers(I))$, all ancestors of $I$ that has directly defined $m()$.
+ \item $\overline{I''} = needed(\overline{I'})$, keep only interfaces that are needed, which are not super-interface of others.
+ \item If $\overline{I''}$ is unique, then return this unique one. Else if any two I1,I2 in $\overline{I''}$ share a parent in $\overline{I'}$, then diamond conflict is detected, report error. Else return multiple $m()$s.
+\end{itemize}
+
+
+
+\subsubsection{\mtype}
+$\mtype(m, C)$ algorithm:
+\begin{itemize}
+ \item If the result of $\mbody(m, C, A)$ is a unique method, 
+       $\method{I_0}{m}{I}{x}{J}{e_0}$, then $\mtype(m, C) = \overline{I} \to I_0$
+ \item Else ($\Undefined$ or multiple methods returned), $\mtype(m, C) = \Error$
+\end{itemize}
+
+
+
+\subsubsection{\ext}
+\ext(I,J) means interface $I$ (directly) extends $J$.
+\begin{mathpar}
+\inferrule* [left=]
+{   \interface{I}{I}{M}
+ \\ J \in \overline{I} }
+{\ext(I, J) = \kwtrue}      \\
+
+\inferrule* [left=]
+{}
+{\ext(I, J) = \kwfalse}
+\end{mathpar}
+
+
+
+\subsubsection{\collectMethods}
+\[ \collectMethods(I) = \left( \bigcup_{I_i \in \overline{I}} \methods(I_i) \right) \bigcup \methods(I) \]
+\[ \methods(I) = \overline{M}, \text{where } IT(I) = \interface{I}{I}{M} \]
+
+
+
+\subsubsection{\needed}
+
+
+
+
+
+
+
+\end{document}
