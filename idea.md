@@ -413,9 +413,52 @@ C extends B { ?? }
 //inside C, is "m() override B" correct? is "m() override A" correct?
 ```
 
-```c++
- 
+Example:
+
+```mim
+interface Deck {
+	void draw() { 
+		System.out.println("Draw a card from the deck.");
+		return;
+	}
+}
+interface Drawable {
+	void draw() {
+		System.out.println("Draw an apple on the screen.");
+	}			
+}
+interface DrawableDeck extends Deck, Drawable {}
+
+new DrawableDeck().Deck::draw()  //calls Deck.draw, "Draw a card ..."
 ```
+
+When you want to update draw() from difference sources:
+
+```mim
+interface Deck {
+	void draw() { 
+		System.out.println("Draw a card from the deck.");
+		return;
+	}
+}
+interface Drawable {
+	void draw() {
+		System.out.println("Draw an apple on the screen.");
+	}			
+}
+interface DrawableDeck extends Deck, Drawable {
+	void draw() update Deck { 
+		System.out.println("Draw two cards from the deck.");
+		return;
+	}
+	void draw() update Drawable{
+		System.out.println("Draw a banana on the screen.");
+	}			
+}
+
+new DrawableDeck().Deck::draw()  //calls Deck.draw, "Draw two cards ..." 
+```
+
 #References
 - Mixin-based Inheritance. Ecoop'90.
 -  Matthew Flatt, Shriram Krishnamurthi, and Matthias Felleisen. Classes and mixins. POPL'98

@@ -87,6 +87,10 @@
 \subsubsection{\mbody}
 \begin{mathpar}
 \inferrule* [left=]
+{C \{ m() \; \kwoverride \; C ... \} }
+{\mbody(m, C, A) = (\overline{X} \; \overline{x}, E \; e_0) \text{ IN } C}
+
+\inferrule* [left=]
 {C \{ m() \; \kwoverride \; A ... \} }
 {\mbody(m, C, A) = (\overline{X} \; \overline{x}, E \; e_0) \text{ IN } C}
 
@@ -141,8 +145,8 @@ $\mtype(m, C)$ algorithm:
 
 \subsubsection{\needed}
 
-
-
+\subsubsection{\only}
+$\only(m, I)$ is true iff inside $I$ there is only one (direct) methoed $m$ definition.
 
 
 

@@ -18,6 +18,7 @@
 \newcommand{\Error}{\keyword{Error}}
 \newcommand{\needed}{\keyword{needed}}
 \newcommand{\methods}{\keyword{methods}}
+\newcommand{\only}{\keyword{only}}
 
 \newcommand{\new}[1]{
     \kwnew \; #1()    
@@ -93,8 +94,9 @@
 
 \newcommand{\tmethod} {
 \inferrule* [left=(T-Method)]
-    {  I \subtype J
+    {  \ext(I, J)
     \\ \mtype(m, J) = \overline{I} \to I_0
+    \\ \text{If } I=J \text{ then } \only(m, I) = \kwtrue 
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
     }
     {\method{I_0}{m}{I}{x}{J}{e_0} \text{ OK IN } I}
