@@ -72,10 +72,13 @@
 
 
 \subsection{Congruence}
+\deff
 \begin{mathpar}
     \creceiver \\
     \cargs \\
     \cstatictype \\
+    \cfreduce \\
+    \cannoreduce
 \end{mathpar}
 
 
@@ -115,7 +118,7 @@ $mbody(m, I)$ algorithm:
 \subsubsection{\mtype}
 $\mtype(m, C)$ algorithm:
 \begin{itemize}
- \item If the result of $\mbody(m, C, A)$ is a unique method, 
+ \item If the result of $\mbody(m, C, A)$ is a unique method,
        $\method{I_0}{m}{I}{x}{J}{e_0}$, then $\mtype(m, C) = \overline{I} \to I_0$
  \item Else ($\Undefined$ or multiple methods returned), $\mtype(m, C) = \Error$
 \end{itemize}
