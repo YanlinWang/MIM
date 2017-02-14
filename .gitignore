@@ -1,3 +1,6 @@
 .cache
 .classpath
 Ignored
+*.out
+*.aux
+*.gz
