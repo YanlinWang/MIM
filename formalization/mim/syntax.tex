@@ -153,15 +153,24 @@
 }
 
 \newcommand{\cargs} {
+%---------- v1.0 ---------------
 %\inferrule* [left=(C-Args)]
 %{e_i \to e_i'}
 %{e.m(..., e_i, ...) \to e.m(..., e_i', ...)}
 %}
+%---------- v2.0 ---------------
+%\inferrule* [left=(C-Args)]
+%{e_1 \to f}
+%{<J>\new{I}.m(<\overline{E}>\overline{e_0}, e_1, \overline{e_2})
+%\to
+%<J>\new{I}.m(<\overline{E}>\overline{e_0}, f, \overline{e_2})}
+%}
+%---------- v3.0 ---------------
 \inferrule* [left=(C-Args)]
 {e_1 \to f}
-{<J>\new{I}.m(<\overline{E}>\overline{e_0}, e_1, \overline{e_2})
+{<J>\new{I}.m(<\overline{E}>\overline{v}, e_1, \overline{e_2})
 \to
-<J>\new{I}.m(<\overline{E}>\overline{e_0}, f, \overline{e_2})}
+<J>\new{I}.m(<\overline{E}>\overline{v}, f, \overline{e_2})}
 }
 
 \newcommand{\cstatictype} {
