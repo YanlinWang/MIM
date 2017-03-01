@@ -341,10 +341,34 @@ object Util extends StandardTokenParsers with PackratParsers {
 //        "interface C extends B{C m(B x){return new C();} B n()override B{return new C();}}" +
 //        "new C().n()")
 //        "new C().B::p(new C(), new B())")
-    val p = parse("interface A { D m() {return new E();}}" +
-        "interface B {D m() {return new D();}}" +
-        "interface C extends A, B { D func(A a) { return a.m(); }}" +
-        "interface D {} interface E extends D {}" + " new C().func(new C())")
+//    val p = parse("interface A { D m() {return new E();}}" +
+//        "interface B {D m() {return new D();}}" +
+//        "interface C extends A, B { D func(A a) { return a.m(); }}" +
+//        "interface D {} interface E extends D {}" + " new C().func(new C())")
+        
+    val p = parse(
+"interface P {} " +
+"interface P1 extends P {} " +
+"interface P2 extends P {} " +
+"interface P3 extends P {} " +
+"interface P4 extends P {} " +
+"interface P5 extends P {} " +
+"interface P6 extends P {} " +
+"interface P7 extends P {} " +
+"interface A { " +
+"  P m() { return new P1(); } " +
+"} " +
+"interface B { " +
+"  P m() { return new P2(); } " +
+"} " +
+"interface C extends A, B { " +
+"  P m() { return new P3(); } " +
+"} " +
+"interface D extends C, A { " +
+"} " +
+"new C().A::m() ");
+
+
     println(p.toString)
     println("-----------")
     var str = "Type-check failed!"

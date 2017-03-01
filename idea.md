@@ -459,6 +459,40 @@ interface DrawableDeck extends Deck, Drawable {
 new DrawableDeck().Deck::draw()  //calls Deck.draw, "Draw two cards ..." 
 ```
 
+#Bruno examples 
+```java
+class A {
+	m() { return 1; }
+}
+class B {
+	m() { return 2; }
+}
+class C extends A, B {
+	m() { return 3; }
+}
+
+class D extends C, A {
+	//m() override A { return 4; }
+	//m() override C { return 5; }
+}
+
+new D().A::m() // which one to call?
+```
+
+```java
+class E extends A, B {
+	m() { return 6; }
+}
+class F extends C, E {
+	m() override C { return 4; } //overrides C, A, B
+	m() override E { return 5; } //overrides E, A, B
+}
+
+new F().A::m() //which one to call?
+```
+
+
+
 #References
 - Mixin-based Inheritance. Ecoop'90.
 -  Matthew Flatt, Shriram Krishnamurthi, and Matthias Felleisen. Classes and mixins. POPL'98
