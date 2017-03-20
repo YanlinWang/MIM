@@ -1,4 +1,4 @@
-\documentclass[10pt,numbers]{sigplanconf}
+\documentclass[preprint]{sigplanconf}
 
 % The following \documentclass options may be useful:
 
@@ -12,7 +12,7 @@
 \usepackage{xspace}
 \usepackage{multicol}
 \usepackage{microtype}%if unwanted, comment out or use option "draft"
-\usepackage[table,xcdraw]{xcolor}
+%\usepackage[table,xcdraw]{xcolor} -- clash with preamble.tex
 \usepackage{color}
 \usepackage{amsthm}
 \usepackage{amsmath}
@@ -21,13 +21,12 @@
 \usepackage{amssymb}
 \usepackage{fancyvrb}
 \usepackage{url}
-\usepackage{pstricks,pst-node,pst-tree}
+%\usepackage{pstricks,pst-node,pst-tree} -- clash with preamble.tex
 \usepackage{bbm}
-\usepackage{pgf}
+%\usepackage{pgf} -- clash with preamble.tex
 \usepackage{multirow}
 \usepackage{enumitem}
 
-\usepackage{listings}
 \usepackage{verbatim}
 \usepackage{graphicx}
 \usepackage{wrapfig}
@@ -35,7 +34,7 @@
 
 \usepackage[T1]{fontenc}
 \usepackage[scaled=0.85]{beramono}
-\usepackage{mathpartir}
+%\usepackage{mathpartir} -- \mathpar already defined
 \usepackage[utf8]{inputenc}
 \usepackage{flushend}
 
@@ -45,10 +44,22 @@
 %\let\oldparagraph\paragraph
 %\renewcommand{\paragraph}[1]{\vspace{-3pt}\oldparagraph{#1}}
 
-\newcommand{\para}[1]{\vspace{-3pt}\paragraph{#1}}
+%\newcommand{\para}[1]{\vspace{-3pt}\paragraph{#1}}
 
-\input{predef/def.tex}
-\input{predef/java.tex}
+%\input{predef/def.tex} ???
+%\input{predef/java.tex} ??? one of them clash with cmll.sty at \with
+\input{predef/others/preamble.tex}
+\input{predef/macros/common_pl_macros.tex}
+\input{predef/mim/syntax.tex}
+\input{predef/algebra/syntax.tex}
+
+\input{predef/f-and/base.tex}
+\input{predef/f-and/orthogonality.tex}
+\input{predef/f-and/wellformedness.tex}
+\input{predef/f-and/subtyping.tex}
+\input{predef/f-and/select.tex}
+\input{predef/f-and/restrict.tex}
+\input{predef/f-and/typing.tex}
 
 \newcommand{\Or}{\ |\ }
 
@@ -67,6 +78,7 @@
 \newcommand\yanlinT[1]{\authorText{purple}{#1}}
 \newcommand\marcoT[1]{\authorText{blue}{#1}}
 \newcommand\haoyuanT[1]{\authorText{cyan}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
 
 \newcommand\delete[1]{\textcolor{red}{\sout{#1}}}
 
@@ -77,9 +89,9 @@
 \newcommand\nat[0]{\mathbb{N}}
 \newcommand\unit[0]{\mathbbm{1}}
 
-\newcommand\mixin{\mixinAnn\xspace}
+%\newcommand\mixin{\mixinAnn\xspace}
 %\renewcommand{\paragraph}[1]{\vspace{5pt}\noindent{\bf #1}}
-\newenvironment{listing}{\vspace{-3pt}\begin{lstlisting}}{\end{lstlisting}\vspace{-3pt}}
+%\newenvironment{listing}{\vspace{-3pt}\begin{lstlisting}}{\end{lstlisting}\vspace{-3pt}}
 
 %\theoremstyle{plain}
 \newtheorem{thm}{Theorem}
@@ -112,39 +124,22 @@
 % \titlebanner{banner above paper title}        % These are ignored unless
 % \preprintfooter{short description of paper}   % 'preprint' option specified.
 
-\title{Classless Java}
+\title{NoTitle}
 %\subtitle{\InterfaceBased Programming for the Masses}
 
-\vspace{-20pt}
-\authorinfo{Yanlin Wang\and Haoyuan Zhang \\ Bruno C. d. S. Oliveira}
+%\vspace{-20pt}
+\authorinfo{NoAuthor}
            {The University of Hong Kong, China}
-           {\{ylwang,hyzhang,bruno\}@cs.hku.hk}
-\authorinfo{Marco Servetto}
-          {Victoria University of Wellington, New Zealand}
-          {marco.servetto@ecs.vuw.ac.nz}
+%           {\{ylwang,hyzhang,bruno\}@cs.hku.hk}
+%\authorinfo{Marco Servetto}
+%          {Victoria University of Wellington, New Zealand}
+%          {marco.servetto@ecs.vuw.ac.nz}
 
 \maketitle
-\vspace{-20pt}
+%\vspace{-20pt}
 
 \begin{abstract}
-  This paper presents an OO style without classes, which we call \interfacebased \objectoriented
-  programming (IB). IB is a natural extension of closely
-  related ideas such as traits.
-  \emph{Abstract state
-    operations} provide a
-  new way to deal with state, which allows for flexibility not
-  available in class-based languages.  In IB state
-  can be type-refined in subtypes. The combination of a
-  purely IB style and type-refinement enables
-  powerful idioms using multiple inheritance and state. To introduce
-  IB to programmers we created Classless Java: an embedding of IB
-  directly into Java. Classless Java uses annotation processing for
-  code generation and relies on new features of Java 8 for
-  interfaces. The code generation techniques used in Classless Java
-  have interesting properties, including guarantees that
-  the generated code is type-safe and good integration with IDEs.
-  Usefulness of IB and Classless Java is shown with
-  examples and case studies.
+  Text.
 \end{abstract}
 
 \begin{comment}
@@ -158,43 +153,36 @@ term1, term2
 \keywords
 keyword1, keyword2
 \end{comment}
-\category{D.3.2}{Programming Languages}
-                {Language Classifications}
-                [Object-Oriented Programming]
-\category{F.3.3}{Logics and Meanings of Programs}
-                {Studies of Program Constructs}
-                []
+%\category{D.3.2}{Programming Languages}
+%                {Language Classifications}
+%                [Object-Oriented Programming]
+%\category{F.3.3}{Logics and Meanings of Programs}
+%                {Studies of Program Constructs}
+%                []
                 
-\terms
-Languages
+%\terms
+%Languages
 
-\keywords
-Interface-based programming, multiple inheritance, code generation
+%\keywords
+%Interface-based programming, multiple inheritance, code generation
 
-\vspace{-10pt}
 \input{sections/Introduction.tex}
 
-% \input{sections/Overview.tex}
+\input{sections/Overview.tex}
 
-% \input{sections/Implementation.tex}
+\input{sections/Formalization.tex}
 
-% \input{sections/Formalization.tex}
+\input{sections/Discussion.tex}
 
-% %\input{sections/Translation.tex}
+\input{sections/CaseStudy.tex}
 
+\input{sections/RelatedWork.tex}
 
-% \input{sections/CaseStudy.tex}
+\input{sections/Conclusion.tex}
 
-% %\input{sections/FutureWork.tex}
-
-% \input{sections/RelatedWork.tex}
-
-
-% \input{sections/Conclusion.tex}
-
-\vspace{-5pt}
-\acks
-We would like to thank the reviewers for their helpful comments. This work is sponsored by the Hong Kong Research Grant Council Early Career Scheme project number 27200514.
+%\vspace{-5pt}
+%\acks
+%We would like to thank the reviewers for their helpful comments. This work is sponsored by the Hong Kong %Research Grant Council Early Career Scheme project number 27200514.
 %
 % We recommend abbrvnat bibliography style.
 
