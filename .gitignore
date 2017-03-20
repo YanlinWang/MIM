@@ -4,3 +4,6 @@ Ignored
 *.out
 *.aux
 *.gz
+*.log
+*.bak
+*.blg
