@@ -157,5 +157,14 @@ $\mtype(m, C)$ algorithm:
 \subsubsection{\only}
 $\only(m, I)$ is true iff inside $I$ there is only one (direct) methoed $m$ definition.
 
+\subsection{\pathcheck}
+$$\forall P \in getSupTypes(I)$$
 
+\begin{align*}
+ set = \{ class | class \in getSupTypes(I) 
+		\\ class.m \text{ defined in its body }
+		\\ class <: P \}
+\end{align*}
 
+$$ prune(set) = \{x \in set | \nexists y \in set, y <: x, y \neq x \} $$
+$$ |prune(set)| <= 1 $$ 

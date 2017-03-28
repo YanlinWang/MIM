@@ -20,6 +20,7 @@
 \newcommand{\needed}{\keyword{needed}}
 \newcommand{\methods}{\keyword{methods}}
 \newcommand{\only}{\keyword{only}}
+\newcommand{\pathcheck}{\keyword{pathcheck}}
 
 \newcommand{\new}[1]{
     \kwnew \; #1()
@@ -103,13 +104,21 @@
     {\method{I_0}{m}{I}{x}{J}{e_0} \text{ OK IN } I}
 }
 
+% \newcommand{\tintf} {
+% \inferrule* [left=(T-Intf)]
+%     {  \overline{I} \text{ OK}
+%     \\ \forall m \in \collectMethods(I), \mbody(m, I) \neq \Undefined
+%     }
+%     { \interface{I}{I}{M} \text{ OK }}
+% }
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
     {  \overline{I} \text{ OK}
-    \\ \forall m \in \collectMethods(I), \mbody(m, I) \neq \Undefined
+    \\ \forall m \in \collectMethods(I), \red{\pathcheck(I, m)}
     }
     { \interface{I}{I}{M} \text{ OK }}
 }
+
 
 \newcommand{\sinvk} {
 \inferrule* [left=(S-Invk)]

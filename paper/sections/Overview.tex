@@ -5,3 +5,37 @@
 	\item Potential fixes (renaming, traits, ....)
 	\item How it is solved with our language (client code, simple explanation) + show update
 \end{itemize}
+
+\begin{lstlisting}
+interface Deck {
+   draw();  // draws a card from the Deck
+}
+
+interface Drawable {
+   draw();  // draws something on the screen
+}
+
+interface DrawableDeck extends Deck, Drawable {
+   ...
+} 
+\end{lstlisting}
+
+\subsection{Potential fixes}
+
+\begin{itemize}
+    \item Explicit override m() in C.
+    \item Choose one (such as Mixin model).
+    \item With Traits: method exclusion.
+    \item With Traits: method rename.
+\end{itemize}
+In previous solutions, only renaming can preserve the two different methods m(), 
+but it’s cumbersome to do in practice: new names have to be introduced, and (probably) need to prefer one over another. 
+Other solutions only preserve one method. Can we keep both methods without renaming?
+
+\subsection{Solution in our language}
+\begin{lstlisting}
+
+\end{lstlisting}
+
+\subsection{Method refinement}
+

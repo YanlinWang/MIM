@@ -6,3 +6,23 @@
 	\item New features (update)
 	\item Our contributions
 \end{itemize}
+
+In multiple inheritance, naming conflicts often occurs. Among these conflicts, some are real conflicts which needs 
+explicit resolve by programmers, however, there are cases where accidental naming conflicts occurs, where the conflicting
+methods have completely different meaning/domain which just share the same name. 
+
+Existing OOP models have taken care of the first case intensively. However, few of them supports 
+unintended method confliction well. Trait and other 
+mainstream OO models do not allow unintended methods confliction to co-exist. 
+SELF~\cite{} uses \emph{sender path tiebreaker rule} to automatically resolve 
+ambiguities that are almost certainly caused by accidental naming conflicts. C++ allows methods with the same signature 
+co-exist in a class via inheritance and programmers can use $::$ operator to select the method wanted. 
+However none of them allows refining these unintended conflicting methods in subclasses. We propose a calculus that 
+deals with unintended method confliction and meanwhile allows refining these methods. 
+
+Contributions:
+\begin{itemize}
+    \item A multiple inheritance model formalized as \MIM.
+    \item Novel notion \updates for method path updating.
+    \item Implementation of a simple typechecker and evaluator in Scala.
+\end{itemize}
