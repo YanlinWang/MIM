@@ -1,5 +1,6 @@
 \section{Formalization}
 
+
 \begin{itemize}
 	\item Syntax + typing rules + Semantics + Auxiliary definitions
 	\item Implementation: a simple type checker + interpreter in Scala
@@ -20,13 +21,17 @@ $I$, $J$ represents interfaces.
 e.m(\overline{e}) \mid
 \new{I} \mid
 e.I::m(\overline{e}) \mid
-\kwsuper.I::m(e) \\
+\kwsuper.I::m(e) \; \red{\mid} \; \red{v^*} \\
 \text{Context}      & \Gamma & \Coloneqq & x_1:I_1 ... x_n:I_n \\
-\text{\red{Values}}       & v & \Coloneqq & <I>\new{J}
+\text{\red{Values}}       & v & \Coloneqq & <I>\new{J} \\
+\\
+\text{Interface names} & I, J, K & & \\
+\text{Method names} & m & & \\
+\text{Variable names} & x & &
 \end{array}
 \end{array}
 \end{displaymath}
-\caption{Syntax.}\label{fig:syntax}
+\caption{Syntax. \red{*: only intended for semantic rules.}}\label{fig:syntax}
 \end{figure*}
 
 \subsection{Subtyping}
@@ -34,9 +39,8 @@ See Figure~\ref{fig:subtyping}.
 
 \begin{figure*}[htbp]
 \begin{mathpar}
-	\subid \\
-	\subtrans \\
-	\subextends
+	\framebox{$ I <: J $} \hspace{.5in} \subid \\
+	\subtrans \hspace{.5in} \subextends
 \end{mathpar}
 \caption{Subtyping.}\label{fig:subtyping}
 \end{figure*}
@@ -46,6 +50,7 @@ See Figure~\ref{fig:typingrules}.
 
 \begin{figure*}[htbp]
 \begin{mathpar}
+	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
 	\tvar \\
 	\tinvk \\
 	\tpathinvk \\
@@ -62,6 +67,7 @@ See Figure~\ref{fig:smallstep}.
 
 \begin{figure*}[htbp]
 \begin{mathpar}
+	\framebox{$ e \rightarrow v $} \hspace{.5in}
 	\sinvk \\
 	\spathinvk \\
 	\ssuperinvk
@@ -75,9 +81,8 @@ See Figure~\ref{fig:smallstep}.
 See Figure~\ref{fig:congruence}.
 
 \begin{figure*}[htbp]
-\deff
 \begin{mathpar}
-	\creceiver \\
+	\creceiver \hspace{.5in}
 	\red{\cpathreceiver} \\
 	\red{\cargs} \\
 	\red{\cpathargs} \\
@@ -86,22 +91,48 @@ See Figure~\ref{fig:congruence}.
 	\cfreduce \\
 	\cannoreduce
 \end{mathpar}
-\caption{Congruence.}\label{fig:congruence}
+\caption{Congruence. \haoyuan{How are the last two rules used?}}\label{fig:congruence}
 \end{figure*}
 
 
 
 \subsection{Auxilary Definitions}
 
+\begin{figure*}[htbp]
+	\begin{mathpar}
+	\inferrule* [left=]
+		{  \mostSpecific(m, I_d, I_s) = \{I\} \\
+			\mostSpecific_3(m, I_d, I) = \{J\} \\
+			\kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_E}{m}{I_X}{x}{I}{e_0}\ldots\}}
+		{\mbody(m, I_d, I_s) = (\overline{I_X} \; \overline{x}, I_E \; e_0)}
+	
+	\inferrule* [left=]
+	{ set = \; $\{$ K <: J \; $and$ \; K >: I \; | \; m \in dom(K) \} }
+	{\mostSpecific(m, I, J) = \left\{{\begin{tabular}{ll}
+				$prune(set)$ & if $set$ is not empty \\ $\mostSpecific_2(m, J)$ & otherwise
+			\end{tabular}}\right.}
+	\inferrule* [left=]
+		{ set = \; $\{$ K >: I \; | \; m \in dom(K) \} }
+		{\mostSpecific_2(m, I) = prune(set)}
+	
+	\inferrule* [left=]
+		{ set = \; $\{$ K <: J \; $and$ \; K \neq J \; $and$ \; K >: I \; | \\
+			\kwinterface \; K \; \kwextends \; \overline{K} \; \{ I_E \; m(\overline{I_X} \; \overline{x}) \;
+			\kwoverride \; J \ldots \}  $\}$ }
+		{\mostSpecific_3(m, I, J) = prune(set)}
+	
+	prune(set) = \{I \in set \; | \; \nexists J \in set, J <: I, J \neq I \}
+	
+	\inferrule* [left=]
+	{   \interface{I}{I}{M}
+		\\ J \in \overline{I} }
+	{\ext(I, J)}
+	\end{mathpar}
+	\caption{Auxiliary functions.}\label{fig:auxfunc}
+\end{figure*}
+
 
 \subsubsection{\mbody}
-\begin{mathpar}	
-	\inferrule* [left=]
-	{  \mostSpecific(m, I_d, I_s) = \{I\} \\
-		\mostSpecific_3(m, I_d, I) = \{J\} \\
-		\kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{E}{m}{X}{x}{I}{e_0}...\}}
-	{\mbody(m, I_d, I_s) = (\overline{X} \; \overline{x}, E \; e_0)}
-\end{mathpar}
 
 \begin{comment}
 $mbody(m, I)$ algorithm:
@@ -114,25 +145,6 @@ $mbody(m, I)$ algorithm:
 \end{comment}
 
 \subsubsection{\mostSpecific}
-\begin{mathpar}	
-	\inferrule* [left=]
-	{ set = \; $\{$ K <: J \; $and$ \; K >: I \; | \; m \in dom(K) \} }
-	{\mostSpecific(m, I, J) = \left\{{\begin{tabular}{ll}
-				$prune(set)$ & if $set$ is not empty \\ $\mostSpecific_2(m, J)$ & otherwise
-			\end{tabular}}\right.}
-	
-	\inferrule* [left=]
-	{ set = \; $\{$ K >: I \; | \; m \in dom(K) \} }
-	{\mostSpecific_2(m, I) = prune(set)}
-	
-	\inferrule* [left=]
-	{ set = \; $\{$ K <: J \; $and$ \; K \neq J \; $and$ \; K >: I \; | \\
-		\kwinterface \; K \; \kwextends \; \overline{K} \; \{ E \; m(\overline{X} \; \overline{x}) \;
-		\kwoverride \; J ... \}  $\}$ }
-	{\mostSpecific_3(m, I, J) = prune(set)}
-\end{mathpar}
-
-$$ prune(set) = \{I \in set \; | \; \nexists J \in set, J <: I, J \neq I \} $$
 
 \subsubsection{\mtype}
 $\mtype(m, C)$ algorithm:
@@ -147,16 +159,6 @@ $\mtype(m, C)$ algorithm:
 
 \subsubsection{\ext}
 \ext(I,J) means interface $I$ (directly) extends $J$.
-\begin{mathpar}
-	\inferrule* [left=]
-	{   \interface{I}{I}{M}
-		\\ J \in \overline{I} }
-	{\ext(I, J) = \kwtrue}      \\
-	
-	\inferrule* [left=]
-	{}
-	{\ext(I, J) = \kwfalse}
-\end{mathpar}
 
 
 
@@ -171,14 +173,4 @@ $\mtype(m, C)$ algorithm:
 \subsubsection{\only}
 $\only(m, I)$ is true iff inside $I$ there is only one (direct) methoed $m$ definition.
 
-\subsection{\pathcheck}
-$$\forall P \in getSupTypes(I)$$
 
-\begin{align*}
- set = \{ class | class \in getSupTypes(I) 
-		\\ class.m \text{ defined in its body }
-		\\ class <: P \}
-\end{align*}
-
-$$ prune(set) = \{x \in set | \nexists y \in set, y <: x, y \neq x \} $$
-$$ |prune(set)| <= 1 $$ 

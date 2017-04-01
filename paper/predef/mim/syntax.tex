@@ -87,7 +87,7 @@
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
-    {\judgeewf \Gamma_{I_0} {\kwsuper.J_0::m(\overline{e})}:I}
+    {\judgeewf \Gamma {\kwsuper.J_0::m(\overline{e})}:I}
 }
 
 \newcommand{\tnew} {
@@ -98,11 +98,14 @@
 
 \newcommand{\tmethod} {
 \inferrule* [left=(T-Method)]
-    {  I <: J \\
-    \mostSpecific(m, I, J) = \{J\}
+    {  \judgeewf \Gamma {this:I} \\
+	    I <: J \\
+	    \judgeewf {\Gamma, \overline{x}:\overline{I_X}} {e_0:\_ <: I_E} \\
+    \mostSpecific(m, I, J) = \{J\} \\
+    \mtype(m, J) = \overline{I_X} \to I_E
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
     }
-    {\method{E}{m}{X}{x}{J}{e_0} \text{ OK IN } I}
+    {\method{I_E}{m}{I_X}{x}{J}{e_0} \text{ OK IN } I}
 }
 
 % \newcommand{\tintf} {
@@ -123,23 +126,23 @@
 
 \newcommand{\sinvk} {
 \inferrule* [left=(S-Invk)]
-{\mbody(m, I, J) = (\overline{X} \; \overline{x}, E' \; e_0)}
-{<J>\new{I}.m(<\overline{E}>\overline{e}) \to
-    <E'>[<\overline{X}>\overline{e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
+{ \mbody(m, I, J) = (\overline{I_X} \; \overline{x}, I'_E \; e_0)}
+{\left(<J>\new{I}\right).m(\overline{<I_E> e}) \to
+    <I'_E>[\overline{<I_X> e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\spathinvk} {
 \inferrule* [left=(S-PathInvk)]
-{\mbody(m, I, K) = (\overline{X} \; \overline{x}, E' \; e_0)}
-{<J>\new{I}.K::m(<\overline{E}>\overline{e}) \to
-    <E'>[<\overline{X}>\overline{e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
+{\mbody(m, I, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0)}
+{\left(<J>\new{I}\right).K::m(\overline{<I_E> e}) \to
+    <I'_E>[\overline{<I_X> e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\ssuperinvk} {
 \inferrule* [left=(S-SuperInvk)]
-{\mbody(m, K, K) = (\overline{X} \; \overline{x}, E' \; e_0)}
-{\kwsuper.K::m(<\overline{E}>\overline{e}) \to
-    <E'>[<\overline{X}>\overline{e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
+{\mbody(m, K, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0)}
+{\kwsuper.K::m(\overline{<I_E> e}) \to
+    <I'_E>[\overline{<I_X> e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\deff} {
@@ -159,14 +162,14 @@
 %{e.m(\overline{e}) \to e'.m(\overline{e})}
 %}
 \inferrule* [left=(C-Receiver)]
-{f \to f'}
-{f.m(\overline{e}) \to f'.m(\overline{e})}
+{e_0 \to v_0}
+{e_0.m(\overline{e}) \to v_0.m(\overline{e})}
 }
 
 \newcommand{\cpathreceiver} {
 \inferrule* [left=(C-PathReceiver)]
-{f \to f'}
-{f.K::m(\overline{e}) \to f'.K::m(\overline{e})}
+{e_0 \to v_0}
+{e_0.K::m(\overline{e}) \to v_0.K::m(\overline{e})}
 }
 
 \newcommand{\cargs} {
@@ -184,32 +187,32 @@
 %}
 %---------- v3.0 ---------------
 \inferrule* [left=(C-Args)]
-{e_1 \to f}
-{<J>\new{I}.m(<\overline{E}>\overline{v}, e_1, \overline{e_2})
+{e \to v}
+{v_0.m(\ldots,e,\ldots)
 \to
-<J>\new{I}.m(<\overline{E}>\overline{v}, f, \overline{e_2})}
+v_0.m(\ldots,v,\ldots)}
 }
 
 \newcommand{\cpathargs} {
 \inferrule* [left=(C-PathArgs)]
-{e_1 \to f}
-{<J>\new{I}.K::m(<\overline{E}>\overline{v}, e_1, \overline{e_2})
+{e \to v}
+{v_0.I::m(\ldots,e,\ldots)
 \to
-<J>\new{I}.K::m(<\overline{E}>\overline{v}, f, \overline{e_2})}
+v_0.I::m(\ldots,v,\ldots)}
 }
 
 \newcommand{\csuperargs} {
 \inferrule* [left=(C-SuperArgs)]
-{e_1 \to f}
-{super.K::m(<\overline{E}>\overline{v}, e_1, \overline{e_2})
+{e \to v}
+{super.I::m(\ldots,e,\ldots)
 \to
-super.K::m(<\overline{E}>\overline{v}, f, \overline{e_2})}
+super.I::m(\ldots,v,\ldots)}
 }
 
 \newcommand{\cstatictype} {
 \inferrule* [left=(C-StaticType)]
 {}
-{\new{I} \to <I>\new{I}}
+{\new{I} \to \; <I>\new{I}}
 }
 
 \newcommand{\cfreduce} {
