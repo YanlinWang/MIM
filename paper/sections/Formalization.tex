@@ -7,6 +7,8 @@
 
 \subsection{Syntax}
 See Figure~\ref{fig:syntax}.
+$I$, $J$ represents interfaces. 
+\kwsuper can only be used inside interface definition.
 
 \begin{figure*}[htbp]
 \begin{displaymath}
@@ -20,7 +22,7 @@ e.m(\overline{e}) \mid
 e.I::m(\overline{e}) \mid
 \kwsuper.I::m(e) \\
 \text{Context}      & \Gamma & \Coloneqq & x_1:I_1 ... x_n:I_n \\
-\text{\red{Values}}       & v & \Coloneqq & <I>\new{C}
+\text{\red{Values}}       & v & \Coloneqq & <I>\new{J}
 \end{array}
 \end{array}
 \end{displaymath}
