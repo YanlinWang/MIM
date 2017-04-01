@@ -96,7 +96,7 @@ See Figure~\ref{fig:congruence}.
 \begin{mathpar}	
 	\inferrule* [left=]
 	{  \mostSpecific(m, I_d, I_s) = \{I\} \\
-		\mostSpecific_2(m, I_d, I) = \{J\} \\
+		\mostSpecific_3(m, I_d, I) = \{J\} \\
 		\kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{E}{m}{X}{x}{I}{e_0}...\}}
 	{\mbody(m, I_d, I_s) = (\overline{X} \; \overline{x}, E \; e_0)}
 \end{mathpar}
@@ -114,14 +114,20 @@ $mbody(m, I)$ algorithm:
 \subsubsection{\mostSpecific}
 \begin{mathpar}	
 	\inferrule* [left=]
-	{ set = \; $\{$ K <: I \; $and$ \; K >: J \; | \; m \in dom(K) \} }
-	{\mostSpecific(m, J, I) = prune(set)}
+	{ set = \; $\{$ K <: J \; $and$ \; K >: I \; | \; m \in dom(K) \} }
+	{\mostSpecific(m, I, J) = \left\{{\begin{tabular}{ll}
+				$prune(set)$ & if $set$ is not empty \\ $\mostSpecific_2(m, J)$ & otherwise
+			\end{tabular}}\right.}
 	
 	\inferrule* [left=]
-	{ set = \; $\{$ K <: I \; $and$ \; K \neq I \; $and$ \; K >: J \; | \\
+	{ set = \; $\{$ K >: I \; | \; m \in dom(K) \} }
+	{\mostSpecific_2(m, I) = prune(set)}
+	
+	\inferrule* [left=]
+	{ set = \; $\{$ K <: J \; $and$ \; K \neq J \; $and$ \; K >: I \; | \\
 		\kwinterface \; K \; \kwextends \; \overline{K} \; \{ E \; m(\overline{X} \; \overline{x}) \;
-		\kwoverride \; I ... \}  $\}$ }
-	{\mostSpecific_2(m, J, I) = prune(set)}
+		\kwoverride \; J ... \}  $\}$ }
+	{\mostSpecific_3(m, I, J) = prune(set)}
 \end{mathpar}
 
 $$ prune(set) = \{I \in set \; | \; \nexists J \in set, J <: I, J \neq I \} $$
