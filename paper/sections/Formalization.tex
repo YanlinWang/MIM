@@ -1,15 +1,33 @@
 \section{Formalization}
 
-
-\begin{itemize}
-	\item Syntax + typing rules + Semantics + Auxiliary definitions
-	\item Implementation: a simple type checker + interpreter in Scala
-\end{itemize}
+In this section, we present a formalization of our MIM calculus, based on
+a minimal subset of Java 8 interfaces. The syntax, typing rules and small-step
+semantics are included below.
 
 \subsection{Syntax}
-See Figure~\ref{fig:syntax}.
-$I$, $J$ represents interfaces. 
-\kwsuper can only be used inside interface definition.
+Figure~\ref{fig:syntax} shows the syntax of MIM. The multiple inheritance feature
+of MIM has a basis on Java interfaces. To demonstrate how unintentional method conflicts
+are untangled in MIM, we present the calculus in a straightforward way, hence we only
+focus on a small subset of the interface model. For example, all the methods declared in an
+interface are default methods, that is to say, they always provide default implementations.
+From this point we can view that we are actually modelling a class model that supports multiple
+inheritance. Then it is straightforward to do object creation like ``\new I''. Fields and
+primitive types are not modelled as well.
+
+We use uppercase letters like $I, J, K$ to represent identifiers for interfaces. By multiple inheritance,
+an interface can have a set of super interfaces, where such a set can be empty. Inside an interface are a
+set of method declarations. Each method body holds a return statement. As seen in Figure~\ref{fig:syntax},
+we have introduced the \kwoverride keyword to override an old implementation of the method. If the interface
+that it overrides is exactly the enclosing interface, then such a method is seen as ``originally defined''.
+Again for simplicity, overloading is not modelled for methods, which implies we can uniquely identify a method
+by its name.
+
+An expression can be a variable, a method invocation, an object creation, furthermore, a path-invocation like
+``$e.I::m(\overline{e})$'', meaning that the dynamically binded implementation for method $m$ should be along
+the path $I$. Another case is the super-invocation, enabling a method to access an old implementation from the
+specified super type. Hence a super-invocation can only be used inside an interface definition. Finally an expression
+can also be a value ``$<I> \new J$''. It is exactly an object instance of $J$ with annotated static type $I$.
+Note that values are only intended for the small-step semantics of MIM, hence they are not supposed to appear in the source program.
 
 \begin{figure*}[htbp]
 \begin{displaymath}
@@ -116,7 +134,7 @@ See Figure~\ref{fig:congruence}.
 		{\mostSpecific_2(m, I) = prune(set)}
 	
 	\inferrule* [left=]
-		{ set = \; $\{$ K <: J \; $and$ \; K \neq J \; $and$ \; K >: I \; | \\
+		{ set = \; $\{$ K <: J \; $and$ \; K >: I \; | \;
 			\kwinterface \; K \; \kwextends \; \overline{K} \; \{ I_E \; m(\overline{I_X} \; \overline{x}) \;
 			\kwoverride \; J \ldots \}  $\}$ }
 		{\mostSpecific_3(m, I, J) = prune(set)}
@@ -134,6 +152,20 @@ See Figure~\ref{fig:congruence}.
 
 \subsubsection{\mbody}
 
+$\mbody(m, I_d, I_s)$, as defined in Figure~\ref{fig:auxfunc}, denotes a method lookup function.
+We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic
+type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation, more
+accurately, its parameters, returned expression and the types.
+
+To calculate $\mbody(m, I_d, I_s)$:
+\begin{itemize}
+	\item First, an auxiliary function $\mostSpecific(m, I_d, I_s)$ returns the set of interfaces that
+	originally defines the most specific implementations of method $m$. We use another helper function $prune$ to ensure that none of those implementations overrides one another.
+	\item If $\mostSpecific$ returns a singleton set $\{I\}$, then it is good, otherwise $\mbody$ is undefined in
+	this case. The set $\{I\}$ implies that we will use the $m$ from $I$ without ambiguity. But moreover, we have to invoke $\mostSpecific_3(m, I_d, I)$, to check if there are updated versions of $m$ between $I_d$ and $I$. Again we forbid ambiguity, so the expected set after pruning is also a singleton set $\{J\}$.
+	\item Finally, we fetch the implementation of $m$ in interface $J$ and return.
+\end{itemize}
+
 \begin{comment}
 $mbody(m, I)$ algorithm:
 \begin{itemize}
@@ -145,6 +177,8 @@ $mbody(m, I)$ algorithm:
 \end{comment}
 
 \subsubsection{\mostSpecific}
+
+\haoyuan{TODO}
 
 \subsubsection{\mtype}
 $\mtype(m, C)$ algorithm:
@@ -172,5 +206,11 @@ $\mtype(m, C)$ algorithm:
 
 \subsubsection{\only}
 $\only(m, I)$ is true iff inside $I$ there is only one (direct) methoed $m$ definition.
+
+
+\begin{itemize}
+	\item Syntax + typing rules + Semantics + Auxiliary definitions
+	\item Implementation: a simple type checker + interpreter in Scala
+\end{itemize}
 
 
