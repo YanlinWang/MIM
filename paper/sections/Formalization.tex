@@ -95,23 +95,15 @@ See Figure~\ref{fig:congruence}.
 
 
 \subsubsection{\mbody}
-\begin{mathpar}
+\begin{mathpar}	
 	\inferrule* [left=]
-	{C \{ m() \; \kwoverride \; C ... \} }
-	{\mbody(m, C, A) = (\overline{X} \; \overline{x}, E \; e_0) \text{ IN } C}
-	
-	\inferrule* [left=]
-	{C \{ m() \; \kwoverride \; A ... \} }
-	{\mbody(m, C, A) = (\overline{X} \; \overline{x}, E \; e_0) \text{ IN } C}
-	
-	\inferrule* [left=]
-	{   \mbody(m, C) = \{ A.m(), B.m(), ...\}
-		\\ \nexists \; C.m()}
-	{\mbody(m, C, A) = (\overline{X} \; \overline{x}, E \; e_0) \text{ IN } A}
+	{  \mostSpecific(m, I_d, I_s) = \{I\} \\
+		\mostSpecific_2(m, I_d, I) = \{J\} \\
+		\kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{E}{m}{X}{x}{I}{e_0}...\}}
+	{\mbody(m, I_d, I_s) = (\overline{X} \; \overline{x}, E \; e_0)}
 \end{mathpar}
 
-$$\interface{I}{I}{M}$$
-
+\begin{comment}
 $mbody(m, I)$ algorithm:
 \begin{itemize}
 	\item If m is defined in I directly, then return I.m()
@@ -119,8 +111,22 @@ $mbody(m, I)$ algorithm:
 	\item $\overline{I''} = needed(\overline{I'})$, keep only interfaces that are needed, which are not super-interface of others.
 	\item If $\overline{I''}$ is unique, then return this unique one. Else if any two I1,I2 in $\overline{I''}$ share a parent in $\overline{I'}$, then diamond conflict is detected, report error. Else return multiple $m()$s.
 \end{itemize}
+\end{comment}
 
+\subsubsection{\mostSpecific}
+\begin{mathpar}	
+	\inferrule* [left=]
+	{ set = \; $\{$ K <: I \; $and$ \; K >: J \; | \; m \in dom(K) \} }
+	{\mostSpecific(m, J, I) = prune(set)}
+	
+	\inferrule* [left=]
+	{ set = \; $\{$ K <: I \; $and$ \; K \neq I \; $and$ \; K >: J \; | \\
+		\kwinterface \; K \; \kwextends \; \overline{K} \; \{ E \; m(\overline{X} \; \overline{x}) \;
+		\kwoverride \; I ... \}  $\}$ }
+	{\mostSpecific_2(m, J, I) = prune(set)}
+\end{mathpar}
 
+$$ prune(set) = \{I \in set \; | \; \nexists J \in set, J <: I, J \neq I \} $$
 
 \subsubsection{\mtype}
 $\mtype(m, C)$ algorithm:

@@ -21,6 +21,8 @@
 \newcommand{\methods}{\keyword{methods}}
 \newcommand{\only}{\keyword{only}}
 \newcommand{\pathcheck}{\keyword{pathcheck}}
+\newcommand{\mostSpecific}{\keyword{mostSpecific}}
+\newcommand{\update}{\keyword{update}}
 
 \newcommand{\new}[1]{
     \kwnew \; #1()
@@ -96,12 +98,11 @@
 
 \newcommand{\tmethod} {
 \inferrule* [left=(T-Method)]
-    {  \ext(I, J)
-    \\ \mtype(m, J) = \overline{I} \to I_0
-    \\ \text{If } I=J \text{ then } \only(m, I) = \kwtrue
+    {  I <: J \\
+    \mostSpecific(m, I, J) = \{J\}
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
     }
-    {\method{I_0}{m}{I}{x}{J}{e_0} \text{ OK IN } I}
+    {\method{E}{m}{X}{x}{J}{e_0} \text{ OK IN } I}
 }
 
 % \newcommand{\tintf} {
@@ -114,7 +115,7 @@
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
     {  \overline{I} \text{ OK}
-    \\ \forall m \in \collectMethods(I), \red{\pathcheck(I, m)}
+    \\ \forall M \in \collectMethods(I), M \text{ OK}
     }
     { \interface{I}{I}{M} \text{ OK }}
 }
