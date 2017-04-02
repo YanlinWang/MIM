@@ -162,14 +162,14 @@
 %{e.m(\overline{e}) \to e'.m(\overline{e})}
 %}
 \inferrule* [left=(C-Receiver)]
-{e_0 \to v_0}
-{e_0.m(\overline{e}) \to v_0.m(\overline{e})}
+{e_0 \to e'_0}
+{e_0.m(\overline{e}) \to e'_0.m(\overline{e})}
 }
 
 \newcommand{\cpathreceiver} {
 \inferrule* [left=(C-PathReceiver)]
-{e_0 \to v_0}
-{e_0.K::m(\overline{e}) \to v_0.K::m(\overline{e})}
+{e_0 \to e'_0}
+{e_0.K::m(\overline{e}) \to e'_0.K::m(\overline{e})}
 }
 
 \newcommand{\cargs} {
@@ -187,26 +187,26 @@
 %}
 %---------- v3.0 ---------------
 \inferrule* [left=(C-Args)]
-{e \to v}
-{v_0.m(\ldots,e,\ldots)
+{e \to e'}
+{e_0.m(\ldots,e,\ldots)
 \to
-v_0.m(\ldots,v,\ldots)}
+e_0.m(\ldots,e',\ldots)}
 }
 
 \newcommand{\cpathargs} {
 \inferrule* [left=(C-PathArgs)]
-{e \to v}
-{v_0.I::m(\ldots,e,\ldots)
+{e \to e'}
+{e_0.I::m(\ldots,e,\ldots)
 \to
-v_0.I::m(\ldots,v,\ldots)}
+e_0.I::m(\ldots,e',\ldots)}
 }
 
 \newcommand{\csuperargs} {
 \inferrule* [left=(C-SuperArgs)]
-{e \to v}
+{e \to e'}
 {super.I::m(\ldots,e,\ldots)
 \to
-super.I::m(\ldots,v,\ldots)}
+super.I::m(\ldots,e',\ldots)}
 }
 
 \newcommand{\cstatictype} {
@@ -217,13 +217,13 @@ super.I::m(\ldots,v,\ldots)}
 
 \newcommand{\cfreduce} {
 \inferrule* [left=(C-FReduce)]
-{f \to f' \; f \neq \new{I}}
-{<I>f \to <I>f'}
+{e \to e' \\ e \neq \new{I}}
+{<I>e \to \; <I>e'}
 }
 
 \newcommand{\cannoreduce} {
 \inferrule* [left=(C-AnnoReduce)]
 {}
-{<I>(<J>e) \to <I>e}
+{<I>(<J> \new K) \to <I> \new K}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% syntax.tex end %%%%%%%%%%%%%%%%%%%%%%%%
