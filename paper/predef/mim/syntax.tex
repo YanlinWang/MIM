@@ -22,6 +22,8 @@
 \newcommand{\only}{\keyword{only}}
 \newcommand{\pathcheck}{\keyword{pathcheck}}
 \newcommand{\mostSpecific}{\keyword{mostSpecific}}
+\newcommand{\updateSet}{\keyword{updateSet}}
+\newcommand{\prune}{\keyword{prune}}
 \newcommand{\update}{\keyword{update}}
 
 \newcommand{\new}[1]{
@@ -118,7 +120,7 @@
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
     {  \overline{I} \text{ OK}
-    \\ \forall M \in \collectMethods(I), M \text{ OK}
+    \\ \overline{M} \text{ OK IN } I
     }
     { \interface{I}{I}{M} \text{ OK }}
 }
