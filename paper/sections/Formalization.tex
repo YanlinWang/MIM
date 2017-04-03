@@ -130,23 +130,21 @@ none of them has a subtyping to one another, since all super types have been rem
 	\begin{mathpar}
 	\inferrule* [left=]
 		{  \mostSpecific(m, I_d, I_s) = \{I\} \\
-			\mostSpecific_3(m, I_d, I) = \{J\} \\
+			\mostSpecific_2(m, I_d, I) = \{J\} \\
 			\kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_E}{m}{I_X}{x}{I}{e_0}\ldots\}}
 		{\mbody(m, I_d, I_s) = (\overline{I_X} \; \overline{x}, I_E \; e_0)}
 	
 	\inferrule* [left=]
-	{ set = \; \{ K <: J \; $and$ \; K >: I \; | \; m \in \updateSet(K, K) \} }
+	{ set1 = \; \{ K <: J \; $and$ \; K >: I \; | \; m \in \updateSet(K, K) \} \\
+		set2 = \; \{ K >: J \; | \; m \in \updateSet(K, K) \} }
 	{\mostSpecific(m, I, J) = \left\{{\begin{tabular}{ll}
-				$prune(set)$ & if $set$ is not empty \\ $\mostSpecific_2(m, J)$ & otherwise
+				$prune(set1)$ & if $set1$ is not empty \\ $prune(set2)$ & otherwise
 			\end{tabular}}\right.}
-	\inferrule* [left=]
-		{ set = \; \{ K >: I \; | \; m \in \updateSet(K, K) \} }
-		{\mostSpecific_2(m, I) = prune(set)}
 	
 	\inferrule* [left=]
 		{ set = \; \{ K <: J \; $and$ \; K >: I \; | \;
 			m \in \updateSet(K, J)  \} }
-		{\mostSpecific_3(m, I, J) = prune(set)}
+		{\mostSpecific_2(m, I, J) = prune(set)}
 	
 	prune(set) = \{I \in set \; | \; \nexists J \in set, J <: I, J \neq I \}
 	
