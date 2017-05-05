@@ -39,9 +39,9 @@ Note that values are only intended for the small-step semantics of MIM, hence th
 e.m(\overline{e}) \mid
 \new{I} \mid
 e.I::m(\overline{e}) \mid
-\kwsuper.I::m(e) \; \red{\mid} \; \red{v^*} \\
+\kwsuper.I::m(e) \; \mid \; v^* \\
 \text{Context}      & \Gamma & \Coloneqq & \overline{x:I} \\
-\text{\red{Values}}       & v & \Coloneqq & <I>\new{J} \\
+\text{Values}       & v & \Coloneqq & <I>\new{J} \\
 \\
 \text{Interface names} & I, J, K & & \\
 \text{Method names} & m & & \\
@@ -123,10 +123,10 @@ The three rules require that the receiver and the arguments have been evaluated 
 \begin{figure*}[htbp]
 \begin{mathpar}
 	\creceiver \hspace{.5in}
-	\red{\cpathreceiver} \\
-	\red{\cargs} \\
-	\red{\cpathargs} \\
-	\red{\csuperargs} \\
+	\cpathreceiver \\
+	\cargs \\
+	\cpathargs \\
+	\csuperargs \\
 	\cstatictype \\
 	\cfreduce \\
 	\cannoreduce
