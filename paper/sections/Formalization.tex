@@ -52,8 +52,33 @@ e.I::m(\overline{e}) \mid
 \caption{Syntax. \red{*: only intended for semantic rules.}}\label{fig:syntax}
 \end{figure*}
 
-\subsection{Subtyping}
-See Figure~\ref{fig:subtyping}. \haoyuan{TODO}
+\subsection{Subtyping and Typing Rules}
+See Figure~\ref{fig:subtyping}. 
+The subtyping of MIM consists of only a few rules shown in Figure ?.
+In short, subtyping relations are built from the inheritance in interface
+declarations. They hold both reflexivity and transitivity.
+
+Details of type-checking rules are displayed in Figure ?, including expression
+typing, well-formedness of methods and interfaces. As a convention, an environment
+$\Gamma$ is maintained to store the types of variables, together with ``this'' type, namely
+the enclosing type. The three rules for method invocation, (T-INVK), (T-PATHINVK) and (T-SUPERINVK)
+are very similar, in the sense that they all check the type of the specific method, by using
+an auxiliary function \mtype. \mtype is the function for looking up method types, which we will
+illustrate later. After the method type is obtained, they all check that arguments and the receiver
+have compatible types. Additionally, (T-PATHINVK) requires the receiver to be the subtype of the specified
+path type, and (T-SUPERINVK) checks if the enclosing type directly extends the specified super type.
+
+The method typing rule (T-METHOD) is more interesting, since the method update is taken into consideration.
+Besides that the static type of the return expression should be the subtype of the declared return type,
+we use another helper function \mostSpecific to ensure that the method update is legal. Briefly, $\mostSpecific(m, I, J)$
+returns a set of interfaces, and an interface is included if and only if: (1) it originally defines method $m$; (2) it is
+a supertype of $I$; (3) it is along path $J$, meaning that it is either a supertype or a subtype of $J$ (including $J$ itself);
+(4) it does not have a subtype in the same set, namely we filter out all super types.
+Hence by $\mostSpecific(m, I, J) = \{J\}$ we define the legality of method updating: the updated method must be an original method (not another method update), and method updating cannot cross over method overriding.
+
+Finally, (T-INTF) defines interface type-checking in a straightforward way.
+
+
 
 \begin{figure*}[htbp]
 \begin{mathpar}
@@ -63,8 +88,6 @@ See Figure~\ref{fig:subtyping}. \haoyuan{TODO}
 \caption{Subtyping.}\label{fig:subtyping}
 \end{figure*}
 
-\subsection{Typing Rules}
-See Figure~\ref{fig:typingrules}. \haoyuan{TODO}
 
 \begin{figure*}[htbp]
 \begin{mathpar}
@@ -80,8 +103,12 @@ See Figure~\ref{fig:typingrules}. \haoyuan{TODO}
 \caption{Typing rules.}\label{fig:typingrules}
 \end{figure*}
 
-\subsection{Small-step Semantics}
-See Figure~\ref{fig:smallstep}. \haoyuan{TODO}
+\subsection{Small-step Semantics and Congruence}
+Figure ? and Figure ? define small-step semantic rules and congruence rules,
+respectively. When evaluating an expression, they are invoked recursively and
+alternately to produce a single value in the end. The small-step semantics (S-INVK), (S-PATHINVK) and (S-SUPERINVK) behave similarly, each corresponds to
+one kind of method invocation. They all invoke \mbody for method body lookup. Generally, one can understand $\mbody(m, I, J)$ in a way that it finds the most specific body of method $m$, when the receiver has dynamic type $I$ and static type $J$.
+The three rules require that the receiver and the arguments have been evaluated into values, before substitution is applied.
 
 \begin{figure*}[htbp]
 \begin{mathpar}
@@ -92,10 +119,6 @@ See Figure~\ref{fig:smallstep}. \haoyuan{TODO}
 \caption{Small-step semantics.}\label{fig:smallstep}
 \end{figure*}
 
-
-
-\subsection{Congruence}
-See Figure~\ref{fig:congruence}. \haoyuan{TODO}
 
 \begin{figure*}[htbp]
 \begin{mathpar}
@@ -190,11 +213,11 @@ $mbody(m, I)$ algorithm:
 
 \subsubsection{\mostSpecific}
 
-\haoyuan{TODO}
+
 
 \subsubsection{\mtype}
 
-\haoyuan{TODO. mtype(m, I) from mbody(I, I).}
+\red{TODO. mtype(m, I) from mbody(I, I).}
 
 \begin{comment}
 \subsubsection{\collectMethods}
@@ -240,13 +263,13 @@ $mbody(m, I)$ algorithm:
 \end{array}
 \]
 
-~\haoyuan{Unfortunately I think this example shows that it is hard to reuse
+~\red{Unfortunately I think this example shows that it is hard to reuse
 	$D.m$ on path $B$ and $E.m$ on path $B$ in $F$?}
 
-\haoyuan{We can use the $\kwsuper$ keyword to access the originally defined methods
+\red{We can use the $\kwsuper$ keyword to access the originally defined methods
 	in super types, but we cannot access the old updating methods.}
 
-\haoyuan{Just like $\kwsuper.I::m()$ is equivalent to $\new I.m()$, maybe we can add
+\red{Just like $\kwsuper.I::m()$ is equivalent to $\new I.m()$, maybe we can add
 a degree of freedom to $\kwsuper$, for example, $\kwsuper.D::B::m()$ is equivalent to
 $\new D.B::m()$, so we can use $\kwsuper.D::B::m()$ and $\kwsuper.E::B::m()$ inside interface $F$ for code reuse?}
 
@@ -294,6 +317,6 @@ To compute \red{$\new F.n(\new F)$}:
 	\item By (C-ANNOREDUCE): \red{$<A> \new F$}.
 \end{itemize}
 
-\haoyuan{TODO: class encapsulation problem: interface A: m; interface B: m update A; interface C: m update B.}
+\red{TODO: class encapsulation problem: interface A: m; interface B: m update A; interface C: m update B.}
 
 
