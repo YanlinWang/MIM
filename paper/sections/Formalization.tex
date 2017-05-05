@@ -53,7 +53,6 @@ e.I::m(\overline{e}) \mid
 \end{figure*}
 
 \subsection{Subtyping and Typing Rules}
-See Figure~\ref{fig:subtyping}. 
 The subtyping of MIM consists of only a few rules shown in Figure ?.
 In short, subtyping relations are built from the inheritance in interface
 declarations. They hold both reflexivity and transitivity.
@@ -68,17 +67,12 @@ illustrate later. After the method type is obtained, they all check that argumen
 have compatible types. Additionally, (T-PATHINVK) requires the receiver to be the subtype of the specified
 path type, and (T-SUPERINVK) checks if the enclosing type directly extends the specified super type.
 
-The method typing rule (T-METHOD) is more interesting, since the method update is taken into consideration.
-Besides that the static type of the return expression should be the subtype of the declared return type,
-we use another helper function \mostSpecific to ensure that the method update is legal. Briefly, $\mostSpecific(m, I, J)$
-returns a set of interfaces, and an interface is included if and only if: (1) it originally defines method $m$; (2) it is
-a supertype of $I$; (3) it is along path $J$, meaning that it is either a supertype or a subtype of $J$ (including $J$ itself);
-(4) it does not have a subtype in the same set, namely we filter out all super types.
-Hence by $\mostSpecific(m, I, J) = \{J\}$ we define the legality of method updating: the updated method must be an original method (not another method update), and method updating cannot cross over method overriding.
+The method typing rule (T-METHOD) is more interesting, since the method can either be an original implementation or a update.
+Besides static type-checking for the return expression,
+we further use the helper function $\mostSpecific$ to ensure that the method update is legal. The formal definition is available in Section ?
+By that we define the legality of method updating: the updated method must be an original method (not another method update), and method updating cannot cross over method overriding (a method overriding cannot appear between the method update and the updated original method in inheritance hierarchy).
 
 Finally, (T-INTF) defines interface type-checking in a straightforward way.
-
-
 
 \begin{figure*}[htbp]
 \begin{mathpar}
@@ -184,22 +178,41 @@ none of them has a subtyping to one another, since all super types have been rem
 	\caption{Auxiliary functions.}\label{fig:auxfunc}
 \end{figure*}
 
+\subsubsection{$\mostSpecific$ and $\mostSpecific_2$}
 
-\subsubsection{\mbody}
+$\mostSpecific$ is an auxiliary function that finds the most specific original implementations of a method. Let us consider $\mostSpecific(m, I, J)$, what it returns is a set of interfaces, each including its own $m$ as a most specific implementation. Such a set may contain several elements, but that implies ambiguity; what we expect is actually a singleton set. By the definition of $\mostSpecific$ shown in Figure ?, an interface belongs to the return set if and only if:
+\begin{itemize}
+	\item It has an original definition of $m$;
+	\item It is a supertype of $I$;
+	\item It is along path $J$, meaning that it is either a supertype or a subtype of $J$ (including $J$ itself);
+	\item It does not have a subtype in the same set, because we have used $prune$ to filter out all super types, as the most specific one is always in the sub-most type.
+\end{itemize}
+We could have put $set1$ and $set2$ together, but the current definition leads a clearer illustration.
+
+The $\mostSpecific$ function only focuses on original method implementations, all the method updates are omitted during that time. On the other hand, another auxiliary function $\mostSpecific_2(m, I, J)$ has the assumption that $J$ defines an original $m$, and this function tries to find the most specific implementations that update such an $m$. Just as $\mostSpecific$, $\mostSpecific_2$ also returns the set of interfaces after pruning. An interface belongs to the return set if and only if:
+\begin{itemize}
+	\item It is between $I$ and $J$;
+	\item It defines a method update for $J.m$;
+	\item It does not have a subtype in the same set.
+\end{itemize}
+The algorithm for finding the most specific method update is quite similar to that for most specific original method. A method update is not allowed to work on another method update, and one can hide another if their interfaces has subtyping relations. If they do not hide each other, the result implies ambiguity.
+
+\subsubsection{$\mbody$ and $\mtype$}
 
 $\mbody(m, I_d, I_s)$, as defined in Figure~\ref{fig:auxfunc}, denotes a method body lookup function.
 We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic
 type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation, more
-accurately, its parameters, returned expression and the types.
+accurately, its parameters, returned expression and the types. It considers both originally defined methods and method updates, so $\mostSpecific$ and $\mostSpecific_2$ are invoked.
 
 To calculate $\mbody(m, I_d, I_s)$:
 \begin{itemize}
-	\item First, an auxiliary function $\mostSpecific(m, I_d, I_s)$ returns the set of interfaces that
-	originally defines the most specific implementations of method $m$. We use another helper function $prune$ to ensure that none of those implementations overrides one another.
+	\item First, it invokes $\mostSpecific(m, I_d, I_s)$ and returns a set.
 	\item If $\mostSpecific$ returns a singleton set $\{I\}$, then it is good, otherwise $\mbody$ is undefined in
-	this case. The set $\{I\}$ implies that we will use the $m$ from $I$ without ambiguity. But moreover, we have to invoke $\mostSpecific_3(m, I_d, I)$, to check if there are updated versions of $m$ between $I_d$ and $I$. Again we forbid ambiguity, so the expected set after pruning is also a singleton set $\{J\}$.
-	\item Finally, we fetch the implementation of $m$ in interface $J$ and return.
+	this case. The set $\{I\}$ implies that we will use the $m$ from $I$ without ambiguity. But moreover, we have to invoke $\mostSpecific_2(m, I_d, I)$, to check if there are updated versions of $m$ between $I_d$ and $I$. Again we forbid ambiguity, so the expected set after pruning is also a singleton set $\{J\}$.
+	\item Finally, we fetch the implementation of $m$ in interface $J$ and return its related information.
 \end{itemize}
+The definition of $\mtype$ simply relies on $\mbody$. In short,
+$$\mbody(m, I, I) = (\overline{I_x}\ \overline{x}, I_E\ e) \ \Longrightarrow\ \mtype(m, I) = \overline{I_x}\rightarrow I_E$$
 
 \begin{comment}
 $mbody(m, I)$ algorithm:
@@ -210,14 +223,6 @@ $mbody(m, I)$ algorithm:
 	\item If $\overline{I''}$ is unique, then return this unique one. Else if any two I1,I2 in $\overline{I''}$ share a parent in $\overline{I'}$, then diamond conflict is detected, report error. Else return multiple $m()$s.
 \end{itemize}
 \end{comment}
-
-\subsubsection{\mostSpecific}
-
-
-
-\subsubsection{\mtype}
-
-\red{TODO. mtype(m, I) from mbody(I, I).}
 
 \begin{comment}
 \subsubsection{\collectMethods}
