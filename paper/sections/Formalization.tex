@@ -49,7 +49,7 @@ e.I::m(\overline{e}) \mid
 \end{array}
 \end{array}
 \end{displaymath}
-\caption{Syntax. \red{*: only intended for semantic rules.}}\label{fig:syntax}
+\caption{Syntax. *: only intended for semantic rules.}\label{fig:syntax}
 \end{figure*}
 
 \subsection{Subtyping and Typing Rules}
@@ -235,8 +235,34 @@ $mbody(m, I)$ algorithm:
 	\item Implementation: a simple type checker + interpreter in Scala
 \end{itemize}
 
+\newpage 
+
 \subsubsection{A Non-Trivial Example}
 
+\begin{lstlisting}
+interface A extends {
+	A m() override A {return new A(); }
+}
+interface B extends A {
+	A m() override B {return new B(); }
+}
+interface C extends A {
+	A m() override C {return new C(); }
+}
+interface D extends B, C {
+	A m() override B {return new D(); }
+}
+interface E extends B {
+	A m() override B {return new E(); }
+}
+interface F extends D, E {
+	A m() override B {return new F(); } 
+	A n(B b) override F {return b.m(); }
+}
+new F().n(new F())
+\end{lstlisting}
+
+\begin{comment}
 \[
 \begin{array}{l}
 \kwinterface \; A \; \kwextends \; \{ \\
@@ -267,6 +293,7 @@ $mbody(m, I)$ algorithm:
 \new F.n(\new F)
 \end{array}
 \]
+\end{comment}
 
 ~\red{Unfortunately I think this example shows that it is hard to reuse
 	$D.m$ on path $B$ and $E.m$ on path $B$ in $F$?}
@@ -323,5 +350,18 @@ To compute \red{$\new F.n(\new F)$}:
 \end{itemize}
 
 \red{TODO: class encapsulation problem: interface A: m; interface B: m update A; interface C: m update B.}
+
+
+\subsection{Type Safety}
+
+\begin{theorem}[Subject Reduction]
+$\textit{If } \ \judgeewf \Gamma {e : I} \; \textit{ and } \ e \rightarrow e',\ 
+\textit{then } \judgeewf \Gamma {e' : I'} \ \textit{ for some } \ I' <: I.$
+\end{theorem}
+
+\begin{theorem}[Progress]
+$\textit{If } \ \judgeewf {} {e : I}, \textit{ then either } \ e 
+\textit{ is a value or there is an } e' \textit{ with } e \rightarrow e'.$
+\end{theorem}
 
 

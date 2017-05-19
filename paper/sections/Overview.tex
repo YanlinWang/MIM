@@ -34,8 +34,27 @@ Other solutions only preserve one method. Can we keep both methods without renam
 
 \subsection{Solution in our language}
 \begin{lstlisting}
-
+interface Deck {
+   void draw() { // draws a card from the Deck }
+}
+interface Drawable {
+   void draw() { // draws something on the screen }
+}
+interface DrawableDeck extends Deck, Drawable {
+  //both draw() methods are kept automaticlaly in our language
+} 
+new DrawableDeck().Deck::draw()
 \end{lstlisting}
 
 \subsection{Method refinement}
-
+\begin{lstlisting}
+interface DrawableDeck2 extends DrawableDeck {
+   void draw() override Deck {
+      // new implementation of draw a card from deck
+   }
+   void draw() override Drawable {
+      // new implementation of drawing something
+   } 
+} 
+new DrawableDeck2().Deck::draw()
+\end{lstlisting}
