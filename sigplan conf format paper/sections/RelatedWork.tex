@@ -1,0 +1,125 @@
+\section{Related Work}
+
+\begin{itemize}
+	\item Static+Dynamic type method lookup (any existing language that supports this?)
+	\item Formalization based on FJ (novelty: keep static types <I> in formalization)
+		\begin{itemize}
+			\item Existing formalizations based on FJ proposed new features and added rules in syntax and semantics. But we not only add rules, but also piggyback static types on almost all semantic rules to model method lookup. 
+			\item Featherweight defenders, ...
+		\end{itemize}
+\end{itemize}
+
+\subsection{Mainstream Multiple Inheritance Models}
+Multiple inheritance is a useful feature in object-oriented programming world although it's difficult to model and can 
+cause various problems (e.g. the diamond problem).  There are many existing languages/models that support multiple 
+inheritance, either coming with multiple inheritance capability or added through evolution. The Mixin model allows naming components 
+that can be applied to various classes as reusable functionality units. However, the linearization (total ordering) of mixin 
+inheritance cannot provide a satisfactory resolution in some cases and restricts the flexibility of mixin composition. 
+
+Simplifying the mixins approach, traits~\cite{scharli03traits} draw a strong line between units of reuse and object factories. 
+Traits act as units of reuse, containing functionality code; while classes, assembled from traits, act as object factories. 
+
+Java 8 interfaces are closely related to traits: concrete method implementations are allowed (via the default keyword) inside interfaces. 
+The introduction of default methods opens the gate for various flavors of multiple inheritance in Java.
+
+Malayeri and Aldrich proposed a model CZ~\cite{malayeri2009cz} which aims to do multiple inheritance without the diamond problem. 
+Inheritance is divided into two concepts: inheritance dependency and implementation inheritance. 
+Using a combination of requires and extends, a program with diamond inheritance is transformed to one without diamonds. 
+Moreover, fields and multiple inheritance can coexist. However untangling inheritance also untangles the class structure. 
+In CZ, not only the number of classes, but also the class hierarchy complexity increases. 
+
+The above mentioned models/languages support multiple inheritance, and they handle method confliction in the same way: requiring 
+programmers to explicitly resolve ambiguity and disallowing two methods with the same signature from two different libraries 
+to co-exit.
+
+\subsection{Resolving Unintended Method Confliction}
+There are still a few languages that already realized the problem and explored a bit. We discuss them one by one.
+
+\noindent {\bf C++ model.}
+As discussed in Section~\ref{}, C++ supports very flexible inheritance mode and allows programmers to choose different 
+confliction resolution approaches via normal or virtual inheritance. Generally speaking, C++ model is much more complex 
+and flexible than our approach. For example, given the following code
+\begin{lstlisting}[language=Java]
+class A { public: void m() {cout << "MA" << endl;}};
+class B { public: void m() {cout << "MB" << endl;}};
+class C : public A, public B { 
+	void m() {cout << "MC" << endl;}
+};
+void func(A* a) { a->m(); }
+int main() {
+	C* c = new C();
+	c->B::m();
+	func(c); 
+	return 0; //Running result: MB MA
+}
+\end{lstlisting}
+The running result is $MB \; MA$, meaning that it looks at the static type when doing method lookup. However, we can alter the code 
+a little bit with virtual method and the result will be totally different:
+\begin{lstlisting}
+class A { 
+	public: virtual void m() {cout << "MA" << endl;}
+};
+class B { 
+	public: virtual void m() {cout << "MB" << endl;}
+};
+class C : public A, public B { 
+    public: virtual void m() {cout << "MC" << endl;}
+};
+void func(A* a) { a->m(); }
+int main() {
+	C* c = new C();
+	c->B::m();
+	func(c); 
+	return 0; //Running result: MB MC
+}
+\end{lstlisting}
+Now the running result will be $MB \; MC$. With virtual method, method lookup algorithm will find the most specific 
+method definition of $m$, which is the definition in class $C$. Although C++ support this flexibility, it does not 
+support updating both $A.m$ and $B.m$ in class $C$. 
+
+\begin{lstlisting}
+\end{lstlisting}
+
+\noindent  {\bf C\# Explicit method implementation.}
+Explicit method implementation is a special feature supported by \csharp. As described in \csharp
+tutorial~\cite{}, a class that implements an interface can explicitly implement a member of that
+interface. When a member is explicitly implemented, it can only be accessed through an instance
+of the interface. Explicit interface implementation allows the programmer to inherit two interfaces 
+that share the same member names and give each interface member a separate implementation. 
+Explicit interface member implementations have two advantages:
+Explicit interface member implementations allow interface implementations to be excluded 
+from the public interface of a class. This is particularly useful when a class implements an internal 
+interface that is of no interest to a consumer of that class or struct.
+Explicit interface member implementations allow disambiguation of interface members with the 
+same signature. This is the the advantage that is similar to ours' model. However, there are two 
+diffirencies: firstly, method (default) implementations are not allowed in \csharp interfaces; 
+secondly, when handling unintended method confliction, multi-way method updating is not supported 
+in \csharp.
+
+\begin{lstlisting}
+\end{lstlisting}
+
+\noindent {\bf Self.} In the prototype-based language \self~\cite{Chambers1991}, inheritance is a basic feature.
+It does not include classes but instead allow individual objects to inherit from (or delegate to) other objects. 
+Although it is different than class-based languages, the multiple inheritance model is somehow similar. The \self 
+language support multiple (object) inheritance in a clever way. Not only the new inheritance
+relation \emph{prioritized parents} is developed, but also the method lookup rule called 
+\emph{sender path tiebreaker rule}, which is similar with our approach, using hirarchical 
+information in method resolution, but in a prototype-based language setting.
+
+\subsection{Static+Dynamic Type Method Lookup}
+
+\subsection{Formalization Based on FeatherweightJava}
+FeatherweightJava~\cite{Igarashi01FJ} is a minimal core calculus of Java language, proposed by Igarashi et. al. Many models are based on 
+FeatherweightJava, for example FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, as well as our model.
+It provides the standard model of formalizing a Java-like object-oriented language and 
+people can easily extends it to form a new language. In terms of formalization, they key novelty of our model is the use of 
+static types as annotations along with various terms. As far as we know, this technique has not appear in literature before.
+
+
+
+
+
+
+
+

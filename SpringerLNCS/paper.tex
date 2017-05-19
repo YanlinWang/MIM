@@ -1,0 +1,112 @@
+\documentclass{llncs}
+
+\usepackage{listings}
+
+\usepackage{xspace}
+\usepackage{multicol}
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+%\usepackage[table,xcdraw]{xcolor} -- clash with preamble.tex
+\usepackage{color}
+% \usepackage{amsthm}
+% \usepackage{amsmath}
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{fancyvrb}
+\usepackage{url}
+%\usepackage{pstricks,pst-node,pst-tree} -- clash with preamble.tex
+\usepackage{bbm}
+%\usepackage{pgf} -- clash with preamble.tex
+\usepackage{multirow}
+\usepackage{enumitem}
+
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage[normalem]{ulem}
+
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.85]{beramono}
+% \usepackage{mathpartir}
+\usepackage[utf8]{inputenc}
+\usepackage{flushend}
+
+
+\let\proof\relax
+\let\endproof\relax
+\let\mathpar\relax
+
+\input{predef/names.tex}
+\input{predef/mim/syntax.tex}
+\input{predef/others/preamble.tex}
+\input{predef/macros/common_pl_macros.tex}
+\input{predef/algebra/syntax.tex}
+\input{predef/f-and/base.tex}
+\input{predef/f-and/orthogonality.tex}
+\input{predef/f-and/wellformedness.tex}
+\input{predef/f-and/subtyping.tex}
+\input{predef/f-and/select.tex}
+\input{predef/f-and/restrict.tex}
+\input{predef/f-and/typing.tex}
+
+
+\begin{document}
+
+\title{NoTitle}
+%\subtitle{\InterfaceBased Programming for the Masses}
+
+% \authorinfo{NoAuthor}
+%            {The University of Hong Kong, China}
+% %           {\{ylwang,hyzhang,bruno\}@cs.hku.hk}
+% %\authorinfo{Marco Servetto}
+% %          {Victoria University of Wellington, New Zealand}
+% %          {marco.servetto@ecs.vuw.ac.nz}
+\author{Author 1, Author 2}
+
+\institute{Lab, University, Address}
+
+\maketitle
+
+\begin{abstract}
+  Text.
+\end{abstract}
+
+
+\input{sections/Introduction.tex}
+
+\input{sections/Overview.tex}
+
+\input{sections/Formalization.tex}
+
+\input{sections/Implementation.tex}
+
+\input{sections/Discussion.tex}
+
+\input{sections/CaseStudy.tex}
+
+\input{sections/RelatedWork.tex}
+
+\input{sections/Conclusion.tex}
+
+\section*{Acknowledgments}\label{sec:Acknowledgments}
+
+Authors would like to thank YYYYY.
+
+% \newpage
+% \clearpage
+% \bibliographystyle{abbrvnat}
+\bibliographystyle{splncs03}
+\bibliography{paper}
+
+
+
+
+
+% \appendix
+% \input{sections/Appendix_Formalization.tex}
+% \input{sections/Translation.tex}
+% \input{sections/Appendix_Translation.tex}
+% \input{sections/Appendix.tex}
+
+
+\end{document}

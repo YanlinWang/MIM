@@ -1,0 +1,60 @@
+\section{Overview}
+
+\begin{itemize}
+	\item Code for the problem (Draw example)
+	\item Potential fixes (renaming, traits, ....)
+	\item How it is solved with our language (client code, simple explanation) + show update
+\end{itemize}
+
+\begin{lstlisting}
+interface Deck {
+   draw();  // draws a card from the Deck
+}
+
+interface Drawable {
+   draw();  // draws something on the screen
+}
+
+interface DrawableDeck extends Deck, Drawable {
+   ...
+} 
+\end{lstlisting}
+
+\subsection{Potential fixes}
+
+\begin{itemize}
+    \item Explicit override m() in C.
+    \item Choose one (such as Mixin model).
+    \item With Traits: method exclusion.
+    \item With Traits: method rename.
+\end{itemize}
+In previous solutions, only renaming can preserve the two different methods m(), 
+but it’s cumbersome to do in practice: new names have to be introduced, and (probably) need to prefer one over another. 
+Other solutions only preserve one method. Can we keep both methods without renaming?
+
+\subsection{Solution in our language}
+\begin{lstlisting}
+interface Deck {
+   void draw() { // draws a card from the Deck }
+}
+interface Drawable {
+   void draw() { // draws something on the screen }
+}
+interface DrawableDeck extends Deck, Drawable {
+  //both draw() methods are kept automaticlaly in our language
+} 
+new DrawableDeck().Deck::draw()
+\end{lstlisting}
+
+\subsection{Method refinement}
+\begin{lstlisting}
+interface DrawableDeck2 extends DrawableDeck {
+   void draw() override Deck {
+      // new implementation of draw a card from deck
+   }
+   void draw() override Drawable {
+      // new implementation of drawing something
+   } 
+} 
+new DrawableDeck2().Deck::draw()
+\end{lstlisting}
