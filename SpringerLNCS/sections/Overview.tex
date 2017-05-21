@@ -1,4 +1,4 @@
-\section{A Running Example: \lstinline{DrawableDeck}}
+\section{A Running Example: DrawableDeck}
 
 This section illustrates the features of our \MIM{} model for resolving unintentional method
 conflicts. As mentioned before, such a case arises when two inherited methods happen to have the
@@ -50,35 +50,30 @@ components, achieving great code reuse. It is supported by many mainstream OO
 languages. Nevertheless at this point, \lstinline|DrawableDeck| has to throw a compile
 error, for the two \lstinline|draw()| methods cause a conflict, though accidentally.
 
-\subsection{More}
-\begin{itemize}
-	\item Code for the problem (Draw example)
-	\item Potential fixes (delegation, renaming, traits, ....)
-	\item How it is solved with our language (client code, simple explanation) + show update
-\end{itemize}
-
-
 \subsection{Potential fixes}
 
 For that problem, there are several workarounds that quickly come to our mind:
 
-\paragraph{I. Delegation.}
+\paragraph{I. Delegation.} As an alternative to multiple inheritance, delegation can be used by
+introducing two fields with \lstinline|Drawable| type and \lstinline|Deck| type, respectively. This avoids
+method conflicts, nevertheless, delegation itself is too restricted in modularity, and meanwhile
+introduces a lot of boilerplate.
 
 \paragraph{II. Creating a \lstinline|draw()| method in \lstinline|DrawableDeck|, which explicitly overrides the old ones.}
+This is a non-solution. It does not make any sense to override both methods with totally different functionalities, as old
+methods have to be hidden.
 
-\paragraph{III. Choosing one of them as the default method, like Mixins.}
+\paragraph{III. Choosing one of them as the default method, like Mixins.} The mixin model can be applied to choose a
+default one based on linearisation. Similarly, we want to preserve both features, rather than keeping only one of them.
 
-\paragraph{IV. Method exclusion like traits.}
+\paragraph{IV. Method exclusion like traits.} Same reason as above.
 
-\paragraph{V. Method renaming.}
-In previous solutions, only renaming can preserve the two different methods m(), 
-but it’s cumbersome to do in practice: new names have to be introduced, and (probably) need to prefer one over another. 
-Other solutions only preserve one method. Can we keep both methods without renaming?
+\paragraph{V. Method renaming like traits.} This is probably what people do in most cases, by simply renaming one to avoid conflicts.
+It can indeed preserve both features, however, it is cumbersome in practice, as introducing new names can affect other code blocks.
+Certainly this is a workaround, not a solution.
 
-\subsection{Solution in our language}
-\begin{lstlisting}
-
-\end{lstlisting}
+\subsection{Solution in \MIM: \dispatchnamecaptical}
+It uses dynamic dispatch.
 
 \subsection{Method refinement}
 
