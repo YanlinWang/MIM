@@ -1,60 +1,84 @@
-\section{Overview}
+\section{A Running Example: \lstinline{DrawableDeck}}
 
-\begin{itemize}
-	\item Code for the problem (Draw example)
-	\item Potential fixes (renaming, traits, ....)
-	\item How it is solved with our language (client code, simple explanation) + show update
-\end{itemize}
+This section illustrates the features of our \MIM{} model for resolving unintentional method
+conflicts. As mentioned before, such a case arises when two inherited methods happen to have the
+same signature, but with different semantics and functionalities. This could be quite troublesome
+to programmers that use multiple inheritance. Below we illustrate with a running example called \lstinline|DrawableDeck|.
+Note that we use Java-like syntax throughout the paper, and all types are defined with the keyword ``\lstinline|interface|'', which
+supports multiple inheritance. Since \MIM{} is designed to be simple, we do not allow abstract methods, that is every method
+is required to have a body for its implementation. In that case, interfaces can be directly instantiated by the keyword ``\lstinline|new|''
+to create an object.
+
+\subsection{Problem: Unintentional Method Conflicts}
+
+Suppose that two components \lstinline|Drawable| and \lstinline|Deck| have been developed in a system.
+\lstinline|Drawable| defines an interface for graphics that can be drawn, which includes a method called \lstinline|draw()|
+for visual display. While interface \lstinline|Deck| represents a deck of cards, and supports several operations, like
+\lstinline|draw()| for drawing a card from the deck.
 
 \begin{lstlisting}
 interface Deck {
-   draw();  // draws a card from the Deck
+  void draw() { // draws a card from the Deck
+    Stack<Card> cards = this.getStack();
+    Card card = cards.pop();
+    ...
+  }
 }
 
 interface Drawable {
-   draw();  // draws something on the screen
+  void draw() { // draws something on the screen
+    JFrame frame = new JFrame("Canvas");
+    frame.setVisible(true);
+    ...
+  }
 }
+\end{lstlisting}
+Note that both methods have \lstinline|void| return type (we will not formalize
+\lstinline|void| in our calculus afterwards; here is only for illustration). In \lstinline|Deck|, \lstinline|draw()| tries to get the cards as a stack, pops
+out the top card, and so on. While in \lstinline|Drawable|, \lstinline|draw()|
+creates a blank canvas using \lstinline|JFrame|. Now, a programmer is designing a
+card game with GUI. He may want to draw a deck on the screen, so he defines a drawable
+deck using multiple inheritance:
 
+\begin{lstlisting}
 interface DrawableDeck extends Deck, Drawable {
-   ...
+  ...
 } 
 \end{lstlisting}
+The point of using multiple inheritance is surely for composing the features of
+components, achieving great code reuse. It is supported by many mainstream OO
+languages. Nevertheless at this point, \lstinline|DrawableDeck| has to throw a compile
+error, for the two \lstinline|draw()| methods cause a conflict, though accidentally.
+
+\subsection{More}
+\begin{itemize}
+	\item Code for the problem (Draw example)
+	\item Potential fixes (delegation, renaming, traits, ....)
+	\item How it is solved with our language (client code, simple explanation) + show update
+\end{itemize}
+
 
 \subsection{Potential fixes}
 
-\begin{itemize}
-    \item Explicit override m() in C.
-    \item Choose one (such as Mixin model).
-    \item With Traits: method exclusion.
-    \item With Traits: method rename.
-\end{itemize}
+For that problem, there are several workarounds that quickly come to our mind:
+
+\paragraph{I. Delegation.}
+
+\paragraph{II. Creating a \lstinline|draw()| method in \lstinline|DrawableDeck|, which explicitly overrides the old ones.}
+
+\paragraph{III. Choosing one of them as the default method, like Mixins.}
+
+\paragraph{IV. Method exclusion like traits.}
+
+\paragraph{V. Method renaming.}
 In previous solutions, only renaming can preserve the two different methods m(), 
 but it’s cumbersome to do in practice: new names have to be introduced, and (probably) need to prefer one over another. 
 Other solutions only preserve one method. Can we keep both methods without renaming?
 
 \subsection{Solution in our language}
 \begin{lstlisting}
-interface Deck {
-   void draw() { // draws a card from the Deck }
-}
-interface Drawable {
-   void draw() { // draws something on the screen }
-}
-interface DrawableDeck extends Deck, Drawable {
-  //both draw() methods are kept automaticlaly in our language
-} 
-new DrawableDeck().Deck::draw()
+
 \end{lstlisting}
 
 \subsection{Method refinement}
-\begin{lstlisting}
-interface DrawableDeck2 extends DrawableDeck {
-   void draw() override Deck {
-      // new implementation of draw a card from deck
-   }
-   void draw() override Drawable {
-      // new implementation of drawing something
-   } 
-} 
-new DrawableDeck2().Deck::draw()
-\end{lstlisting}
+
