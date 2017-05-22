@@ -16,7 +16,7 @@ Suppose that two components \lstinline|Drawable| and \lstinline|Deck| have been 
 for visual display. While interface \lstinline|Deck| represents a deck of cards, and supports several operations, like
 \lstinline|draw()| for drawing a card from the deck.
 
-\begin{lstlisting}
+\vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() { // draws a card from the Deck
     Stack<Card> cards = this.getStack();
@@ -34,7 +34,7 @@ interface Drawable {
     ...
   }
 }
-\end{lstlisting}
+\end{lstlisting}\vspace{3pt}
 Note that both methods have \lstinline|void| return type (we will not formalize
 \lstinline|void| in our calculus afterwards; here is only for illustration). In \lstinline|Deck|, \lstinline|draw()| tries to get the cards as a stack, pops
 out the top card, and so on. While in \lstinline|Drawable|, \lstinline|draw()|
@@ -42,11 +42,11 @@ creates a blank canvas using \lstinline|JFrame|. Now, a programmer is designing 
 card game with GUI. He may want to draw a deck on the screen, so he defines a drawable
 deck using multiple inheritance:
 
-\begin{lstlisting}
+\vspace{3pt}\begin{lstlisting}
 interface DrawableDeck extends Drawable, Deck {
   ...
 } 
-\end{lstlisting}
+\end{lstlisting}\vspace{3pt}
 The point of using multiple inheritance is surely for composing the features of
 components, achieving great code reuse. It is supported by many mainstream OO
 languages. Nevertheless at this point, \lstinline|DrawableDeck| has to throw a compile
@@ -79,7 +79,7 @@ inheritance. But we need to find an approach to disambiguate on method calls sta
 
 Certainly the compiler can ignore the conflict when \lstinline|DrawableDeck| is declared, but once an object of \lstinline|DrawableDeck| is created, a method call for \lstinline|draw()| on that object is ambiguous, due to dynamic dispatch. Nonetheless, we can adopt static dispatch for disambiguating. Some languages like C++ use qualified names in that way:
 
-\begin{lstlisting}
+\vspace{3pt}\begin{lstlisting}
 void func(Drawable obj) {
   obj.draw();
 }
@@ -88,14 +88,14 @@ DrawableDeck d = new DrawableDeck();
 d.Drawable::draw();       // calling draw() in Drawable
 ((Drawable) d).draw(); // calling draw() in Drawable
 func(d);                 // calling draw() in Drawable
-\end{lstlisting}
+\end{lstlisting}\vspace{3pt}
 Thus we have: \paragraph{VI. Static dispatch.} Static dispatch finds out and invokes the most specific method ``by need''.
 
 On the other hand, we also need dynamic dispatch as it is essential and widely used in object-oriented programming.
 C++ has the flexibility for choosing either way of dispatch by the ``virtual'' keyword.
 Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance, here we redefine \lstinline|Deck| to support
 both \lstinline|draw()| and another operation called \lstinline|shuffleAndDraw()|:
-\begin{lstlisting}
+\vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() {...}
   void shuffleAndDraw() {
@@ -104,10 +104,10 @@ interface Deck {
   }
   ...
 }
-\end{lstlisting}
-\lstinline|shuffleAndDraw()| is a designed method that invokes \lstinline|draw()| in its definition. In principle, we want
+\end{lstlisting}\vspace{3pt}
+\lstinline|shuffleAndDraw()| is a representative method that invokes \lstinline|draw()| in its definition. In principle, we want
 that invocation to use dynamic dispatch, because a programmer may define a subtype of \lstinline|Deck|, and override \lstinline|draw()|:
-\begin{lstlisting}
+\vspace{3pt}\begin{lstlisting}
 interface LoggingDeck {
   void draw() { // overriding
     Stack<Card> cards = this.getStack();
@@ -120,21 +120,42 @@ interface LoggingDeck {
     }
   }
 }
-\end{lstlisting}
+\end{lstlisting}\vspace{3pt}
 Usually we want to reuse the code of \lstinline|shuffleAndDraw()| during inheritance, hence dynamic dispatch is necessary, otherwise
 programmers have to override all the other methods that invoke \lstinline|draw()|. However, as seen before, dynamic dispatch can cause
 ambiguity if we have:
-\begin{lstlisting}
+\vspace{3pt}\begin{lstlisting}
 interface DrawableLoggingDeck extends Drawable, LoggingDeck {
   ...
 }
 
 DrawableLoggingDeck d = new DrawableLoggingDeck();
 d.shuffleAndDraw(); // ambiguous draw()
-\end{lstlisting}
-Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calling \lstinline|shuffleAndDraw()| triggers the ambiguity.
+\end{lstlisting}\vspace{3pt}
+Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calling \lstinline|shuffleAndDraw()| triggers the ambiguity. Therefore, we need to find another algorithm for method binding.
 
 \subsection{Solution in \MIM: \dispatchnamecaptical}
+Our \MIM{} model uses \dispatchnameit{} for method lookup. A qualified method invocation, for instance, \lstinline|e.I::m()|, is read as ``finding the most specific \lstinline|m()| along path \lstinline|I|''. The meaning of ``along path \lstinline|I|'' is that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| like dynamic dispatch. The formal definition will be introduced later.
+
+In the above example, when 
+
+Now we can actually redefine \lstinline|Deck| as follows:
+\vspace{3pt}\begin{lstlisting}
+interface Deck {
+  void draw() {...}
+  void shuffleAndDraw() {
+    this.Deck::shuffle();
+    this.Deck::draw();
+  }
+  ...
+}
+\end{lstlisting}\vspace{3pt}
+It guarantees that \lstinline|shuffleAndDraw()| are calling \lstinline|shuffle()| and \lstinline|draw()| from its own branch, so that the namesakes
+from other branches will not cause conflicts. Now \lstinline|d.shuffleAndDraw()| is no longer ambiguous.
+
+The above example reflects the general case, that is, all method calls with receiver ``\lstinline|this|'' need to be qualified with its enclosing interface name, so as to avoid potential conflicts. Actually in \MIM{}, we can still write ``\lstinline|shuffle();|'' and ``\lstinline|draw();|''
+in \lstinline|Deck|, because \MIM{} automatically desugars those method calls to qualified ones, by its implicit semantic rules.
+\textcolor{red}{Haoyuan: More. super call. update.}
 
 \subsection{Method refinement}
 
