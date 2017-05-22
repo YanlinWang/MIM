@@ -20,8 +20,10 @@ for visual display. While interface \lstinline|Deck| represents a deck of cards,
 interface Deck {
   void draw() { // draws a card from the Deck
     Stack<Card> cards = this.getStack();
-    Card card = cards.pop();
-    ...
+    if (!cards.isEmpty()) {
+      Card card = cards.pop();
+      ...
+    }
   }
 }
 
@@ -41,7 +43,7 @@ card game with GUI. He may want to draw a deck on the screen, so he defines a dr
 deck using multiple inheritance:
 
 \begin{lstlisting}
-interface DrawableDeck extends Deck, Drawable {
+interface DrawableDeck extends Drawable, Deck {
   ...
 } 
 \end{lstlisting}
@@ -70,10 +72,69 @@ default one based on linearisation. Similarly, we want to preserve both features
 
 \paragraph{V. Method renaming like traits.} This is probably what people do in most cases, by simply renaming one to avoid conflicts.
 It can indeed preserve both features, however, it is cumbersome in practice, as introducing new names can affect other code blocks.
-Certainly this is a workaround, not a solution.
+Certainly this is a workaround, not a solution.\\
+
+What we really expect from the language is we keep both methods without renaming, and the type checker does not complain on the
+inheritance. But we need to find an approach to disambiguate on method calls statically.
+
+Certainly the compiler can ignore the conflict when \lstinline|DrawableDeck| is declared, but once an object of \lstinline|DrawableDeck| is created, a method call for \lstinline|draw()| on that object is ambiguous, due to dynamic dispatch. Nonetheless, we can adopt static dispatch for disambiguating. Some languages like C++ use qualified names in that way:
+
+\begin{lstlisting}
+void func(Drawable obj) {
+  obj.draw();
+}
+
+DrawableDeck d = new DrawableDeck();
+d.Drawable::draw();       // calling draw() in Drawable
+((Drawable) d).draw(); // calling draw() in Drawable
+func(d);                 // calling draw() in Drawable
+\end{lstlisting}
+Thus we have: \paragraph{VI. Static dispatch.} Static dispatch finds out and invokes the most specific method ``by need''.
+
+On the other hand, we also need dynamic dispatch as it is essential and widely used in object-oriented programming.
+C++ has the flexibility for choosing either way of dispatch by the ``virtual'' keyword.
+Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance, here we redefine \lstinline|Deck| to support
+both \lstinline|draw()| and another operation called \lstinline|shuffleAndDraw()|:
+\begin{lstlisting}
+interface Deck {
+  void draw() {...}
+  void shuffleAndDraw() {
+    shuffle();
+    draw();
+  }
+  ...
+}
+\end{lstlisting}
+\lstinline|shuffleAndDraw()| is a designed method that invokes \lstinline|draw()| in its definition. In principle, we want
+that invocation to use dynamic dispatch, because a programmer may define a subtype of \lstinline|Deck|, and override \lstinline|draw()|:
+\begin{lstlisting}
+interface LoggingDeck {
+  void draw() { // overriding
+    Stack<Card> cards = this.getStack();
+    if (!cards.isEmpty()) {
+      Card card = cards.pop();
+      println("The card is: " + card.toString());
+      ...
+    } else {
+      println("Empty deck.");
+    }
+  }
+}
+\end{lstlisting}
+Usually we want to reuse the code of \lstinline|shuffleAndDraw()| during inheritance, hence dynamic dispatch is necessary, otherwise
+programmers have to override all the other methods that invoke \lstinline|draw()|. However, as seen before, dynamic dispatch can cause
+ambiguity if we have:
+\begin{lstlisting}
+interface DrawableLoggingDeck extends Drawable, LoggingDeck {
+  ...
+}
+
+DrawableLoggingDeck d = new DrawableLoggingDeck();
+d.shuffleAndDraw(); // ambiguous draw()
+\end{lstlisting}
+Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calling \lstinline|shuffleAndDraw()| triggers the ambiguity.
 
 \subsection{Solution in \MIM: \dispatchnamecaptical}
-It uses dynamic dispatch.
 
 \subsection{Method refinement}
 
