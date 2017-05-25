@@ -132,14 +132,16 @@ interface DrawableLoggingDeck extends Drawable, LoggingDeck {
 DrawableLoggingDeck d = new DrawableLoggingDeck();
 d.shuffleAndDraw(); // ambiguous draw()
 \end{lstlisting}\vspace{3pt}
-Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calling \lstinline|shuffleAndDraw()| triggers the ambiguity. Therefore, we need to find another algorithm for method binding.
+Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calling \lstinline|shuffleAndDraw()| triggers the ambiguity. When \lstinline|shuffleAndDraw()| invokes \lstinline|draw()|, what we really want is \lstinline|LoggingDeck.draw()|, yet
+neither static dispatch nor dynamic dispatch in languages like C++ does so.
+ Therefore, we need to find another algorithm for method binding.
 
 \subsection{Solution in \MIM: \dispatchnamecaptical}
 Our \MIM{} model uses \dispatchnameit{} for method lookup. A qualified method invocation, for instance, \lstinline|e.I::m()|, is read as ``finding the most specific \lstinline|m()| along path \lstinline|I|''. The meaning of ``along path \lstinline|I|'' is that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| like dynamic dispatch. The formal definition will be introduced later.
 
-In the above example, when 
+On the other hand, \lstinline|((I) e).m()| behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of diamond inheritance to ensure unambiguity. That is to say, we do not allow two conflicted methods to override a same base method. This is natural as it is no longer an ``unintended'' conflict in that way.
 
-Now we can actually redefine \lstinline|Deck| as follows:
+With the old example, below code meets our expectation:
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() {...}
@@ -153,8 +155,8 @@ interface Deck {
 It guarantees that \lstinline|shuffleAndDraw()| are calling \lstinline|shuffle()| and \lstinline|draw()| from its own branch, so that the namesakes
 from other branches will not cause conflicts. Now \lstinline|d.shuffleAndDraw()| is no longer ambiguous.
 
-The above example reflects the general case, that is, all method calls with receiver ``\lstinline|this|'' need to be qualified with its enclosing interface name, so as to avoid potential conflicts. Actually in \MIM{}, we can still write ``\lstinline|shuffle();|'' and ``\lstinline|draw();|''
-in \lstinline|Deck|, because \MIM{} automatically desugars those method calls to qualified ones, by its implicit semantic rules.
+Actually in \MIM{}, we can still write ``\lstinline|shuffle();|'' and ``\lstinline|draw();|'',
+because the compiler is able to know that the receiver ``\lstinline|this|'' exactly has static type \lstinline|Deck|, hence hierarchical dispatch eliminates ambiguity.
 \textcolor{red}{Haoyuan: More. super call. update.}
 
 \subsection{Method refinement}
