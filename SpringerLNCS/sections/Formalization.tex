@@ -353,23 +353,44 @@ To compute \red{$\new F.n(\new F)$}:
 
 \subsection{Type Safety}
 
-\begin{lemma}~\label{lamma0}
+\begin{lemma}~\label{lemma0}
 $\textit{If } \mtype(m, I, J) = \overline{D} \rightarrow D, \textit{ and } \mbody(m, I, J) = \overline{x}.e, 
  \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists C <: D, \textit{ such that }  
  \judgeewf {\overline{x}:\overline{D}, \kwthis:J_0} {e:C} $.
 \end{lemma}
 
-\begin{lemma}[Term Substitution Preserves Typing]~\label{lamma1}
+\begin{lemma}[Term Substitution Preserves Typing]~\label{lemma1}
 $\textit{If } \ \judgeewf {\Gamma, \ \overline{x}:\overline{I_X}} { e : I } \textit{ , and }
 \judgeewf {\Gamma} {\overline{y}:\overline{I_Y}} \textit{ where } \overline{I_Y} \subtype \overline{I_X}
 \textit{, then } \judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I'} \textit{ for some } I' \subtype I.
 $
 \end{lemma}
 
+
+\begin{proof}~\\
+\noindent \textbf{Case Var.}
+$ e = x \quad I = \Gamma(x) $. \\
+If $x \notin \overline{x}$, then the conclusion is immediate, since $[\overline{y}/\overline{x}]x = x$.
+On the other hand, if $x = x_i$ and $I = {I_X}_i$, then since $[\overline{y}/\overline{x}]x = [\overline{y}/\overline{x}]x_i = y_i$,
+letting $I' = {I_Y}_i$ finishes the case.
+
+\noindent \textbf{Case New.}
+$e = \new I$ and there are no term for substitution, the conclusion is obvious.
+
+\noindent \textbf{Case Invk.}
+
+
+\noindent \textbf{Case PathInvk.}
+
+\noindent \textbf{Case SuperInvk.}
+
+\end{proof}
+
 \begin{theorem}[Subject Reduction]
 $\textit{If } \ \judgeewf \Gamma {e : I} \; \textit{ and } \ e \rightarrow e',\ 
 \textit{then } \judgeewf \Gamma {e' : I'} \ \textit{ for some } \ I' <: I.$
 \end{theorem}
+
 
 \begin{proof} ~\\
 \noindent \textbf{Case Invk.} 
@@ -383,11 +404,11 @@ By rules (T-NEW) and (T-INVK),
 	 \overline{Y_E} \subtype \overline{X} \quad
 	 \textit{, for some } \; \overline{Y_E}
   \]
-By Lemma~\ref{lamma0},
+By Lemma~\ref{lemma0},
 	\[
 	\judgeewf {\Gamma, \overline{x}:\overline{I_X}, \kwthis:J_0} {e_0:I_F} \textit{, for some } J \subtype J_0 \textit{ and } I_F \subtype I_{E_0}
 	\]
-By Lemma~\ref{lamma1},
+By Lemma~\ref{lemma1},
 	\[
 	\judgeewf {\Gamma} {[<\overline{I_X}>\overline{e}/\overline{x}, \; <J>\new I/\kwthis ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
 	\]
@@ -404,11 +425,11 @@ By rules (T-NEW) and (T-INVK),
 	 \overline{Y_E} \subtype \overline{X} \quad
 	 \textit{, for some } \; \overline{Y_E}
   \]
-By Lemma~\ref{lamma0},
+By Lemma~\ref{lemma0},
 	\[
 	\judgeewf {\Gamma, \overline{x}:\overline{I_X}, \kwthis:J_0} {e_0:I_F} \textit{, for some } K \subtype J_0 \textit{ and } I_F \subtype I_{E_0}
 	\]
-By Lemma~\ref{lamma1},
+By Lemma~\ref{lemma1},
 	\[
 	\judgeewf {\Gamma} {[<\overline{I_X}>\overline{e}/\overline{x}, \; <K>\new I/\kwthis ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
 	\]
@@ -425,11 +446,11 @@ By rules (T-NEW) and (T-INVK),
 	 \overline{Y_E} \subtype \overline{X} \quad
 	 \textit{, for some } \; \overline{Y_E}
   \]
-By Lemma~\ref{lamma0},
+By Lemma~\ref{lemma0},
 	\[
 	\judgeewf {\Gamma, \overline{x}:\overline{I_X}, \kwthis:J_0} {e_0:I_F} \textit{, for some } K \subtype J_0 \textit{ and } I_F \subtype I_{E_0}
 	\]
-By Lemma~\ref{lamma1},
+By Lemma~\ref{lemma1},
 	\[
 	\judgeewf {\Gamma} {[<\overline{I_X}>\overline{e}/\overline{x} ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
 	\]
