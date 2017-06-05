@@ -52,7 +52,7 @@ components, achieving great code reuse. It is supported by many mainstream OO
 languages. Nevertheless at this point, \lstinline|DrawableDeck| has to throw a compile
 error, for the two \lstinline|draw()| methods cause a conflict, though accidentally.
 
-\subsection{Potential fixes}
+\subsection{Potential Fixes}
 
 For that problem, there are several workarounds that quickly come to our mind:
 
@@ -139,7 +139,7 @@ neither static dispatch nor dynamic dispatch in languages like C++ does so.
 \subsection{Solution in \MIM: \dispatchnamecaptical}
 Our \MIM{} model uses \dispatchnameit{} for method lookup. A qualified method invocation, for instance, \lstinline|e.I::m()|, is read as ``finding the most specific \lstinline|m()| along path \lstinline|I|''. The meaning of ``along path \lstinline|I|'' is that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| like dynamic dispatch. The formal definition will be introduced later.
 
-On the other hand, \lstinline|((I) e).m()| behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of diamond inheritance to ensure unambiguity. That is to say, we do not allow two conflicted methods to override a same base method. This is natural as it is no longer an ``unintended'' conflict in that way.
+On the other hand, \lstinline|((I) e).m()|, or simply \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of diamond inheritance to ensure unambiguity. That is to say, we do not allow two conflicted methods to override a same base method. This is natural as it is no longer an ``unintended'' conflict in that way.
 
 With the old example, below code meets our expectation:
 \vspace{3pt}\begin{lstlisting}
@@ -157,7 +157,31 @@ from other branches will not cause conflicts. Now \lstinline|d.shuffleAndDraw()|
 
 Actually in \MIM{}, we can still write ``\lstinline|shuffle();|'' and ``\lstinline|draw();|'',
 because the compiler is able to know that the receiver ``\lstinline|this|'' exactly has static type \lstinline|Deck|, hence hierarchical dispatch eliminates ambiguity.
-\textcolor{red}{Haoyuan: More. super call. update.}
 
-\subsection{Method refinement}
+\subsection{Method Update in \MIM	}
 
+\MIM{} supports two kinds of polymorphism on methods: (1) method overriding; (2) method update. A method update is similar to overriding, in the sense that it provides a refined implementation of a method. But the difference is that an update just refines one branch, since \MIM{} can preserve several conflicted branches at the same time. Whereas a method overriding will hide all its inherited original methods, in which case method conflicts are unexpectedly ignored.
+
+For example, we define an interface \lstinline|DrawableLoggingDeck2|, where we refine the \lstinline|draw()| from \lstinline|Drawable()| by setting
+the canvas invisible:
+\vspace{3pt}\begin{lstlisting}
+interface DrawableLoggingDeck2 extends DrawableLoggingDeck {
+  void draw() updates Drawable {
+    JFrame frame = new JFrame("Canvas");
+    frame.setVisible(false);
+    ...
+  }
+}
+\end{lstlisting}\vspace{3pt}
+Here the update specifies \lstinline|Drawable| to be refined. The use of this update ensures that both branches of \lstinline|draw()| are preserved. At the same time, we should notice that a method update is no longer considered as an original method. Some client code is shown below:
+\vspace{3pt}\begin{lstlisting}
+DrawableLoggingDeck2 d2 = new DrawableLoggingDeck2();
+d2.Drawable::draw(); // calling draw() in DrawableLoggingDeck2
+d2.Deck::draw();       // calling draw() in LoggingDeck
+\end{lstlisting}\vspace{3pt}
+
+In \MIM{}, hierarchical dispatch first finds the most specific original method (with respect to method overriding), then it finds the most specific update on that method. A counter-example is when there are two method updates on \lstinline|Drawable| in \lstinline|DrawableLoggingDeck2|, it leads to ambiguity. The compiler is supposed to forbid that during compile time.
+
+Two rules for method updates in \MIM: updates can only refine \textbf{original} methods, and they cannot overlap method overriding. For instance, writing \lstinline|"void draw()| \lstinline|updates Deck {...}"| is disallowed in \lstinline|DrawableLoggingDeck2|, because existing two branches are \lstinline|Drawable.draw()| and \lstinline|LoggingDeck.draw()|, yet \lstinline|Deck.draw()| is already overridden. It does not really make sense to update the old branch.
+
+Similar to many OO languages, \MIM{} also allows \textit{super method invocation} in a method body. The invocation \lstinline|super.T::m()| will ignore all the subtypes of \lstinline|T|, and only look at \lstinline|T| together with its super interfaces.
