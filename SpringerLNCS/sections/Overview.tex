@@ -1,5 +1,6 @@
 \section{A Running Example: DrawableDeck}
 
+\red{H: with UML graphs the illustration could be better.}
 This section illustrates the features of our \MIM{} model for resolving unintentional method
 conflicts. As mentioned before, such a case arises when two inherited methods happen to have the
 same signature, but with different semantics and functionalities. This could be quite troublesome
@@ -139,7 +140,7 @@ neither static dispatch nor dynamic dispatch in languages like C++ does so.
 \subsection{Solution in \MIM: \dispatchnamecaptical}
 Our \MIM{} model uses \dispatchnameit{} for method lookup. A qualified method invocation, for instance, \lstinline|e.I::m()|, is read as ``finding the most specific \lstinline|m()| along path \lstinline|I|''. The meaning of ``along path \lstinline|I|'' is that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| like dynamic dispatch. The formal definition will be introduced later.
 
-On the other hand, \lstinline|((I) e).m()|, or simply \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of diamond inheritance to ensure unambiguity. That is to say, we do not allow two conflicted methods to override a same base method. This is natural as it is no longer an ``unintended'' conflict in that way.
+On the other hand, \lstinline|((I) e).m()|, or simply \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict in that way.
 
 With the old example, below code meets our expectation:
 \vspace{3pt}\begin{lstlisting}

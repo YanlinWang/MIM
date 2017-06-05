@@ -1,2 +1,14 @@
 \section{Conclusion}
-Conclusion.
+
+This paper proposes \MIM{} as a new multiple inheritance model for unintentional method conflicts.
+Existing approaches including static dispatch and dynamic dispatch have to compromise between code reuse
+and type safety, whereas \MIM{} uses a different solution called hierarchical dispatch to obtain both.
+Such an approach not only offers great code reuse like dynamic dispatch, but also ensures unambiguity by
+our algorithm for method binding. This paper also introduces method updates for refinements on branches individually.
+\MIM{} is formalized with a basis on Featherweight Java, and supported
+by a few theorems.
+
+Our model can certainly be improved at some aspects. We did not formalize fields, though it is difficult to
+put state and multiple inheritance together []. For simplicity, we did not formalize other common features including
+method overloading, casts, covariant return types, and so on. Moreover, we restrict method updates to target only at the
+original methods. Potentially a looser condition can better support encapsulation and modularity with respect to code design.
