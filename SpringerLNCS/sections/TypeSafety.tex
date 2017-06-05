@@ -4,15 +4,34 @@
 $\textit{If } \mtype(m, I, J) = \overline{D} \rightarrow D, \textit{ and } \mbody(m, I, J) = \overline{x}.e, 
  \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists C <: D, \textit{ such that }  
  \judgeewf {\overline{x}:\overline{D}, \kwthis:J_0} {e:C} $.
+
+ \begin{proof}~\\
+ $\textit{The base case: if } m \textit{ is defined in } I, \textit{ then it is easy since } m 
+ \textit{ is defined in } I \textit{ and } 
+ \judgeewf {\overline{x}:\overline{D}, \kwthis : I} {e : C} \textit{ by (T-METHOD)}.
+ \textit{ The induction step is also straightforward. }
+ $
+ \end{proof}
 \end{lemma}
 
+
+\begin{lemma}[Method Type Preservation]~\label{lemma2}
+$\textit{If } \mtype(m, I) = \overline{I_X} \rightarrow I_E, \textit{ then } \mtype(m, J) = \overline{I_X} \rightarrow I_E 
+\textit{ for all } J \subtype I.
+$
+\begin{proof}~\\
+Straight induction on the derivation of $J \subtype I$. Whether $m$ is defined in $J$ or not, $\mtype(m, J)$ should 
+be the same as $\mtype(m, K)$ where $J \; \kwextends \; K \{...\}$.
+\end{proof}
+\end{lemma}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{lemma}[Term Substitution Preserves Typing]~\label{lemma1}
 $\textit{If } \ \judgeewf {\Gamma, \ \overline{x}:\overline{I_X}} { e : I } \textit{ , and }
 \judgeewf {\Gamma} {\overline{y}:\overline{I_Y}} \textit{ where } \overline{I_Y} \subtype \overline{I_X}
 \textit{, then } \judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I'} \textit{ for some } I' \subtype I.
 $
-\end{lemma}
-
 
 \begin{proof}~\\
 \noindent \textbf{Case Var.}
@@ -25,13 +44,32 @@ letting $I' = {I_Y}_i$ finishes the case.
 $e = \new I$ and there are no term for substitution, the conclusion is obvious.
 
 \noindent \textbf{Case Invk.}
-
+$ e = e_0.m(\overline{e}) \quad
+  \judgeewf {\Gamma, \overline{x}:\overline{I_X}} {e_0 : I_0} $
+$$ mtype(m, I_0) = \overline{I_E} \rightarrow J $$
+$$ \judgeewf {\Gamma, \overline{x}:\overline{I_X}} {\overline{e}:\overline{I}} \quad
+    \overline{I} \subtype \overline{I_E} $$
+By induction hypothesis, there are some $I_0'$ and $\overline{I_E'}$ such that
+    $$ \judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0'} \quad 
+        I_0' \subtype I_0 $$
+    $$ \judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_E'}} \quad  
+        \overline{I_E'} \subtype \overline{I}$$    
+By lemma~\ref{lemma2}, 
+    $mtype(m, I_0') = \overline{I_E} \rightarrow J$,
+then $\overline{I_E'} \subtype \overline{I_E}$ by the transitivity of $\subtype$.
+Therefore, by the rule (T-INVK), 
+    $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.m([\overline{y}/\overline{x}]\overline{e}) : J}$.
 
 \noindent \textbf{Case PathInvk.}
+$ e = e_0.I::m(\overline{e}) $ and proof is similar as case Var.
 
 \noindent \textbf{Case SuperInvk.}
-
+$ e = \kwsuper.I::m(\overline{e}) $ \\
+Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be similar as case Var.
 \end{proof}
+
+\end{lemma}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{theorem}[Subject Reduction]
 $\textit{If } \ \judgeewf \Gamma {e : I} \; \textit{ and } \ e \rightarrow e',\ 
