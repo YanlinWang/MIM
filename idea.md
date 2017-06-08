@@ -504,3 +504,84 @@ on mixins: A solution to multiple inheritance problems
 - Traits: composable units of behaviour.
 - Java language specification.
 - C++ virtual inheritance. http://www.cprogramming.com/tutorial/virtual_inheritance.html
+
+#A Running Example: DrawableDeck
+```java
+interface Deck {
+	void draw() { // draws a card from the Deck
+		Stack<Card> cards = this.getStack(); 
+		if (!cards.isEmpty()) {
+			Card card = cards.pop();
+			...
+		} 
+	}
+}
+```
+
+```java
+interface Drawable {	void draw() { // draws something on the screen		JFrame frame = new JFrame("Canvas");
+		frame.setVisible(true);		...
+	}}
+```
+
+```java
+interface DrawableDeck extends Drawable, Deck {	... 
+}
+```
+
+```c++
+DrawableDeck d = new DrawableDeck(); 
+d.Drawable::draw();
+```
+
+```java
+interface Deck { 
+	void draw() {...}	void shuffleAndDraw() { 
+		shuffle();		draw(); 
+	}
+	...}
+```
+
+```java
+interface LoggingDeck {	void draw() { // overriding 
+		Stack<Card> cards = this.getStack();		if (!cards.isEmpty()) { 
+			Card card = cards.pop();			println("The card is: " + card.toString());			...		} else {			println("Empty deck.");		} 
+	}}
+```
+
+```java
+interface DrawableLoggingDeck extends Drawable, LoggingDeck {	... 
+}
+DrawableLoggingDeck d = new DrawableLoggingDeck();d.shuffleAndDraw(); // ambiguous draw()
+```
+
+```csharp
+interface IEnglishDimensions 
+{
+   float Length();
+}
+interface IMetricDimensions 
+{
+   float Length();
+}
+class Box : IEnglishDimensions, IMetricDimensions 
+{
+   float lengthInches;
+	// Explicitly implement the members of IEnglishDimensions:
+   float IEnglishDimensions.Length() 
+   {
+      return lengthInches;
+   }
+   // Explicitly implement the members of IMetricDimensions:
+   float IMetricDimensions.Length() 
+   {
+      return lengthInches * 2.54f;
+   }
+   public static void Main() 
+   {
+      Box myBox = new Box(30.0f);
+      IEnglishDimensions eDimensions = (IEnglishDimensions) myBox;
+      System.Console.WriteLine("Length(in): {0}", eDimensions.Length());
+   }
+}
+```

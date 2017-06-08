@@ -71,7 +71,7 @@ Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be simi
 \end{lemma}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{theorem}[Subject Reduction]
+\begin{theorem}[Subject Reduction]~\label{theorem_subject}
 $\textit{If } \ \judgeewf \Gamma {e : I} \; \textit{ and } \ e \rightarrow e',\ 
 \textit{then } \judgeewf \Gamma {e' : I'} \ \textit{ for some } \ I' <: I.$
 \end{theorem}
@@ -143,7 +143,11 @@ So $I_G <: I_{E_0}$, finally just let $I' = I_G$.
 
 \end{proof}
 
-\begin{theorem}[Progress]
+\begin{theorem}[Progress]~\label{theorem_progress}
 $\textit{If } \ \judgeewf {} {e : I}, \textit{ then either } \ e 
 \textit{ is a value or there is an } e' \textit{ with } e \rightarrow e'.$
+\end{theorem}
+
+\begin{theorem}[Type Soundness]~\label{theorem_soundness}
+$aa$
 \end{theorem}
