@@ -11,7 +11,7 @@
 
 \subsection{Mainstream Multiple Inheritance Models}
 Multiple inheritance is a useful feature in object-oriented programming world although it's difficult to model and can 
-cause various problems (e.g. the diamond problem).  There are many existing languages/models that support multiple 
+cause various problems (e.g. the diamond problem~\cite{Sak89dis,Singh1995}).  There are many existing languages/models that support multiple 
 inheritance, either coming with multiple inheritance capability or added through evolution. The Mixin model allows naming components 
 that can be applied to various classes as reusable functionality units. However, the linearization (total ordering) of mixin 
 inheritance cannot provide a satisfactory resolution in some cases and restricts the flexibility of mixin composition. 
@@ -19,24 +19,25 @@ inheritance cannot provide a satisfactory resolution in some cases and restricts
 Simplifying the mixins approach, traits~\cite{scharli03traits} draw a strong line between units of reuse and object factories. 
 Traits act as units of reuse, containing functionality code; while classes, assembled from traits, act as object factories. 
 
-Java 8 interfaces are closely related to traits: concrete method implementations are allowed (via the default keyword) inside interfaces. 
+Java 8 interfaces are closely related to traits: concrete method implementations are allowed (via the \textbf{\texttt{default}} keyword) inside interfaces. 
 The introduction of default methods opens the gate for various flavors of multiple inheritance in Java.
 
 Malayeri and Aldrich proposed a model CZ~\cite{malayeri2009cz} which aims to do multiple inheritance without the diamond problem. 
 Inheritance is divided into two concepts: inheritance dependency and implementation inheritance. 
-Using a combination of requires and extends, a program with diamond inheritance is transformed to one without diamonds. 
-Moreover, fields and multiple inheritance can coexist. However untangling inheritance also untangles the class structure. 
-In CZ, not only the number of classes, but also the class hierarchy complexity increases. 
+Using a combination of \textbf{\texttt{requires}} and \textbf{\texttt{extends}}, a program with 
+diamond inheritance is transformed to one without diamonds. Moreover, fields and multiple inheritance can coexist. 
+However untangling inheritance also untangles the class structure. In CZ, not only the number of classes, but also 
+the class hierarchy complexity increases. 
 
 The above mentioned models/languages support multiple inheritance, and they handle method confliction in the same way: requiring 
 programmers to explicitly resolve ambiguity and disallowing two methods with the same signature from two different libraries 
-to co-exit.
+to co-exit. This is the common drawback of the above mentioned models versus our model.
 
 \subsection{Resolving Unintended Method Confliction}
 There are still a few languages that already realized the problem and explored a bit. We discuss them one by one.
 
 \noindent {\bf C++ model.}
-As discussed in Section~\ref{}, C++ supports very flexible inheritance mode and allows programmers to choose different 
+As discussed in Section~\ref{sec:overview}, C++ supports very flexible inheritance mode and allows programmers to choose different 
 confliction resolution approaches via normal or virtual inheritance. Generally speaking, C++ model is much more complex 
 and flexible than our approach. For example, given the following code
 \begin{lstlisting}[language=Java]
@@ -53,9 +54,11 @@ int main() {
 	return 0; //Running result: MB MA
 }
 \end{lstlisting}
-The running result is $MB \; MA$, meaning that it looks at the static type when doing method lookup. However, we can alter the code 
-a little bit with virtual method and the result will be totally different:
-\begin{lstlisting}
+The running result is $MB \; MA$, meaning that it uses static dispatch (looks at the static types) when doing method lookup. 
+On calling \texttt{func(c)}, no matter the dynamic type of \texttt{c} is class \texttt{C}, the method call still dispatches to 
+the method \texttt{m} in class \texttt{A} because of static dispatch.
+However, we can alter the code a little bit with \textbf{\texttt{virtual}} methods and the result will be totally different:
+\begin{lstlisting}[language=c++]
 class A { 
 	public: virtual void m() {cout << "MA" << endl;}
 };
@@ -73,16 +76,17 @@ int main() {
 	return 0; //Running result: MB MC
 }
 \end{lstlisting}
-Now the running result will be $MB \; MC$. With virtual method, method lookup algorithm will find the most specific 
-method definition of $m$, which is the definition in class $C$. Although C++ support this flexibility, it does not 
-support updating both $A.m$ and $B.m$ in class $C$. 
+Now the running result will be $MB \; MC$. With virtual method, dynamic dispatch is used and 
+method lookup algorithm will find the most specific method definition of $m$, which is the definition 
+in class $C$. Although C++ support this flexibility, the drawback compared to our model is
+obvious: it does not support updating both $A.m$ and $B.m$ in class $C$. 
 
 \begin{lstlisting}
 \end{lstlisting}
 
-\noindent  {\bf C\# Explicit method implementation.}
+\noindent  {\bf \csharp Explicit method implementation.}
 Explicit method implementation is a special feature supported by \csharp. As described in \csharp
-tutorial~\cite{}, a class that implements an interface can explicitly implement a member of that
+documentation~\cite{csharpdoc}, a class that implements an interface can explicitly implement a member of that
 interface. When a member is explicitly implemented, it can only be accessed through an instance
 of the interface. Explicit interface implementation allows the programmer to inherit two interfaces 
 that share the same member names and give each interface member a separate implementation. 
