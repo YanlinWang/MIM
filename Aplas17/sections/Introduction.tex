@@ -1,28 +1,44 @@
 \section{Introduction}
 
-\begin{itemize}
-	\item problem: Unintended method confliction in Multiple inheritance
-	\item Existing approaches or models and Their drawbacks
-	\item New features (update)
-	\item Our contributions
-\end{itemize}
-
-In multiple inheritance, naming conflicts often occurs. Among these conflicts, some are real conflicts which needs 
-explicit resolve by programmers, however, there are cases where accidental naming conflicts occurs, where the conflicting
-methods have completely different meaning/domain which just share the same name. 
-
-Existing OOP models have taken care of the first case intensively. However, few of them supports 
-unintended method confliction well. Trait and other 
-mainstream OO models do not allow unintended methods confliction to co-exist. 
-SELF~\cite{} uses \emph{sender path tiebreaker rule} to automatically resolve 
-ambiguities that are almost certainly caused by accidental naming conflicts. C++ allows methods with the same signature 
-co-exist in a class via inheritance and programmers can use $::$ operator to select the method wanted. 
-However none of them allows refining these unintended conflicting methods in subclasses. We propose a calculus that 
-deals with unintended method confliction and meanwhile allows refining these methods. 
-
 Contributions:
 \begin{itemize}
     \item A multiple inheritance model formalized as \MIM.
     \item Novel notion \updates for method path updating.
     \item Implementation of a simple typechecker and evaluator in Scala.
 \end{itemize}
+
+\noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
+
+Object-oriented programming has been adopted for years in both industry and research areas to offer great code reuse.
+It allows data structures and behaviours to be represented by modules and the relationship among them. But earlier
+single inheritance appeared to be less expressive and flexible to use. Since the occurrence of multiple inheritance, it
+seems more practical to programmers in many mainstream languages like C++ and Java.
+
+Nevertheless, just as Steve Cook pointed out
+in [], it is good but ``there is no good way to do it''.
+One of the most sensitive and critical issue is perhaps the ambiguity introduced by multiple inheritance.
+One case is the famous \textit{diamond problem}. It says that such inheritance could allow one feature to be inherited from
+multiple parent classes, hence conflicts arise. The variety of strategies on resolving such conflicts urges the occurrence of
+different multiple inheritance models, including traits, mixins, CZ, and so on. We can observe that existing languages have taken
+care of this case intensively. Other issues include how multiple inheritance
+deals with state, as discussed in [C++] and [], and so on.
+
+In contrast with the diamond inheritance, a second case of ambiguity is that conflicted methods do not actually refer to the same feature.
+This issue was proposed by the trait paper, so-called \textit{unintentional method conflicts}. In a nominal system, they are designed
+for different behaviours, and they just happen to have same names (and signatures),
+yet an inheritance to compose them has to be rejected. Unlike the
+diamond problem, the conflicted methods usually do not share a common parent, hence in this paper we also call such a case ``\textit{the triangle
+inheritance}''.\haoyuan{Fine to have a graph with diamond and triangle shapes if we got space.}
+
+Unintentional method conflicts are less common than the diamond problem, nonetheless, they have severe effects in practice. This
+is unfortunately because such an issue has not been formally studied much, hence existing languages can merely provide limited support on it.
+In most situations, it is only treated the same as the diamond inheritance. This is unfair and practically unacceptable, especially when it is
+necessary to combine two large modules and their features, but the inheritance is simply prohibited by such a small conflict. As a workaround from the diamond inheritance side, it is possible to define a new method in the child class, to override those conflicted methods. Intuitively using one method to fuse two unrelated features is unsatisfactory, therefore we need a real solution to keep both features individually during inheritance,
+so as not to break independent extensibility.
+
+Some better workarounds include delegation, renaming/exclusion in the trait model, and so on, yet they still have various drawbacks as we will discuss in Section ?. On the other hand, there is indeed some related work [] that approaches our expectation, that is, they allow two unintentionally conflicted method to coexist in the system. Among them C++ is a representative that accepts the triangle inheritance and resolves the ambiguity by static dispatch. However, when virtual methods are defined with unintentional conflicts, C++ has to throw (linker?) errors on them.
+This is again unsatisfactory because dynamic dispatch is necessary under many circumstances for code reuse and extensibility.
+
+Having tolerance for unintentional method conflicts does not mean to sacrifice extensibility, hence in contrast with static dispatch and dynamic dispatch, we propose a third approach, which looks like a combination of both, called \textit{hierarchical dispatch}. By hierarchical dispatch, 
+
+ 
