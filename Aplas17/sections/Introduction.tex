@@ -1,14 +1,5 @@
 \section{Introduction}
 
-Contributions:
-\begin{itemize}
-    \item A multiple inheritance model formalized as \MIM.
-    \item Novel notion \updates for method path updating.
-    \item Implementation of a simple typechecker and evaluator in Scala.
-\end{itemize}
-
-\noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
-
 Object-oriented programming has been adopted for years in both industry and research areas to offer great code reuse.
 It allows data structures and behaviours to be represented by modules and the relationship among them. But earlier
 single inheritance appeared to be less expressive and flexible to use. Since the occurrence of multiple inheritance, it
@@ -39,6 +30,15 @@ so as not to break independent extensibility.
 Some better workarounds include delegation, renaming/exclusion in the trait model, and so on, yet they still have various drawbacks as we will discuss in Section ?. On the other hand, there is indeed some related work [] that approaches our expectation, that is, they allow two unintentionally conflicted method to coexist in the system. Among them C++ is a representative that accepts the triangle inheritance and resolves the ambiguity by static dispatch. However, when virtual methods are defined with unintentional conflicts, C++ has to throw (linker?) errors on them.
 This is again unsatisfactory because dynamic dispatch is necessary under many circumstances for code reuse and extensibility.
 
-Having tolerance for unintentional method conflicts does not mean to sacrifice extensibility, hence in contrast with static dispatch and dynamic dispatch, we propose a third approach, which looks like a combination of both, called \textit{hierarchical dispatch}. By hierarchical dispatch, 
+Having tolerance for unintentional method conflicts does not mean to sacrifice extensibility, hence in contrast with static dispatch and dynamic dispatch, we propose a third approach, which looks like a combination of both, called \textit{hierarchical dispatch}. By hierarchical dispatch, the method binder will look at both the static type and the dynamic type of the receiver during runtime. When there are multiple branches that cause unintentional conflicts, the static type can specify one branch among them for unambiguity, and the dynamic type helps to find the most specific (the newest) implementation. In that case both unambiguity and extensibility are preserved. To present this idea, we introduce a formalized model in Section ? based on Featherweight Java, together with some theorems and proofs for type soundness. In the model we also propose \textit{partial overrides}, where a method refinement can be applied only to one branch.
+
+In summary, our contributions are: \haoyuan{will have prototype implementation in Scala if we still have time.}
+\begin{itemize}
+	\item \textbf{Hierarchical dispatch:} which integrates both the static type and dynamic type for method binding, and hence
+	ensures unambiguity as well as extensibility.
+	\item \textbf{Partial overrides:} a novel notion that allows method refinements on individual branches.
+	\item \textbf{MIM:} a formalized model based on Featherweight Java, supporting the above features. Some theorems and their proofs
+	are attached to confirm the type soundness (unambiguity?) of the model.
+\end{itemize}
 
  
