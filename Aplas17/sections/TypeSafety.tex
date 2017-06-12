@@ -144,10 +144,37 @@ So $I_G <: I_{E_0}$, finally just let $I' = I_G$.
 \end{proof}
 
 \begin{theorem}[Progress]~\label{theorem_progress}
-$\textit{If } \ \judgeewf {} {e : I}, \textit{ then either } \ e 
-\textit{ is a value or there is an } e' \textit{ with } e \rightarrow e'.$
+%$\textit{If } \ \judgeewf {} {e : I}, \textit{ then either } \ e 
+%\textit{ is a value or there is an } e' \textit{ with } e \rightarrow e'.$
+$\textit{Suppose } e \textit{ is a well-typed expression } $ \\
+\begin{enumerate}
+\item If $e$ includes $\left(<J>\new{I}\right).m(\overline{<I_E>} \; \overline{e})$ as a subexpression,
+    then $ \mbody(m, I, J) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
+\item If $e$ includes $\left(<J>\new{I}\right).K::m(\overline{<I_E> e})$ as a subexpression,
+    then $ \mbody(m, I, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
+\item If $e$ includes $\kwsuper.K::m(\overline{<I_E> e})$ as a subexpression,
+    then $ \mbody(m, K, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
+\end{enumerate}
+\begin{proof}~\\
+\noindent \textbf{Case 1.}
+Given that $e$ is well-typed, by rule (T-INVK), $\mtype(m, J)$ is defined.
+By rule (T-INTF) for interface $I$,
+    \[ \forall J >: I, m, \mtype(m, J) \text{ is defined } \Rightarrow \mbody(m, I, J) \text{ is defined } \]
+So straightforwardly, we get $ \mbody(m, I, J) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
+         
+\noindent \textbf{Case 2 and 3.} Proof for case 2 and 3 is similar to case 1, and we omit it here.
+\end{proof}
 \end{theorem}
 
+
 \begin{theorem}[Type Soundness]~\label{theorem_soundness}
-$\textit{Suppose } e \textit{ is a well-typed expression } $ \\
+If $\judgeewf \o {e : I}$ and $e \to^* e'$ with $e'$ a normal form, then $e'$ is 
+a value $v$ with $\judgeewf \o {v:J}$ and $J \subtype I$.
+\begin{proof}
+Immediate from Theorem~\ref{theorem_subject} and Theroem~\ref{theorem_progress}.
+\end{proof}
 \end{theorem}
