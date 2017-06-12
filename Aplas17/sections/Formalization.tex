@@ -112,6 +112,15 @@ Finally, (T-INTF) defines interface type-checking in a straightforward way. Note
 \end{mathpar}
 \caption{Typing rules.}\label{fig:typingrules}
 \end{figure*}
+\bruno{Path invocation subsumes regular invocation. In other words:
+e0.m(e) = e0.I::m(e) when the type of e0 is I.}
+\bruno{Last time I met I told you that the typing of ``this'' is
+  wrong, and this is not yet fixed. I've also told you to make all
+figures at the top. In T-Method, \Gamma shows up out of nowhere.
+}
+\bruno{Rule for new is wrong! It says that a new expression that
+  creates a class with any name (even if the class does not exist) 
+is valid. The paper is not even following the rules of FJ.}
 
 \subsection{Small-step Semantics and Congruence}
 Figure ? and Figure ? define small-step semantic rules and congruence rules,
