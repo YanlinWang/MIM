@@ -5,17 +5,23 @@ This section illustrates the features of our \MIM{} model for resolving unintent
 conflicts. As mentioned before, such a case arises when two inherited methods happen to have the
 same signature, but with different semantics and functionalities. This could be quite troublesome
 to programmers that use multiple inheritance. Below we illustrate with a running example called \lstinline|DrawableDeck|.
-Note that we use Java-like syntax throughout the paper, and all types are defined with the keyword ``\lstinline|interface|'', which
-supports multiple inheritance. Since \MIM{} is designed to be simple, we do not allow abstract methods, that is every method
-is required to have a body for its implementation. In that case, interfaces can be directly instantiated by the keyword ``\lstinline|new|''
-to create an object. \haoyuan{TODO: mention relation to Java 8 interfaces with default methods; and traits}
+Note that we use Java-like syntax throughout the paper, and all types are defined with the keyword ``\lstinline|interface|''. The concept
+is closely related to Java 8 interfaces, and traits. For simplicity, an interface in our model has the following characteristics:
+\begin{itemize}
+	\item It allows multiple inheritance.
+	\item Every method represents a behaviour and requires a body for its implementation (like Java 8 default methods). There is no abstract method.
+	\item It can be directly instantiated by the \lstinline|new| keyword.
+\end{itemize}
+Furthermore for simplicity, our formalization does not model state at this stage, but that should not block our discussions below.
 
 \subsection{Problem: Unintentional Method Conflicts}
 
-Suppose that two components \lstinline|Drawable| and \lstinline|Deck| have been developed in a system.
-\lstinline|Drawable| defines an interface for graphics that can be drawn, which includes a method called \lstinline|draw()|
-for visual display. While interface \lstinline|Deck| represents a deck of cards, and supports several operations, like
-\lstinline|draw()| for drawing a card from the deck.
+Suppose that two components \lstinline|Deck| and \lstinline|Drawable| have been developed in a system.
+\lstinline|Deck| represents a deck of cards, and defines \lstinline|draw()| for drawing a card from the deck.
+While \lstinline|Drawable| is an interface for graphics that can be drawn, and also includes a method called \lstinline|draw()|
+for visual display. For illustration, the implementation of \lstinline|draw()| in \lstinline|Drawable|
+only creates a blank canvas on the screen, and later some instances (\lstinline|Circle|, \lstinline|Square|, or whatever) that extend
+\lstinline|Drawable| may define their own \lstinline|drawObject()| methods and invoke \lstinline|draw()|.
 
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
@@ -35,7 +41,7 @@ interface Drawable {
     ...
   }
 }
-\end{lstlisting}\vspace{3pt} \haoyuan{TODO: drawObject}
+\end{lstlisting}\vspace{3pt}
 Note that both methods have \lstinline|void| return type (we will not formalize
 \lstinline|void| in our calculus afterwards; here is only for illustration). In \lstinline|Deck|, \lstinline|draw()| tries to get the cards as a stack, pops
 out the top card, and so on. While in \lstinline|Drawable|, \lstinline|draw()|
@@ -44,9 +50,7 @@ card game with GUI. He may want to draw a deck on the screen, so he defines a dr
 deck using multiple inheritance:
 
 \vspace{3pt}\begin{lstlisting}
-interface DrawableDeck extends Drawable, Deck {
-  ...
-} 
+interface DrawableDeck extends Drawable, Deck {...} 
 \end{lstlisting}\vspace{3pt}
 The point of using multiple inheritance is surely for composing the features of
 components, achieving great code reuse. It is supported by many mainstream OO
@@ -59,8 +63,8 @@ For that problem, there are several workarounds that quickly come to our mind:
 
 \paragraph{I. Delegation.} As an alternative to multiple inheritance, delegation can be used by
 introducing two fields with \lstinline|Drawable| type and \lstinline|Deck| type, respectively. This avoids
-method conflicts, nevertheless, delegation itself is too restricted in modularity, and meanwhile
-introduces a lot of boilerplate.\haoyuan{TODO: drawbacks: hard to correctly maintain self-references[]}
+method conflicts. Nevertheless, it is known that using delegation makes it hard to correctly maintain self-references \haoyuan{?} in an
+extensible system [], and meanwhile introduces a lot of boilerplate.
 
 \paragraph{II. Creating a \lstinline|draw()| method in \lstinline|DrawableDeck|, which explicitly overrides the old ones.}
 This is a non-solution. It does not make any sense to override both methods with totally different functionalities, as old
@@ -69,11 +73,9 @@ methods have to be hidden.
 \paragraph{III. Choosing one of them as the default method, like Mixins.} The mixin model can be applied to choose a
 default one based on linearisation. Similarly, we want to preserve both features, rather than keeping only one of them.
 
-\paragraph{IV. Method exclusion like traits.} Same reason as above. \haoyuan{TODO: put exclusion and renaming together}
-
-\paragraph{V. Method renaming like traits.} This is probably what people do in most cases, \haoyuan{not supported by most languages; breaks subtyping} by simply renaming one to avoid conflicts.
-It can indeed preserve both features, however, it is cumbersome in practice, as introducing new names can affect other code blocks.
-Certainly this is a workaround, not a solution.\\
+\paragraph{IV. Method exclusion/renaming in traits.} Those features provided by the trait model can eliminate conflicts, although
+most programming languages do not support them. In a traditional OO system, they more or less break the subtyping. Moreover, in
+contrast with exclusion, renaming can indeed preserve both conflicted behaviours, however, it is cumbersome in practice, as introducing new names can affect other code blocks. It could be considered as a workaround, but certainly is not a good solution.\\
 
 What we really expect from the language is we keep both methods without renaming, and the type checker does not complain on the
 inheritance. But we need to find an approach to disambiguate on method calls statically.
@@ -90,7 +92,7 @@ d.Drawable::draw();       // calling draw() in Drawable
 ((Drawable) d).draw(); // calling draw() in Drawable
 func(d);                 // calling draw() in Drawable
 \end{lstlisting}\vspace{3pt}
-Thus we have: \paragraph{VI. Static dispatch.} Static dispatch finds out and invokes the most specific method ``by need''.
+Thus we have: \paragraph{V. Static dispatch.} Static dispatch finds out and invokes the most specific method ``by need''.
 
 On the other hand, we also need dynamic dispatch as it is essential and widely used in object-oriented programming.
 C++ has the flexibility for choosing either way of dispatch by the ``virtual'' keyword.
@@ -126,21 +128,19 @@ Usually we want to reuse the code of \lstinline|shuffleAndDraw()| during inherit
 programmers have to override all the other methods that invoke \lstinline|draw()|. However, as seen before, dynamic dispatch can cause
 ambiguity if we have:
 \vspace{3pt}\begin{lstlisting}
-interface DrawableLoggingDeck extends Drawable, LoggingDeck {
-  ...
-}
+interface DrawableLoggingDeck extends Drawable, LoggingDeck {...}
 
 DrawableLoggingDeck d = new DrawableLoggingDeck();
 d.shuffleAndDraw(); // ambiguous draw()
 \end{lstlisting}\vspace{3pt}
 Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calling \lstinline|shuffleAndDraw()| triggers the ambiguity. When \lstinline|shuffleAndDraw()| invokes \lstinline|draw()|, what we really want is \lstinline|LoggingDeck.draw()|, yet
 neither static dispatch nor dynamic dispatch in languages like C++ does so.
- Therefore, we need to find another algorithm for method binding\haoyuan{method resolution}.
+ Therefore, we need to find another algorithm for method resolution.
 
 \subsection{Solution in \MIM: \dispatchnamecaptical}
-Our \MIM{} model uses \dispatchnameit{} for method lookup. A qualified method invocation, for instance, \lstinline|e.I::m()|, is read as ``finding the most specific \lstinline|m()| along path \lstinline|I|''. The meaning of ``along path \lstinline|I|'' is that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| like dynamic dispatch. The formal definition will be introduced later.
+Our \MIM{} model uses \dispatchnameit{} for method lookup. A qualified method invocation, for instance, \lstinline|e.I::m()|, is read as ``finding the most specific \lstinline|m()| along path \lstinline|I|''. The meaning of ``along path \lstinline|I|'' is that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| like dynamic dispatch. The formal definition will be introduced later. On the other hand, \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, simply behaves the same as \lstinline|e.I::m()| in our model. It is just like the difference between implicit and explicit casts.
 
-On the other hand, \lstinline|((I) e).m()| \haoyuan{explicit casts are not supported in our model}, or simply \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict in that way.
+Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict in that way.
 
 With the old example, below code meets our expectation:
 \vspace{3pt}\begin{lstlisting}
@@ -159,7 +159,7 @@ from other branches will not cause conflicts. Now \lstinline|d.shuffleAndDraw()|
 Actually in \MIM{}, we can still write ``\lstinline|shuffle();|'' and ``\lstinline|draw();|'',
 because the compiler is able to know that the receiver ``\lstinline|this|'' exactly has static type \lstinline|Deck|, hence hierarchical dispatch eliminates ambiguity.
 
-\subsection{Method Update in \MIM	}
+\subsection{Partial Overrides in \MIM	} \haoyuan{TODO}
 
 \MIM{} supports two kinds of polymorphism on methods: (1) method overriding; (2) method update. A method update is similar to overriding, in the sense that it provides a refined implementation of a method. But the difference is that an update just refines one branch, since \MIM{} can preserve several conflicted branches at the same time. Whereas a method overriding will hide all its inherited original methods, in which case method conflicts are unexpectedly ignored.
 
