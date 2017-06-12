@@ -86,8 +86,7 @@
 
 \newcommand{\tsuperinvk} {
 \inferrule* [left=(T-SuperInvk)]
-    {  \judgeewf \Gamma {this:I_0}
-    \\ \ext(I_0, J_0)
+    {  \ext(\Gamma(this), J_0)
     \\ \mtype(m, J_0) = \overline{J} \to I
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
@@ -97,15 +96,14 @@
 
 \newcommand{\tnew} {
 \inferrule* [left=(T-New)]
-    {}
+    {\interface{I}{I}{M}}
     {\judgeewf \Gamma \new{I}:I}
 }
 
 \newcommand{\tmethod} {
 \inferrule* [left=(T-Method)]
-    {  \judgeewf \Gamma {this:I} \\
-	    I <: J \\
-	    \judgeewf {\Gamma, \overline{x}:\overline{I_X}} {e_0:\_ <: I_E} \\
+    {  I <: J \\
+	    \judgeewf {\overline{x}:\overline{I_X}, this:I	} {e_0:\_ <: I_E} \\
     \mostSpecific(m, I, J) = \{J\} \\
     \mtype(m, J) = \overline{I_X} \to I_E
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
@@ -132,23 +130,23 @@
 
 \newcommand{\sinvk} {
 \inferrule* [left=(S-Invk)]
-{ \mbody(m, I, J) = (\overline{I_X} \; \overline{x}, I'_E \; e_0)}
+{ \mbody(m, I, J) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
 {\left(<J>\new{I}\right).m(\overline{<I_E> e}) \to
-    <I'_E>[\overline{<I_X> e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
+    <I'_E>[\overline{<I_X> e}/\overline{x}, <I_0>\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\spathinvk} {
 \inferrule* [left=(S-PathInvk)]
-{\mbody(m, I, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0)}
+{\mbody(m, I, K) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
 {\left(<J>\new{I}\right).K::m(\overline{<I_E> e}) \to
-    <I'_E>[\overline{<I_X> e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
+    <I'_E>[\overline{<I_X> e}/\overline{x}, <I_0>\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\ssuperinvk} {
 \inferrule* [left=(S-SuperInvk)]
-{\mbody(m, K, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0)}
+{\mbody(m, K, K) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
 {\kwsuper.K::m(\overline{<I_E> e}) \to
-    <I'_E>[\overline{<I_X> e}/\overline{x}, <J>\new{I}/\kwthis]e_0}
+    <I'_E>[\overline{<I_X> e}/\overline{x}, <I_0>\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\deff} {
@@ -223,7 +221,7 @@ super.I::m(\ldots,e',\ldots)}
 
 \newcommand{\cfreduce} {
 \inferrule* [left=(C-FReduce)]
-{e \to e' \\ e \neq \new{I}}
+{e \to e' \\ e \neq \new{J}}
 {<I>e \to \; <I>e'}
 }
 

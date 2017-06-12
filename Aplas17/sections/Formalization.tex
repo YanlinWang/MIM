@@ -25,8 +25,7 @@ interfaces. By multiple inheritance, an interface can have a set of
 super interfaces, where such a set can be empty. Inside an interface
 is a set of method declarations. Each method body holds a return
 statement. As seen in Figure~\ref{fig:syntax}, we have introduced the
-\kwoverride keyword\bruno{use \\xspace to deal with the spacing issues
-in commands like override} to override an old implementation of the
+\kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''.
 Again for simplicity, overloading is not modelled for methods, which
@@ -45,7 +44,7 @@ intended for the small-step semantics of MIM, hence they are not
 supposed to appear in the source program.
 
 
-\begin{figure*}[htbp]
+\begin{figure*}[t]
 \begin{displaymath}
 \begin{array}{l}
 \begin{array}{llrl}
@@ -55,7 +54,7 @@ supposed to appear in the source program.
 e.m(\overline{e}) \mid
 \new{I} \mid
 e.I::m(\overline{e}) \mid
-\kwsuper.I::m(e) \; \mid \; v^* \\
+\kwsuper.I::m(e) \; \mid \; <I> e \\
 \text{Context}      & \Gamma & \Coloneqq & \overline{x:I} \\
 \text{Values}       & v & \Coloneqq & <I>\new{J} \\
 \\
@@ -65,7 +64,7 @@ e.I::m(\overline{e}) \mid
 \end{array}
 \end{array}
 \end{displaymath}
-\caption{Syntax. *: only intended for semantic rules. \red{Do we need "this"?}}\label{fig:syntax}
+\caption{Syntax. \haoyuan{mention in text that annotated expressions are only intended for semantic rules?}}\label{fig:syntax}
 \end{figure*}
 
 \subsection{Subtyping and Typing Rules}
@@ -90,7 +89,7 @@ By that we define the legality of method updating: the updated method must be an
 
 Finally, (T-INTF) defines interface type-checking in a straightforward way. Note that it is responsible for checking conflicted paths with a same source. As we illustrated in Section ?, such a case is disallowed for unambiguity.
 
-\begin{figure*}[htbp]
+\begin{figure*}[t]
 \begin{mathpar}
 	\framebox{$ I <: J $} \hspace{.5in} \subid \\
 	\subtrans \hspace{.5in} \subextends
@@ -99,7 +98,7 @@ Finally, (T-INTF) defines interface type-checking in a straightforward way. Note
 \end{figure*}
 
 
-\begin{figure*}[htbp]
+\begin{figure*}[t]
 \begin{mathpar}
 	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
 	\tvar \\
@@ -129,17 +128,17 @@ alternately to produce a single value in the end. The small-step semantics (S-IN
 one kind of method invocation. They all invoke \mbody{} for method body lookup. Generally, one can understand $\mbody(m, I, J)$ in a way that it finds the most specific body of method $m$, when the receiver has dynamic type $I$ and static type $J$.
 The three rules require that the receiver and the arguments have been evaluated into values, before substitution is applied.
 
-\begin{figure*}[htbp]
+\begin{figure*}[t]
 \begin{mathpar}
 	\sinvk \\
 	\spathinvk \\
 	\ssuperinvk
 \end{mathpar}
-\caption{Small-step semantics.\red{Haoyuan: TODO: <???> new I()/this}}\label{fig:smallstep}
+\caption{Small-step semantics.\haoyuan{fixed rules. Need to change text.}}\label{fig:smallstep}
 \end{figure*}
 
 
-\begin{figure*}[htbp]
+\begin{figure*}[t]
 \begin{mathpar}
 	\creceiver \hspace{.5in}
 	\cpathreceiver \\
@@ -168,13 +167,13 @@ the ``originally-defined'' method set from $I$. The $\prune$ function takes a se
 types, and filters out those that have subtypes in the same set. Finally in the returned set,
 none of them has a subtyping to one another, since all super types have been removed.
 
-\begin{figure*}[htbp]
+\begin{figure*}[t]
 	\begin{mathpar}
 	\inferrule* [left=]
 		{  \mostSpecific(m, I_d, I_s) = \{I\} \\
 			\mostSpecific_2(m, I_d, I) = \{J\} \\
 			\kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_E}{m}{I_X}{x}{I}{e_0}\ldots\}}
-		{\mbody(m, I_d, I_s) = (\overline{I_X} \; \overline{x}, I_E \; e_0)}
+		{\mbody(m, I_d, I_s) = (J, \overline{I_X} \; \overline{x}, I_E \; e_0)}
 	
 	\inferrule* [left=]
 	{ set1 = \; \{ K <: J \; $and$ \; K >: I \; | \; m \in \updateSet(K, K) \} \\
@@ -224,7 +223,6 @@ The algorithm for finding the most specific method update is quite similar to th
 
 \subsubsection{$\mbody$ and $\mtype$}
 
-\red{H: mtype based on mbody?}
 $\mbody(m, I_d, I_s)$, as defined in Figure~\ref{fig:auxfunc}, denotes a method body lookup function.
 We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic
 type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation, more
@@ -238,7 +236,7 @@ To calculate $\mbody(m, I_d, I_s)$:
 	\item Finally, we fetch the implementation of $m$ in interface $J$ and return its related information.
 \end{itemize}
 The definition of $\mtype$ simply relies on $\mbody$. In short,
-$$\mbody(m, I, I) = (\overline{I_x}\ \overline{x}, I_E\ e) \ \Longrightarrow\ \mtype(m, I) = \overline{I_x}\rightarrow I_E$$
+$$\mbody(m, I, I) = (J, \overline{I_x}\ \overline{x}, I_E\ e) \ \Longrightarrow\ \mtype(m, I) = \overline{I_x}\rightarrow I_E$$
 
 \begin{comment}
 $mbody(m, I)$ algorithm:
