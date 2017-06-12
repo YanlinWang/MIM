@@ -292,13 +292,13 @@ See Appendix~\ref{appendix_proof}.
 $\textit{Suppose } e \textit{ is a well-typed expression } $ \\
 \begin{enumerate}
 \item If $e$ includes $\left(<J>\new{I}\right).m(\overline{<I_E>} \; \overline{e})$ as a subexpression,
-    then $ \mbody(m, I, J) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
+    then $ \mbody(m, I, J) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
          $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
 \item If $e$ includes $\left(<J>\new{I}\right).K::m(\overline{<I_E> e})$ as a subexpression,
-    then $ \mbody(m, I, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
+    then $ \mbody(m, I, K) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
          $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
 \item If $e$ includes $\kwsuper.K::m(\overline{<I_E> e})$ as a subexpression,
-    then $ \mbody(m, K, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
+    then $ \mbody(m, K, K) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
          $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
 \end{enumerate}
 \end{theorem}

@@ -1,16 +1,19 @@
 \begin{lemma}~\label{lemma0}
-$\textit{If } \mtype(m, I, J) = \overline{D} \rightarrow D, \textit{ and } \mbody(m, I, J) = \overline{x}.e, 
- \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists C <: D, \textit{ such that }  
- \judgeewf {\overline{x}:\overline{D}, \kwthis:J_0} {e:C} $.
+% $\textit{If } \mtype(m, I, J) = \overline{D} \rightarrow D, \textit{ and } \mbody(m, I, J) = \overline{x}.e, 
+%  \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists C <: D, \textit{ such that }  
+%  \judgeewf {\overline{x}:\overline{D}, \kwthis:J_0} {e:C} $.
+$\textit{If } \mbody(m, I, J) = (J', \overline{I_X} \; \overline{x}, I_E \; e), 
+ \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists I' <: I_E, \textit{ such that }  
+ \judgeewf {\overline{x}:\overline{I_X}, \kwthis:J_0} {e : I'} $.
+\end{lemma}
 
  \begin{proof}~\\
  $\textit{The base case: if } m \textit{ is defined in } I, \textit{ then it is easy since } m 
  \textit{ is defined in } I \textit{ and } 
- \judgeewf {\overline{x}:\overline{D}, \kwthis : I} {e : C} \textit{ by (T-METHOD)}.
+ \judgeewf {\overline{x}:\overline{I_X}, \kwthis : I} {e : I_E} \textit{ by (T-METHOD)}.
  \textit{ The induction step is also straightforward. }
  $
  \end{proof}
-\end{lemma}
 
 
 \begin{lemma}[Method Type Preservation]~\label{lemma2}
@@ -75,7 +78,7 @@ Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be simi
 \begin{proof} ~\\
 \noindent \textbf{Case Invk.} 
 let \[ e = <J>\new I.m(<\overline{I_E}>\overline{e}) \] 
-Suppose \[ \mbody(m, I, J) = (\overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
+Suppose \[ \mbody(m, I, J) = (J', \overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
 then \[ e' =  [<\overline{I_X}>\overline{e}/\overline{x}, \; <J>\new I/\kwthis ] e_0 \] 
 By rules (T-NEW) and (T-INVK), 
   \[ \judgeewf \Gamma {\new I:I} \quad 
@@ -96,7 +99,7 @@ So $I_G <: I_{E_0}$, finally just let $I' = I_G$.
 
 \noindent \textbf{Case PathInvk.}
 let \[ e = <J>\new I.K::m(<\overline{I_E}>\overline{e}) \]  
-Suppose \[ \mbody(m, I, K) = (\overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
+Suppose \[ \mbody(m, I, K) = (J', \overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
 then \[ e' =  [<\overline{I_X}>\overline{e}/\overline{x}, \; <K>\new I/\kwthis ] e_0 \] 
 By rules (T-NEW) and (T-INVK), 
   \[ \judgeewf \Gamma {\new I:I} \quad 
@@ -117,7 +120,7 @@ So $I_G <: I_{E_0}$, finally just let $I' = I_G$.
 
 \noindent \textbf{Case Super-Invk.}
 let \[ e = \kwsuper.K::m(<\overline{I_E}>\overline{e}) \]   
-Suppose \[ \mbody(m, K, K) = (\overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
+Suppose \[ \mbody(m, K, K) = (J', \overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
 then \[ e' =  [<\overline{I_X}>\overline{e}/\overline{x}] e_0 \] 
 By rules (T-NEW) and (T-INVK), 
   \[ 
@@ -144,8 +147,8 @@ So $I_G <: I_{E_0}$, finally just let $I' = I_G$.
 Given that $e$ is well-typed, by rule (T-INVK), $\mtype(m, J)$ is defined.
 By rule (T-INTF) for interface $I$,
     \[ \forall J >: I, m, \mtype(m, J) \text{ is defined } \Rightarrow \mbody(m, I, J) \text{ is defined } \]
-So straightforwardly, we get $ \mbody(m, I, J) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
-         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
+So straightforwardly, we get $ \mbody(m, I, J) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $J', \overline{I_X}, \overline{x}, I_E'$ and $e_0$
          
 \noindent \textbf{Case 2 and 3.} Proof for case 2 and 3 is similar to case 1, and we omit it here.
 \end{proof}
