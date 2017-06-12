@@ -1,33 +1,48 @@
 \section{Formalization}
 
 In this section, we present a formalization of our MIM calculus, based on
-a minimal subset of Java 8 interfaces. The syntax, typing rules and small-step
+a minimal subset of Java 8 interfaces.\bruno{Mention that it is done 
+in a FJ style?} The syntax, typing rules and small-step
 semantics are included below.
 
 \subsection{Syntax}
-Figure~\ref{fig:syntax} shows the syntax of MIM. The multiple inheritance feature
-of MIM has a basis on Java interfaces. To demonstrate how unintentional method conflicts
-are untangled in MIM, we present the calculus in a straightforward way, hence we only
-focus on a small subset of the interface model. For example, all the methods declared in an
-interface are default methods, that is to say, they always provide default implementations.
-From this point we can view that we are actually modelling a class model that supports multiple
-inheritance. Then it is straightforward to do object creation like $\new I$. Fields and
-primitive types are not modelled as well.
 
-We use uppercase letters like $I, J, K$ to represent identifiers for interfaces. By multiple inheritance,
-an interface can have a set of super interfaces, where such a set can be empty. Inside an interface are a
-set of method declarations. Each method body holds a return statement. As seen in Figure~\ref{fig:syntax},
-we have introduced the \kwoverride keyword to override an old implementation of the method. If the interface
-that it overrides is exactly the enclosing interface, then such a method is seen as ``originally defined''.
-Again for simplicity, overloading is not modelled for methods, which implies we can uniquely identify a method
-by its name.
+Figure~\ref{fig:syntax} shows the syntax of MIM. The multiple
+inheritance feature of MIM as a basis Java 8 interfaces, which support
+method implementations via default methods. This feature is quite
+closely related to \emph{traits}\cite{}.  To demonstrate how
+unintentional method conflicts are untangled in MIM, we present the
+calculus in a straightforward way, hence we only focus on a small
+subset of the interface model. For example, all the methods declared
+in an interface are default methods, that is to say, they always
+provide default implementations.  From this point we can view that we
+are actually modelling a class model that supports multiple
+inheritance. Then it is straightforward to do object creation like
+$\new I$. Fields and primitive types are not modelled as well.
 
-An expression can be a variable, a method invocation, an object creation, furthermore, a path-invocation like
-``$e.I::m(\overline{e})$'', meaning that the dynamically binded implementation for method $m$ should be along
-the path $I$. Another case is the super-invocation, enabling a method to access an old implementation from the
-specified super type. Hence a super-invocation can only be used inside an interface definition. Finally an expression
-can also be a value ``$<I> \new J$''. It is exactly an object instance of $J$ with annotated static type $I$.
-Note that values are only intended for the small-step semantics of MIM, hence they are not supposed to appear in the source program.
+We use uppercase letters like $I, J, K$ to represent identifiers for
+interfaces. By multiple inheritance, an interface can have a set of
+super interfaces, where such a set can be empty. Inside an interface
+is a set of method declarations. Each method body holds a return
+statement. As seen in Figure~\ref{fig:syntax}, we have introduced the
+\kwoverride keyword\bruno{use \\xspace to deal with the spacing issues
+in commands like override} to override an old implementation of the
+method. If the interface that it overrides is exactly the enclosing
+interface, then such a method is seen as ``originally defined''.
+Again for simplicity, overloading is not modelled for methods, which
+implies we can uniquely identify a method by its name.
+
+An expression can be a variable, a method invocation, an object
+creation, furthermore, a path-invocation like
+``$e.I::m(\overline{e})$'', meaning that the dynamically binded
+implementation for method $m$ should be along the path $I$. Another
+case is the super-invocation, enabling a method to access an old
+implementation from the specified super type. Hence a super-invocation
+can only be used inside an interface definition. Finally an expression
+can also be a value ``$<I> \new J$''. It is exactly an object instance
+of $J$ with annotated static type $I$.  Note that values are only
+intended for the small-step semantics of MIM, hence they are not
+supposed to appear in the source program.
 
 
 \begin{figure*}[htbp]
@@ -97,6 +112,15 @@ Finally, (T-INTF) defines interface type-checking in a straightforward way. Note
 \end{mathpar}
 \caption{Typing rules.}\label{fig:typingrules}
 \end{figure*}
+\bruno{Path invocation subsumes regular invocation. In other words:
+e0.m(e) = e0.I::m(e) when the type of e0 is I.}
+\bruno{Last time I met I told you that the typing of ``this'' is
+  wrong, and this is not yet fixed. I've also told you to make all
+figures at the top. In T-Method, \Gamma shows up out of nowhere.
+}
+\bruno{Rule for new is wrong! It says that a new expression that
+  creates a class with any name (even if the class does not exist) 
+is valid. The paper is not even following the rules of FJ.}
 
 \subsection{Small-step Semantics and Congruence}
 Figure ? and Figure ? define small-step semantic rules and congruence rules,
