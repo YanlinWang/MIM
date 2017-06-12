@@ -8,7 +8,7 @@ to programmers that use multiple inheritance. Below we illustrate with a running
 Note that we use Java-like syntax throughout the paper, and all types are defined with the keyword ``\lstinline|interface|'', which
 supports multiple inheritance. Since \MIM{} is designed to be simple, we do not allow abstract methods, that is every method
 is required to have a body for its implementation. In that case, interfaces can be directly instantiated by the keyword ``\lstinline|new|''
-to create an object.
+to create an object. \haoyuan{TODO: mention relation to Java 8 interfaces with default methods; and traits}
 
 \subsection{Problem: Unintentional Method Conflicts}
 
@@ -35,7 +35,7 @@ interface Drawable {
     ...
   }
 }
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}\vspace{3pt} \haoyuan{TODO: drawObject}
 Note that both methods have \lstinline|void| return type (we will not formalize
 \lstinline|void| in our calculus afterwards; here is only for illustration). In \lstinline|Deck|, \lstinline|draw()| tries to get the cards as a stack, pops
 out the top card, and so on. While in \lstinline|Drawable|, \lstinline|draw()|
@@ -60,7 +60,7 @@ For that problem, there are several workarounds that quickly come to our mind:
 \paragraph{I. Delegation.} As an alternative to multiple inheritance, delegation can be used by
 introducing two fields with \lstinline|Drawable| type and \lstinline|Deck| type, respectively. This avoids
 method conflicts, nevertheless, delegation itself is too restricted in modularity, and meanwhile
-introduces a lot of boilerplate.
+introduces a lot of boilerplate.\haoyuan{TODO: drawbacks: hard to correctly maintain self-references[]}
 
 \paragraph{II. Creating a \lstinline|draw()| method in \lstinline|DrawableDeck|, which explicitly overrides the old ones.}
 This is a non-solution. It does not make any sense to override both methods with totally different functionalities, as old
@@ -69,9 +69,9 @@ methods have to be hidden.
 \paragraph{III. Choosing one of them as the default method, like Mixins.} The mixin model can be applied to choose a
 default one based on linearisation. Similarly, we want to preserve both features, rather than keeping only one of them.
 
-\paragraph{IV. Method exclusion like traits.} Same reason as above.
+\paragraph{IV. Method exclusion like traits.} Same reason as above. \haoyuan{TODO: put exclusion and renaming together}
 
-\paragraph{V. Method renaming like traits.} This is probably what people do in most cases, by simply renaming one to avoid conflicts.
+\paragraph{V. Method renaming like traits.} This is probably what people do in most cases, \haoyuan{not supported by most languages; breaks subtyping} by simply renaming one to avoid conflicts.
 It can indeed preserve both features, however, it is cumbersome in practice, as introducing new names can affect other code blocks.
 Certainly this is a workaround, not a solution.\\
 
@@ -135,12 +135,12 @@ d.shuffleAndDraw(); // ambiguous draw()
 \end{lstlisting}\vspace{3pt}
 Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calling \lstinline|shuffleAndDraw()| triggers the ambiguity. When \lstinline|shuffleAndDraw()| invokes \lstinline|draw()|, what we really want is \lstinline|LoggingDeck.draw()|, yet
 neither static dispatch nor dynamic dispatch in languages like C++ does so.
- Therefore, we need to find another algorithm for method binding.
+ Therefore, we need to find another algorithm for method binding\haoyuan{method resolution}.
 
 \subsection{Solution in \MIM: \dispatchnamecaptical}
 Our \MIM{} model uses \dispatchnameit{} for method lookup. A qualified method invocation, for instance, \lstinline|e.I::m()|, is read as ``finding the most specific \lstinline|m()| along path \lstinline|I|''. The meaning of ``along path \lstinline|I|'' is that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| like dynamic dispatch. The formal definition will be introduced later.
 
-On the other hand, \lstinline|((I) e).m()|, or simply \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict in that way.
+On the other hand, \lstinline|((I) e).m()| \haoyuan{explicit casts are not supported in our model}, or simply \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict in that way.
 
 With the old example, below code meets our expectation:
 \vspace{3pt}\begin{lstlisting}
