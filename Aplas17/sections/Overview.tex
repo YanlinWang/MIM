@@ -1,27 +1,40 @@
 \section{A Running Example: DrawableDeck}~\label{sec:overview}
 \includegraphics[height=3.3cm]{pics/DrawableLoggingDeck.pdf}
 \red{H: with UML graphs the illustration could be better.}
-This section illustrates the features of our \MIM{} model for resolving unintentional method
-conflicts. As mentioned before, such a case arises when two inherited methods happen to have the
-same signature, but with different semantics and functionalities. This could be quite troublesome
-to programmers that use multiple inheritance. Below we illustrate with a running example called \lstinline|DrawableDeck|.
-Note that we use Java-like syntax throughout the paper, and all types are defined with the keyword ``\lstinline|interface|''. The concept
-is closely related to Java 8 interfaces, and traits. For simplicity, an interface in our model has the following characteristics:
+
+This section illustrates the features of our \MIM{} model for
+resolving unintentional method conflicts. As mentioned before, such a
+case arises when two inherited methods happen to have the same
+signature, but with different semantics and functionality. This
+situation is troublesome to programmers that use multiple
+inheritance. Below we illustrate with a running example called
+\lstinline|DrawableDeck|, which models a drawable deck of cards. 
+Note that we use Java-like syntax
+throughout the paper, and all types are defined with the keyword
+``\lstinline|interface|''. The concept is closely related to Java 8
+interfaces, and traits. For simplicity, an interface in our model has
+the following characteristics:
 \begin{itemize}
 	\item It allows multiple inheritance.
-	\item Every method represents a behaviour and requires a body for its implementation (like Java 8 default methods). There is no abstract method.
+	\item Every method represents a behaviour and requires a body for its implementation (like Java 8 default methods). There are no abstract methods.
 	\item It can be directly instantiated by the \lstinline|new| keyword.
 \end{itemize}
-Furthermore for simplicity, our formalization does not model state at this stage, but that should not block our discussions below.
+Furthermore for simplicity, our formalization does not model state at
+this stage. %%, but that should not block our discussions below.
 
 \subsection{Problem: Unintentional Method Conflicts}
 
-Suppose that two components \lstinline|Deck| and \lstinline|Drawable| have been developed in a system.
-\lstinline|Deck| represents a deck of cards, and defines \lstinline|draw()| for drawing a card from the deck.
-While \lstinline|Drawable| is an interface for graphics that can be drawn, and also includes a method called \lstinline|draw()|
-for visual display. For illustration, the implementation of \lstinline|draw()| in \lstinline|Drawable|
-only creates a blank canvas on the screen, and later some instances (\lstinline|Circle|, \lstinline|Square|, or whatever) that extend
-\lstinline|Drawable| may define their own \lstinline|drawObject()| methods and invoke \lstinline|draw()|.
+Suppose that two components \lstinline|Deck| and \lstinline|Drawable| 
+have been developed in a system.  \lstinline|Deck| represents a deck
+of cards, and defines \lstinline|draw()| for drawing a card from the
+deck.  While \lstinline|Drawable| is an interface for graphics that
+can be drawn, and also includes a method called \lstinline|draw()| for
+visual display. For illustration, the implementation of
+\lstinline|draw()| in \lstinline|Drawable| only creates a blank canvas
+on the screen, and later some instances (\lstinline|Circle|,
+\lstinline|Square|, or others) that extend \lstinline|Drawable| may
+define their own \lstinline|drawObject()| methods and invoke
+\lstinline|draw()|.
 
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
@@ -42,6 +55,8 @@ interface Drawable {
   }
 }
 \end{lstlisting}\vspace{3pt}
+\bruno{Space is probably going to be a problem, so you may have to
+  consider putting code side-by-side to maximize space usage.}
 Note that both methods have \lstinline|void| return type (we will not formalize
 \lstinline|void| in our calculus afterwards; here is only for illustration). In \lstinline|Deck|, \lstinline|draw()| tries to get the cards as a stack, pops
 out the top card, and so on. While in \lstinline|Drawable|, \lstinline|draw()|
@@ -52,29 +67,41 @@ deck using multiple inheritance:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableDeck extends Drawable, Deck {...} 
 \end{lstlisting}\vspace{3pt}
-The point of using multiple inheritance is surely for composing the features of
-components, achieving great code reuse. It is supported by many mainstream OO
+The point of using multiple inheritance is surely for composing the features from
+components, and to achieve code reuse. Multiple inheritance is supported by many mainstream OO
 languages. Nevertheless at this point, \lstinline|DrawableDeck| has to throw a compile
-error, for the two \lstinline|draw()| methods cause a conflict, though accidentally.
+error, since the two \lstinline|draw()| methods cause a conflict, though accidentally.
 
 \subsection{Potential Fixes}
 
-For that problem, there are several workarounds that quickly come to our mind:
+For that problem, there are several workarounds. We go over some of
+the main ones next.
 
-\paragraph{I. Delegation.} As an alternative to multiple inheritance, delegation can be used by
-introducing two fields with \lstinline|Drawable| type and \lstinline|Deck| type, respectively. This avoids
-method conflicts. Nevertheless, it is known that using delegation makes it hard to correctly maintain self-references \haoyuan{?} in an
-extensible system [], and meanwhile introduces a lot of boilerplate.
+\paragraph{I. Delegation.} As an alternative to multiple inheritance,
+delegation can be used by introducing two fields with
+\lstinline|Drawable| type and \lstinline|Deck| type,
+respectively. This avoids method conflicts. Nevertheless, it is known
+that using delegation makes it hard to correctly maintain
+self-references \haoyuan{?} in an extensible system [], and also
+introduces a lot of boilerplate code.
 
 \paragraph{II. Creating a \lstinline|draw()| method in \lstinline|DrawableDeck|, which explicitly overrides the old ones.}
 This is a non-solution. It does not make any sense to override both methods with totally different functionalities, as old
 methods have to be hidden.
 
-\paragraph{III. Choosing one of them as the default method, like Mixins.} The mixin model can be applied to choose a
-default one based on linearisation. Similarly, we want to preserve both features, rather than keeping only one of them.
+\paragraph{III. Refactor Drawable and/or Deck to rename the methods.} If
+the code for \lstinline|Drawable| or \lstinline|Deck| are available
+then it may be possible to rename one of the \lstinline|draw|
+methods. However this approach is non-modular, as it requires 
+modifying existing code, and may not be possible if code is unavailable.
 
-\paragraph{IV. Method exclusion/renaming in traits.} Those features provided by the trait model can eliminate conflicts, although
-most programming languages do not support them. In a traditional OO system, they more or less break the subtyping. Moreover, in
+%\paragraph{III. Choosing one of them as the default method, like Mixins.} The mixin model can be applied to choose a
+%default one based on linearisation. Similarly, we want to preserve both features, rather than keeping only one of them.
+
+\paragraph{IV. Method exclusion/renaming in traits.} Those features
+provided by the trait model can eliminate conflicts, although most
+programming languages do not support them. In a traditional OO system,
+they more or less break the subtyping. Moreover, in
 contrast with exclusion, renaming can indeed preserve both conflicted behaviours, however, it is cumbersome in practice, as introducing new names can affect other code blocks. It could be considered as a workaround, but certainly is not a good solution.\\
 
 What we really expect from the language is we keep both methods without renaming, and the type checker does not complain on the
