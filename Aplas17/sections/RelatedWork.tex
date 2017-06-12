@@ -103,7 +103,9 @@ in \csharp.
 \begin{lstlisting}
 \end{lstlisting}
 
-\noindent {\bf Self.} In the prototype-based language \self~\cite{Chambers1991}, inheritance is a basic feature.
+\subsection{Hirarchical Dispatch}
+As we have discussed before, the mix of static and dynamic dispatch is needed by the literature 
+pay little attention to this. In the prototype-based language \self~\cite{Chambers1991}, inheritance is a basic feature.
 It does not include classes but instead allow individual objects to inherit from (or delegate to) other objects. 
 Although it is different than class-based languages, the multiple inheritance model is somehow similar. The \self 
 language support multiple (object) inheritance in a clever way. Not only the new inheritance
@@ -111,7 +113,6 @@ relation \emph{prioritized parents} is developed, but also the method lookup rul
 \emph{sender path tiebreaker rule}, which is similar with our approach, using hirarchical 
 information in method resolution, but in a prototype-based language setting.
 
-\subsection{Static+Dynamic Type Method Lookup}
 
 \subsection{Formalization Based on FeatherweightJava}
 FeatherweightJava~\cite{Igarashi01FJ} is a minimal core calculus of Java language, proposed by Igarashi et. al. Many models are based on 

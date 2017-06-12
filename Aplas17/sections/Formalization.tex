@@ -253,3 +253,47 @@ $mbody(m, I)$ algorithm:
 \[ \collectMethods(I) = \left( \bigcup_{I_i \in \overline{I}} \methods(I_i) \right) \bigcup \methods(I) \]
 \[ \methods(I) = \overline{M}, \text{where } IT(I) = \interface{I}{I}{M} \]
 \end{comment}
+
+
+
+\subsection{Properties}
+Previously the definitions of our model are given, now we should proceed to prove the type soundness of 
+the model, which relates typing to computation. We want to prove such a property: if an expression is 
+well-typed, then after many reduction steps it must reduces to a value of a subtype of the original type
+of the expression. Following the FeatherweightJava paper~\cite{Igarashi01FJ}, the type-soundness theorem 
+(Theorem~\ref{theorem_soundness}) is proved by using the standard technique of subject reduction (Theorem~\ref{theorem_subject})
+and progress (Theorem~\ref{theorem_progress})~\cite{Wright1994}.
+
+\begin{theorem}[Subject Reduction]~\label{theorem_subject}
+$\textit{If } \ \judgeewf \Gamma {e : I} \; \textit{ and } \ e \rightarrow e',\ 
+\textit{then } \judgeewf \Gamma {e' : I'} \ \textit{ for some } \ I' <: I.$
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
+
+\begin{theorem}[Progress]~\label{theorem_progress}
+$\textit{Suppose } e \textit{ is a well-typed expression } $ \\
+\begin{enumerate}
+\item If $e$ includes $\left(<J>\new{I}\right).m(\overline{<I_E>} \; \overline{e})$ as a subexpression,
+    then $ \mbody(m, I, J) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
+\item If $e$ includes $\left(<J>\new{I}\right).K::m(\overline{<I_E> e})$ as a subexpression,
+    then $ \mbody(m, I, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
+\item If $e$ includes $\kwsuper.K::m(\overline{<I_E> e})$ as a subexpression,
+    then $ \mbody(m, K, K) = (\overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
+
+\begin{theorem}[Type Soundness]~\label{theorem_soundness}
+If $\judgeewf \o {e : I}$ and $e \to^* e'$ with $e'$ a normal form, then $e'$ is 
+a value $v$ with $\judgeewf \o {v:J}$ and $J \subtype I$.
+\end{theorem}
+\begin{proof}
+Immediate from Theorem~\ref{theorem_subject} and Theroem~\ref{theorem_progress}.
+\end{proof}
