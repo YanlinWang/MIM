@@ -27,6 +27,7 @@
 \newcommand{\updateSet}{\keyword{updateSet}}
 \newcommand{\prune}{\keyword{prune}}
 \newcommand{\update}{\keyword{update}}
+\newcommand{\dom}{\keyword{dom}}
 
 \newcommand{\new}[1]{
     \kwnew \; #1()
@@ -123,7 +124,7 @@
 \inferrule* [left=(T-Intf)]
     {  \overline{I} \text{ OK}
     \\ \overline{M} \text{ OK IN } I
-    \\ \red{TODO: unambiguity\ check (forall\ m, J < I, mbody(m, I, J)\ defined ?)}
+    \\ \forall J >: I \text{ and } m, \mtype(m, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined}
     }
     { \interface{I}{I}{M} \text{ OK }}
 }
