@@ -5,7 +5,10 @@ a minimal subset of Java 8 interfaces.\bruno{Mention that it is done
 in a FJ style?} The syntax, typing rules and small-step
 semantics are included below.
 
-\subsection{Syntax} \haoyuan{TODO: syntactic sugar}
+\subsection{Syntax} \haoyuan{TODO: syntactic sugar; mention that path invocation subsumes
+regular invocation; add explanation for interface check; use the examples to illustrate the
+mbody algorithm in an intuitive way, and especially explain the two counter-examples that are
+important to type soundness.}
 
 Figure~\ref{fig:syntax} shows the syntax of MIM. The multiple
 inheritance feature of MIM as a basis Java 8 interfaces, which support
@@ -113,13 +116,6 @@ Finally, (T-INTF) defines interface type-checking in a straightforward way. Note
 \end{figure*}
 \bruno{Path invocation subsumes regular invocation. In other words:
 e0.m(e) = e0.I::m(e) when the type of e0 is I.}
-\bruno{Last time I met I told you that the typing of ``this'' is
-  wrong, and this is not yet fixed. I've also told you to make all
-figures at the top. In T-Method, $\Gamma$ shows up out of nowhere.
-}
-\bruno{Rule for new is wrong! It says that a new expression that
-  creates a class with any name (even if the class does not exist) 
-is valid. The paper is not even following the rules of FJ.}
 
 \subsection{Small-step Semantics and Congruence}
 Figure ? and Figure ? define small-step semantic rules and congruence rules,
