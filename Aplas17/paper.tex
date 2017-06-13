@@ -105,7 +105,30 @@
 \maketitle
 
 \begin{abstract}
-  Text.
+Multiple inheritance is a valuable feature for Object-Oriented
+Programming. However it is also tricky to get right, as illustrated by
+the extensive literature on the topic. One of the most promising 
+approaches to multiple inheritance are traits. Traits offer a
+restricted model of multiple inheritance that is easy to reason and 
+has many elegant properties. Traits have good support for method 
+conflicts which arize from \emph{diamond inheritance}:
+conflicts that arize from method implementations sharing a common 
+ancestor. However the mechanisms of traits are inadequate to deal 
+with \emph{unintentional method conflicts}: conflicts which 
+arize from two unrelated methods that happen to share the same name
+and signature. 
+
+This paper presents a new trait model that deals with unintended
+method conflicts. In our new trait model conflicting methods arizing
+from unrelated methods can coexist in the same trait. Moreover they
+can be \emph{independently overriden}. What ensures unambiguity 
+is the use of information about the class hierarchy. In turn
+hierarchical information is also employed in method dispatching, which 
+uses a combination of static and dynamic type information to chose 
+the implementation of a method at run-time. We give illustrative 
+examples of our language and features and formalize a minimal 
+Featherweight-Java style calculus. 
+
 \end{abstract}
 
 
