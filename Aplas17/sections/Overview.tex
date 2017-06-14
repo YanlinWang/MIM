@@ -1,6 +1,11 @@
 \section{A Running Example: DrawableDeck}~\label{sec:overview}
-\includegraphics[height=3.3cm]{pics/DrawableLoggingDeck.pdf}
-\red{H: with UML graphs the illustration could be better.}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
+\caption{DrawableLoggingDeck UML}\label{fig:subtyping}
+\end{figure*}
+
 
 This section illustrates the features of our \MIM{} model for
 resolving unintentional method conflicts. As mentioned before, such a
@@ -35,9 +40,7 @@ methods), then in between the discussion moves to hierarchical
 dispatching. Later it returns to point 2. 
 }
 
-\subsection{Problem: Unintentional Method Conflicts}
-\bruno{maybe call this problem 1?}
-
+\subsection{Problem 1: Unintentional Method Conflicts}
 Suppose that two components \lstinline|Deck| and \lstinline|Drawable| 
 have been developed in a system.  \lstinline|Deck| represents a deck
 of cards, and defines \lstinline|draw()| for drawing a card from the
