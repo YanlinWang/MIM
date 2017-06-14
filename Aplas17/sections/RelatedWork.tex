@@ -20,20 +20,19 @@ diamond inheritance is transformed to one without diamonds. Moreover, fields and
 However untangling inheritance also untangles the class structure. In CZ, not only the number of classes, but also 
 the class hierarchy complexity increases. 
 
-The above mentioned models/languages support multiple inheritance, and they handle method confliction in the same way: requiring 
-programmers to explicitly resolve ambiguity and disallowing two methods with the same signature from two different libraries 
-to co-exit. This is the common drawback of the above mentioned models versus our model.
+The above mentioned models/languages support multiple inheritance, and they handle method conflicts in the same way, by
+simply disallowing two methods with the same signature from two different units to coexist. The ambiguity is resolved either
+by programmers explicitly or by setting a linearised composition. This is the common drawback of the above mentioned models versus our model.
 
-\subsection{Resolving Unintended Method Confliction}
-There are still a few languages that already realized the problem and explored a bit. We discuss them one by one.
+\subsection{Resolving Unintended Method Conflicts}
+There are still a few languages that partly realize the problem. They provide limited support for unintended conflicting methods. 
 
 \noindent {\bf C++ model.}
-As discussed in Section~\ref{sec:overview}, C++ supports very flexible inheritance mode and allows programmers to choose different 
-confliction resolution approaches via normal or virtual inheritance. Generally speaking, C++ model is much more complex 
-and flexible than our approach. For example, given the following code
+C++ supports very flexible inheritance models and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
+It allows unintended conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. For example, given the following code
 \begin{lstlisting}[language=Java]
-class A { public: void m() {cout << "MA" << endl;}};
-class B { public: void m() {cout << "MB" << endl;}};
+class A { public: void m() {cout << "MA" << endl;} };
+class B { public: void m() {cout << "MB" << endl;} };
 class C : public A, public B { 
 	void m() {cout << "MC" << endl;}
 };
@@ -45,17 +44,13 @@ int main() {
 	return 0; //Running result: MB MA
 }
 \end{lstlisting}
-The running result is $MB \; MA$, meaning that it uses static dispatch (looks at the static types) when doing method lookup. 
-On calling \texttt{func(c)}, no matter the dynamic type of \texttt{c} is class \texttt{C}, the method call still dispatches to 
-the method \texttt{m} in class \texttt{A} because of static dispatch.
+The running result is $MB \; MA$, meaning that it uses static dispatch (looks at the static types) for method \lstinline|m()|. 
+On calling \texttt{func(c)}, in spite that the dynamic type of \texttt{c} is class \texttt{C}, the method call still dispatches to 
+\lstinline|A.m|.
 However, we can alter the code a little bit with \textbf{\texttt{virtual}} methods and the result will be totally different:
 \begin{lstlisting}[language=c++]
-class A { 
-	public: virtual void m() {cout << "MA" << endl;}
-};
-class B { 
-	public: virtual void m() {cout << "MB" << endl;}
-};
+class A { public: virtual void m() {cout << "MA" << endl;} };
+class B { public: virtual void m() {cout << "MB" << endl;} };
 class C : public A, public B { 
     public: virtual void m() {cout << "MC" << endl;}
 };
@@ -67,49 +62,48 @@ int main() {
 	return 0; //Running result: MB MC
 }
 \end{lstlisting}
-Now the running result will be $MB \; MC$. With virtual method, dynamic dispatch is used and 
-method lookup algorithm will find the most specific method definition of $m$, which is the definition 
-in class $C$. Although C++ support this flexibility, the drawback compared to our model is
-obvious: it does not support updating both $A.m$ and $B.m$ in class $C$. 
+Now the running result will be $MB \; MC$. With virtual methods, dynamic dispatch is used and 
+method lookup algorithm will find the most specific method definition of $m$, namely \lstinline|C.m| at this time.
+Although C++ support this flexibility, unfortunately, dynamic dispatch on conflicting methods will be problematic.
+Furthermore, it does not support partial overrides compared to our model.
 
 \begin{lstlisting}
 \end{lstlisting}
 
-\noindent  {\bf \csharp Explicit method implementation.}
-Explicit method implementation is a special feature supported by \csharp. As described in \csharp
+\noindent  {\bf \csharp{} Explicit method implementation.}
+Explicit method implementation is a special feature supported by \csharp{}. As described in \csharp{}
 documentation~\cite{csharpdoc}, a class that implements an interface can explicitly implement a member of that
 interface. When a member is explicitly implemented, it can only be accessed through an instance
 of the interface. Explicit interface implementation allows the programmer to inherit two interfaces 
-that share the same member names and give each interface member a separate implementation. 
-Explicit interface member implementations have two advantages:
-Explicit interface member implementations allow interface implementations to be excluded 
+that share the same member names and give each interface member a separate implementation.
+
+Explicit interface member implementations have two advantages.
+Firstly, they allow interface implementations to be excluded 
 from the public interface of a class. This is particularly useful when a class implements an internal 
 interface that is of no interest to a consumer of that class or struct.
-Explicit interface member implementations allow disambiguation of interface members with the 
-same signature. This is the the advantage that is similar to ours' model. However, there are two 
-diffirencies: firstly, method (default) implementations are not allowed in \csharp interfaces; 
-secondly, when handling unintended method confliction, multi-way method updating is not supported 
-in \csharp.
+Secondly, they allow disambiguation of interface members with the 
+same signature. However, there are two critical differences to \MIM{}:
+(1) default implementations are not allowed in \csharp{} interfaces; 
+(2) there are only one-level partial overrides (implementations).
 
 \begin{lstlisting}
 \end{lstlisting}
 
-\subsection{Hirarchical Dispatch}
-As we have discussed before, the mix of static and dynamic dispatch is needed by the literature 
-pay little attention to this. In the prototype-based language \self~\cite{Chambers1991}, inheritance is a basic feature.
+\subsection{Hierarchical Dispatch}
+As we have discussed before, the mix of static and dynamic dispatch is particularly useful under certain circumstances,
+yet there is little attention from related work. In the prototype-based language \self~\cite{Chambers1991}, inheritance is a basic feature.
 It does not include classes but instead allow individual objects to inherit from (or delegate to) other objects. 
-Although it is different than class-based languages, the multiple inheritance model is somehow similar. The \self 
-language support multiple (object) inheritance in a clever way. Not only the new inheritance
-relation \emph{prioritized parents} is developed, but also the method lookup rule called 
-\emph{sender path tiebreaker rule}, which is similar with our approach, using hirarchical 
-information in method resolution, but in a prototype-based language setting.
+Although it is different from class-based languages, the multiple inheritance model is somehow similar. The \self{}
+language supports multiple (object) inheritance in a clever way. It not only develops the new inheritance
+relation \emph{prioritized parents}, but also adopts \emph{sender path tiebreaker rule} for method lookup, which is similar with our approach, using hierarchical information in method resolution, but in a prototype-based language setting.\haoyuan{Do they have updates?}
 
 
-\subsection{Formalization Based on FeatherweightJava}
-FeatherweightJava~\cite{Igarashi01FJ} is a minimal core calculus of Java language, proposed by Igarashi et. al. Many models are based on 
-FeatherweightJava, for example FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, as well as our model.
-It provides the standard model of formalizing a Java-like object-oriented language and 
-people can easily extends it to form a new language. In terms of formalization, they key novelty of our model is the use of 
+\subsection{Formalization Based on Featherweight Java}
+Featherweight Java~\cite{Igarashi01FJ} is a minimal core calculus of Java language, proposed by Igarashi et. al\haoyuan{Need cite}. There are
+many models built on
+Featherweight Java, including FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, and so on.
+It provides the standard model of formalizing a Java-like object-oriented language, and 
+is easily extensible. In terms of formalization, they key novelty of our model is the use of 
 static types as annotations along with various terms. As far as we know, this technique has not appear in literature before.
 
 
