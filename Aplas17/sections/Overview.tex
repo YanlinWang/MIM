@@ -128,7 +128,7 @@ What we really expect from the language is that we keep both methods
 without renaming, and the type checker does not complain about 
 inheritance. But we need to find an approach to \emph{disambiguate on method
 calls statically}.
-\bruno{Perhaps show the solution in \MIM{} here (i.e Section 2.4), and then move to problem
+\bruno{Perhaps show the solution in MIM here (i.e Section 2.4), and then move to problem
 2 (which is being discussed next with shuffleAndDraw)}
 
 Certainly the compiler can ignore the conflict when
@@ -194,7 +194,7 @@ Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calli
 neither static dispatch nor dynamic dispatch in languages like C++ does so.
  Therefore, we need to find another algorithm for method resolution.
 
-\subsection{Solution in \MIM: \dispatchnamecaptical}
+\subsection{Solution in \MIM: \dispatchnamecaptical}\label{subsec:solutionmim}
 The \MIM{} model uses \dispatchnameit{} for method lookup. A qualified
 method invocation, for instance, \lstinline|e.I::m()|, is read as
 ``finding the most specific method \lstinline|m| along the path
@@ -220,7 +220,7 @@ from other branches will not cause conflicts. Now \lstinline|d.shuffleAndDraw()|
 Actually in \MIM{}, we can still write ``\lstinline|shuffle();|'' and ``\lstinline|draw();|'',
 because the compiler is able to know that the receiver ``\lstinline|this|'' exactly has static type \lstinline|Deck|, hence hierarchical dispatch eliminates ambiguity.
 
-\subsection{Partial Overrides in \MIM	}
+\subsection{Partial Overrides in \MIM	}\label{subsec:partialoverrides}
 
 Method overriding is commonly supported by many OO languages as a kind of polymorphism.
 We have seen that \MIM{} is able to preserve several conflicted branches simultaneously and let them coexist.
