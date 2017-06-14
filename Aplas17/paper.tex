@@ -89,7 +89,8 @@
 
 \begin{document}
 
-\title{Untangling Unintended Conflicts with Hierarchical Dispatch}
+% \title{Untangling Unintended Conflicts with Hierarchical Dispatch}
+\title{FHJ: A Formal Model for Resolving Unintended Conflicts in Multiple Inheritance}
 %\subtitle{\InterfaceBased Programming for the Masses}
 
 % \authorinfo{NoAuthor}
@@ -108,9 +109,9 @@
 Multiple inheritance is a valuable feature for Object-Oriented
 Programming. However it is also tricky to get right, as illustrated by
 the extensive literature on the topic. One of the most promising 
-approaches to multiple inheritance is \emph{traits}. Traits offers a
+approaches to multiple inheritance is \emph{traits}. Traits offer a
 restricted model of multiple inheritance that is easy to reason and 
-has many elegant properties. Traits has good support for method 
+have many elegant properties. Traits have good support for method 
 conflicts which arise from \emph{diamond inheritance}:
 conflicts that arise from method implementations sharing a common 
 ancestor. However the mechanisms of traits are inadequate to deal 
@@ -118,9 +119,11 @@ with \emph{unintentional method conflicts}: conflicts which
 arise from two unrelated methods that happen to share the same name
 and signature. 
 
-This paper presents a new trait model that deals with unintended
-method conflicts. In our new trait model conflicting methods arising
-from unrelated methods can coexist in the same trait. Moreover they
+This paper presents a new model \name{} 
+(short for \emph{\textbf{F}eatherweight \textbf{H}irarchical \textbf{J}ava}) 
+that deals with unintended
+method conflicts. In our new model conflicting methods arising
+from unrelated methods can coexist in the same component. Moreover they
 can be \emph{independently overridden}. What ensures unambiguity 
 is the use of information about the class hierarchy. In turn
 hierarchical information is also employed in method dispatching, which 
