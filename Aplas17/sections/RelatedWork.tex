@@ -1,34 +1,49 @@
 \section{Related Work}
 
 \subsection{Mainstream Multiple Inheritance Models}
-Multiple inheritance is a useful feature in object-oriented programming world although it's difficult to model and can 
+Multiple inheritance is an useful feature in object-oriented
+programming, although it is difficult to model and can 
 cause various problems (e.g. the diamond problem~\cite{Sak89dis,Singh1995}).  There are many existing languages/models that support multiple 
-inheritance, either coming with multiple inheritance capability or added through evolution. The Mixin model allows naming components 
+inheritance. The Mixin model~\cite{} allows naming components 
 that can be applied to various classes as reusable functionality units. However, the linearization (total ordering) of mixin 
 inheritance cannot provide a satisfactory resolution in some cases and restricts the flexibility of mixin composition. 
 
-Simplifying the mixins approach, traits~\cite{scharli03traits} draw a strong line between units of reuse and object factories. 
-Traits act as units of reuse, containing functionality code; while classes, assembled from traits, act as object factories. 
+Simplifying the mixins approach, traits~\cite{scharli03traits} draw a
+strong line between units of reuse and object factories.  Traits act
+as units of reuse, containing functionality code; while classes,
+assembled from traits, act as object factories.\bruno{Should talk
+  about work on traits that support renaming.}\bruno{I remember Yanlin
+  had a presentation with alot of related work on multiple
+  inheritance. Many of those seem to be missing here} Java 8
+interfaces~\cite{} are closely related to traits: concrete method
+implementations are allowed (via the \textbf{\texttt{default}}
+keyword) inside interfaces.  The introduction of default methods opens
+the gate for various flavors of multiple inheritance in Java.
 
-Java 8 interfaces are closely related to traits: concrete method implementations are allowed (via the \textbf{\texttt{default}} keyword) inside interfaces. 
-The introduction of default methods opens the gate for various flavors of multiple inheritance in Java.
+Malayeri and Aldrich proposed a model CZ~\cite{malayeri2009cz} which
+aims to do multiple inheritance without the diamond problem.
+Inheritance is divided into two concepts: inheritance dependency and
+implementation inheritance.  Using a combination of
+\textbf{\texttt{requires}} and \textbf{\texttt{extends}}, a program
+with diamond inheritance is transformed to one without
+diamonds. Moreover, fields and multiple inheritance can coexist.
+However untangling inheritance also untangles the class structure. In
+CZ, not only the number of classes, but also the class hierarchy
+complexity increases.
 
-Malayeri and Aldrich proposed a model CZ~\cite{malayeri2009cz} which aims to do multiple inheritance without the diamond problem. 
-Inheritance is divided into two concepts: inheritance dependency and implementation inheritance. 
-Using a combination of \textbf{\texttt{requires}} and \textbf{\texttt{extends}}, a program with 
-diamond inheritance is transformed to one without diamonds. Moreover, fields and multiple inheritance can coexist. 
-However untangling inheritance also untangles the class structure. In CZ, not only the number of classes, but also 
-the class hierarchy complexity increases. 
-
-The above mentioned models/languages support multiple inheritance, and they handle method conflicts in the same way, by
-simply disallowing two methods with the same signature from two different units to coexist. The ambiguity is resolved either
-by programmers explicitly or by setting a linearised composition. This is the common drawback of the above mentioned models versus our model.
+The above mentioned models/languages support multiple inheritance, and
+they handle method conflicts in the same way, by simply disallowing
+two methods with the same signature from two different units to
+coexist. The ambiguity is resolved either by programmers explicitly or
+by setting a linearised composition. This is the common drawback of
+the above mentioned models versus our model.
 
 \subsection{Resolving Unintended Method Conflicts}
-There are still a few languages that partly realize the problem. They provide limited support for unintended conflicting methods. 
+There are a few languages that partly realize the problem of
+unintended conflicts and provide some support for it.
 
 \noindent {\bf C++ model.}
-C++ supports very flexible inheritance models and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
+C++ supports a very flexible inheritance model and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
 It allows unintended conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. For example, given the following code
 \begin{lstlisting}[language=Java]
 class A { public: void m() {cout << "MA" << endl;} };
@@ -64,18 +79,21 @@ int main() {
 \end{lstlisting}
 Now the running result will be $MB \; MC$. With virtual methods, dynamic dispatch is used and 
 method lookup algorithm will find the most specific method definition of $m$, namely \lstinline|C.m| at this time.
-Although C++ support this flexibility, unfortunately, dynamic dispatch on conflicting methods will be problematic.
-Furthermore, it does not support partial overrides compared to our model.
-
-\begin{lstlisting}
-\end{lstlisting}
+Although C++ support this flexibility, dynamic dispatching on
+conflicting methods is problematic.\bruno{why? give example of
+  something that goes wrong?}
+Furthermore, C++ does not support partial overrides compared to our
+model.
 
 \noindent  {\bf \csharp{} Explicit method implementation.}
-Explicit method implementation is a special feature supported by \csharp{}. As described in \csharp{}
-documentation~\cite{csharpdoc}, a class that implements an interface can explicitly implement a member of that
-interface. When a member is explicitly implemented, it can only be accessed through an instance
-of the interface. Explicit interface implementation allows the programmer to inherit two interfaces 
-that share the same member names and give each interface member a separate implementation.
+Explicit method implementation is a special feature supported by
+\csharp{}. As described in \csharp{} documentation~\cite{csharpdoc}, a
+class that implements an interface can explicitly implement a member
+of that interface. When a member is explicitly implemented, it can
+only be accessed through an instance of the interface. Explicit
+interface implementation allows the programmer to inherit two
+interfaces that share the same member names and give each interface
+member a separate implementation.
 
 Explicit interface member implementations have two advantages.
 Firstly, they allow interface implementations to be excluded 
@@ -84,10 +102,7 @@ interface that is of no interest to a consumer of that class or struct.
 Secondly, they allow disambiguation of interface members with the 
 same signature. However, there are two critical differences to \MIM{}:
 (1) default implementations are not allowed in \csharp{} interfaces; 
-(2) there are only one-level partial overrides (implementations).
-
-\begin{lstlisting}
-\end{lstlisting}
+(2) there is only one level of partial overrides (implementations).
 
 \subsection{Hierarchical Dispatch}
 As we have discussed before, the mix of static and dynamic dispatch is particularly useful under certain circumstances,
@@ -95,16 +110,16 @@ yet there is little attention from related work. In the prototype-based language
 It does not include classes but instead allow individual objects to inherit from (or delegate to) other objects. 
 Although it is different from class-based languages, the multiple inheritance model is somehow similar. The \self{}
 language supports multiple (object) inheritance in a clever way. It not only develops the new inheritance
-relation \emph{prioritized parents}, but also adopts \emph{sender path tiebreaker rule} for method lookup, which is similar with our approach, using hierarchical information in method resolution, but in a prototype-based language setting.\haoyuan{Do they have updates?}
-
+relation with \emph{prioritized parents}, but also adopts \emph{sender path tiebreaker rule} for method lookup, which is similar with our approach, using hierarchical information in method resolution, but in a prototype-based language setting.\haoyuan{Do they have updates?}
 
 \subsection{Formalization Based on Featherweight Java}
-Featherweight Java~\cite{Igarashi01FJ} is a minimal core calculus of Java language, proposed by Igarashi et. al\haoyuan{Need cite}. There are
+Featherweight Java (FJ)~\cite{Igarashi01FJ} is a minimal core calculus of Java language, proposed by Igarashi et. al\haoyuan{Need cite}. There are
 many models built on
 Featherweight Java, including FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, and so on.
-It provides the standard model of formalizing a Java-like object-oriented language, and 
-is easily extensible. In terms of formalization, they key novelty of our model is the use of 
-static types as annotations along with various terms. As far as we know, this technique has not appear in literature before.
+FJ provides the standard model of formalizing a Java-like object-oriented language, and 
+is easily extensible. In terms of formalization, the key novelty of our model is the use of 
+static types as annotations along with various terms. As far as we
+know, this technique has not appeared in the literature before.
 
 
 
