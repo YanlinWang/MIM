@@ -6,22 +6,23 @@ inheritance. Nevertheless different flavours of multiple inheritance
 have been adopted in some popular OOP languages. C++ has had 
 multiple inheritance from the start. Scala adapts ideas from traits~\cite{scharli03traits} 
 and mixins~\cite{bracha90mixin} to offer a disciplined form of multiple inheritance. Java 8 
-offers a variant of traits with disguised of interfaces with default methods~\cite{goetz12fdefenders}.
+offers a simple variant of traits with disguised of interfaces with default methods~\cite{goetz12fdefenders}.
 
 A reason why programming languages have resisted to multiple
-inheritance in the past is that, as Cook~\cite{Cook1987} puts it, 
+inheritance in the past is that, as Cook~\cite{Cook1987} put it, 
 ``\emph{multiple inheritance is good but there is no good way to do it}''.
 One of the most sensitive and critical issues is perhaps the ambiguity
 introduced by multiple inheritance. One case is the famous
-\textit{diamond problem}~\cite{Sak89dis,Singh1995} (also known as ``fork-join inheritance''~\cite{Sak89dis}). In the diamond problem inheritance could allow
+\textit{diamond problem}~\cite{Sak89dis,Singh1995} (also known as ``fork-join inheritance''~\cite{Sak89dis}). 
+In the diamond problem, inheritance could allow
 one feature to be inherited from multiple parent classes that share a
 common ancestor, hence
 conflicts arise. The variety of strategies for resolving such conflicts
 urges the occurrence of different multiple inheritance models,
 including traits, mixins, CZ~\cite{malayeri2009cz}, and many others. Existing
 languages and research have taken care of this case extensively. Other issues
-include how multiple inheritance deals with state, 
-which also has been discussed quite extensively~\cite{classless,malayeri2009cz,stroustrup1995}.
+including how multiple inheritance deals with state, 
+have also been discussed quite extensively~\cite{classless,malayeri2009cz,stroustrup1995}.
 
 In contrast with the diamond inheritance, a second case of ambiguity
 is \textit{unintentional method conflicts}~\cite{scharli03traits}. That is conflicting 
@@ -31,26 +32,26 @@ functionality, but they just happen to have same names (and
 signatures).
 A simple example of this situation are two \lstinline{draw} methods that
 are inherited from a deck of cards and a drawable widget. 
-In such context the two draw methods have very different meanings, 
+In such context the two \lstinline{draw} methods have very different meanings, 
 but they happen to share the same name.
 %%This issue was proposed by the trait paper, so-called
-When inheritance is used to compose those methods an
+When inheritance is used to compose these methods, a compilation 
 error happens due to conflicts. However, unlike the diamond problem,
 the conflicted methods have very different meanings and do not share a
 common parent. We call such a case ``\textit{triangle inheritance}''.
 \haoyuan{Fine to have a graph with diamond and triangle shapes if we got space.}
 
 Unintentional method conflicts are less common than the diamond
-problem, nonetheless, they have severe effects in practice. This is
-unfortunate because such an issue has not received much formal study 
-before. In practice existing languages also provide limited support for
+problem, nonetheless, they have severe effects in practice. 
+Unfortunately, such an issue has not received much formal study 
+before. In practice, existing languages also provide limited support for
 it. In most languages, the mechanisms available to deal with this problem are the same as the diamond
-inheritance. Unfortunatelly this is often inadequate and can lead 
+inheritance. However, this is often inadequate and can lead 
 to tricky problems in practice. This is especially the case
 when it is necessary to combine two large modules and their features,
 but the inheritance is simply prohibited by a small conflict. As
 a workaround from the diamond inheritance side, it is possible to
-define a new method in the child class, to override those conflicting
+define a new method in the child class to override those conflicting
 methods. Intuitively using one method to fuse two unrelated features
 is unsatisfactory. Therefore we need a better solution to keep both
 features separately during inheritance, so as not to break
@@ -67,7 +68,7 @@ limited support for virtual methods with unintentional conflicts, and
 it will often throw errors when composing them. This is again
 unsatisfactory because virtual methods are pervasive in OOP and used 
 for code reuse and extensibility. A problem with the C++ approach is
-that it can only use either static or dynamic dispatching separately, but dealing
+that programmers can only use either static or dynamic dispatching separately, but dealing
 with unintentional method conflicts seems to require a combination of both. 
 
 %Having tolerance for unintentional method conflicts does not mean to
@@ -83,7 +84,7 @@ unintentional conflicts, the static type can specify one branch among
 them for unambiguity, and the dynamic type helps to find the most
 specific implementation. In that case both unambiguity and
 extensibility are preserved. To present this idea, we introduce a
-formalized model in Section~\ref{sec:formalization} based on
+formalized model \MIM{} in Section~\ref{sec:formalization} based on
 Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
 proofs for type soundness. In the model we also propose
 \textit{partial overrides}, where method overriding can be applied
@@ -93,7 +94,7 @@ the triangle inheritance.
 
 In summary, our contributions are: \haoyuan{will have prototype implementation in Scala if we still have time.}
 \begin{itemize}
-	\item \textbf{Hierarchical dispatch algorithm:} which integrates both the static type and dynamic type for method dispatch, and hence
+	\item \textbf{Hierarchical dispatch algorithm:} an algorithm that integrates both the static type and dynamic type for method dispatch, and hence
 	ensures unambiguity as well as extensibility.
 	\item \textbf{Partial overrides:} a novel notion that allows
           methods to override on individual branches of the class hierarchy.
