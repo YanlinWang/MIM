@@ -5,7 +5,10 @@
 \includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
 \caption{DrawableLoggingDeck UML}\label{fig:subtyping}
 \end{figure*}
-
+\bruno{I've said this several times in the past: please use proper UML
+notation! The UML arrows are not right.}
+\bruno{This figure is never referred to in the text! You need to talk 
+about the figure in the text.}
 
 This section illustrates the features of our \MIM{} model for
 resolving unintentional method conflicts. As mentioned before, such a
@@ -17,7 +20,7 @@ inheritance. Below we illustrate with a running example called
 Note that we use Java-like syntax
 throughout the paper, and all types are defined with the keyword
 ``\lstinline|interface|''. The concept is closely related to Java 8
-interfaces, and traits. For simplicity, an interface in our model has
+interfaces with default methods~\cite{}, and traits. For simplicity, an interface in our model has
 the following characteristics:
 \begin{itemize}
 	\item It allows multiple inheritance.
@@ -44,7 +47,7 @@ dispatching. Later it returns to point 2.
 Suppose that two components \lstinline|Deck| and \lstinline|Drawable| 
 have been developed in a system.  \lstinline|Deck| represents a deck
 of cards, and defines \lstinline|draw()| for drawing a card from the
-deck.  While \lstinline|Drawable| is an interface for graphics that
+deck.  \lstinline|Drawable| is an interface for graphics that
 can be drawn, and also includes a method called \lstinline|draw()| for
 visual display. For illustration, the implementation of
 \lstinline|draw()| in \lstinline|Drawable| only creates a blank canvas
@@ -119,7 +122,7 @@ modifying existing code, and may not be possible if code is unavailable.
 support method exclusion/renaming. Those features
 provided can eliminate conflicts, although most
 programming languages do not support them. In a traditional OO system,
-they more or less break the subtyping. Moreover, in
+they can break the subtyping. Moreover, in
 contrast with exclusion, renaming can indeed preserve both conflicted
 behaviours, however, it is cumbersome in practice, as introducing new
 names can affect other code blocks.
