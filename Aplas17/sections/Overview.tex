@@ -87,7 +87,7 @@ deck using multiple inheritance:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableDeck extends Drawable, Deck {...} 
 \end{lstlisting}\vspace{3pt}
-The point of using multiple inheritance is surely for composing the features from
+The point of using multiple inheritance is surely for composing the features from various 
 components, and to achieve code reuse. Multiple inheritance is supported by many mainstream OO
 languages. Nevertheless at this point, \lstinline|DrawableDeck| has to throw a compile
 error, since the two \lstinline|draw()| methods cause a conflict, though accidentally.
@@ -125,11 +125,12 @@ programming languages do not support them. In a traditional OO system,
 they can break the subtyping. Moreover, in
 contrast with exclusion, renaming can indeed preserve both conflicted
 behaviours, however, it is cumbersome in practice, as introducing new
-names can affect other code blocks. \\
+names can affect other code blocks.
 
-What we really expect from the language is that we keep both methods
-without renaming, and the type checker does not complain about 
-conflicts. But we need to find an approach to \emph{disambiguate on method
+\paragraph{V. Static dispatch.}
+What we really expect from the language is keeping both methods
+without renaming, and the type checker does not complain. 
+But we need to find an approach to \emph{disambiguate on method
 calls statically}.
 \bruno{Perhaps show the solution in MIM here (i.e Section 2.4), and then move to problem
 2 (which is being discussed next with shuffleAndDraw)}
@@ -137,8 +138,7 @@ calls statically}.
 Certainly the compiler can ignore the conflict when
 \lstinline|DrawableDeck| is declared, but once an object of
 \lstinline|DrawableDeck| is created, a method call for
-\lstinline|draw()| on that object is ambiguous, due to dynamic
-dispatch. Nonetheless, we can adopt static dispatch for
+\lstinline|draw()| on that object would be ambiguous. Nonetheless, we can adopt static dispatch for
 disambiguating. Some languages like C++ use qualified names in that
 way:
 
@@ -152,10 +152,11 @@ d.Drawable::draw();       // calling draw() in Drawable
 ((Drawable) d).draw(); // calling draw() in Drawable
 func(d);                 // calling draw() in Drawable
 \end{lstlisting}\vspace{3pt}
-Thus we have: \paragraph{V. Static dispatch.} Static dispatch finds out and invokes the most specific method ``by need''.
+Static dispatch in C++ finds out and invokes the most specific method ``by need''.
 
+\subsection{Problem 2: Dynamic Dispatch for Code Reuse}
 On the other hand, we also need dynamic dispatch as it is essential and widely used in object-oriented programming.
-C++ has the flexibility for choosing either way of dispatch by the ``virtual'' keyword.
+C++ has the flexibility for choosing either way of dispatch by the \kwvirtual{} keyword.
 Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance, here we redefine \lstinline|Deck| to support
 both \lstinline|draw()| and another operation called \lstinline|shuffleAndDraw()|:
 \vspace{3pt}\begin{lstlisting}
@@ -202,11 +203,11 @@ The \MIM{} model uses \dispatchnameit{} for method lookup. A qualified
 method invocation, for instance, \lstinline|e.I::m()|, is read as
 ``finding the most specific method \lstinline|m| along the path
 \lstinline|I|''. The meaning of ``along the path \lstinline|I|'' is
-that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| like dynamic dispatch. The formal definition will be introduced later. On the other hand, \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, simply behaves the same as \lstinline|e.I::m()| in our model. It is just like the difference between implicit and explicit casts.
+that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| because of dynamic dispatch. The formal definition will be introduced later. On the other hand, \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, simply behaves the same as \lstinline|e.I::m()| in our model. It is just like the difference between implicit and explicit casts.
 
-Such a dispatch make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict in that way.
+Such a dispatch algorithm make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict in that way.
 
-With the old example, below code meets our expectation:
+With the old example, the code below meets our expectation:
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() {...}
@@ -217,7 +218,7 @@ interface Deck {
   ...
 }
 \end{lstlisting}\vspace{3pt}
-It guarantees that \lstinline|shuffleAndDraw()| are calling \lstinline|shuffle()| and \lstinline|draw()| from its own branch, so that the namesakes
+It guarantees that \lstinline|shuffleAndDraw()| calls \lstinline|shuffle()| and \lstinline|draw()| from its own branch, so that the namesakes
 from other branches will not cause conflicts. Now \lstinline|d.shuffleAndDraw()| is no longer ambiguous.
 
 Actually in \MIM{}, we can still write ``\lstinline|shuffle();|'' and ``\lstinline|draw();|'',
