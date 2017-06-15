@@ -14,31 +14,37 @@ multiple inheritance is good but ``\emph{there is no good way to do it}''.
 One of the most sensitive and critical issues is perhaps the ambiguity
 introduced by multiple inheritance. One case is the famous
 \textit{diamond problem}~\cite{Sak89dis,Singh1995}. In the diamond problem inheritance could allow
-one feature to be inherited from multiple parent classes, hence
-conflicts arise. The variety of strategies on resolving such conflicts
+one feature to be inherited from multiple parent classes that share a
+common ancestor, hence
+conflicts arise. The variety of strategies for resolving such conflicts
 urges the occurrence of different multiple inheritance models,
 including traits, mixins, CZ~\cite{malayeri2009cz}, and many others. Existing
-languages have taken care of this case intensively. Other issues
-include how multiple inheritance deals with state, as discussed in
+languages and research have taken care of this case extensively. Other issues
+include how multiple inheritance deals with state, 
 which also has been discussed quite extensively~\cite{classless,malayeri2009cz,stroustrup1995}.
 
 In contrast with the diamond inheritance, a second case of ambiguity
 is \textit{unintentional method conflicts}~\cite{scharli03traits}. That is conflicting 
-methods that do not actually refer to the same feature.
-%%This issue was proposed by the trait paper, so-called
+methods that do not actually refer to the same feature. 
 In a nominal system, methods can be designed for different
 functionality, but they just happen to have same names (and
-signatures). When inheritance is used to compose those methods an
+signatures).
+A simple example of this situation are two \lstinline{draw} methods that
+are inherited from a deck of cards and a drawable widget. 
+In such context the two draw methods have very different meanings, 
+but they happen to share the same name.
+%%This issue was proposed by the trait paper, so-called
+When inheritance is used to compose those methods an
 error happens due to conflicts. However, unlike the diamond problem,
-the conflicted methods usually do not share a common parent. In this
-paper we call such a case ``\textit{triangle inheritance}''.
+the conflicted methods have very different meanings and do not share a
+common parent. We call such a case ``\textit{triangle inheritance}''.
 \haoyuan{Fine to have a graph with diamond and triangle shapes if we got space.}
 
 Unintentional method conflicts are less common than the diamond
 problem, nonetheless, they have severe effects in practice. This is
 unfortunate because such an issue has not received much formal study 
 before. In practice existing languages also provide limited support for
-it. In most languages, the mechanism available to deal with this problem are the same as the diamond
+it. In most languages, the mechanisms available to deal with this problem are the same as the diamond
 inheritance. Unfortunatelly this is often inadequate and can lead 
 to tricky problems in practice. This is especially the case
 when it is necessary to combine two large modules and their features,
@@ -46,46 +52,54 @@ but the inheritance is simply prohibited by a small conflict. As
 a workaround from the diamond inheritance side, it is possible to
 define a new method in the child class, to override those conflicting
 methods. Intuitively using one method to fuse two unrelated features
-is unsatisfactory. Therefore we need a real solution to keep both
+is unsatisfactory. Therefore we need a better solution to keep both
 features separately during inheritance, so as not to break
-\emph{independent extensibility}\cite{zenger05independentlyextensible}.
+\emph{independent extensibility}~\cite{zenger05independentlyextensible}.
 
 Some other workarounds or approaches include delegation, and
 renaming/exclusion in the trait model. Yet they still have various
 drawbacks as we will discuss in Section~\ref{sec:overview}. Closest to our work
 are mechanisms available in C++ and C\# that allow for two
-unintentionally conflicted method to coexist in the system. Among them
+unintentionally conflicted methods to coexist in a class. Among them
 C++ is a representative that accepts the triangle inheritance and
 resolves the ambiguity by \emph{static dispatching}. However, C++ has
 limited support for virtual methods with unintentional conflicts, and
 it will often throw errors when composing them. This is again
 unsatisfactory because virtual methods are pervasive in OOP and used 
-for code reuse and extensibility.
+for code reuse and extensibility. A problem with the C++ approach is
+that it can only use either static or dynamic dispatching separately, but dealing
+with unintentional method conflicts seems to require a combination of both. 
 
-Having tolerance for unintentional method conflicts does not mean to
-sacrifice extensibility, hence in contrast with static dispatch and
-dynamic dispatch, we propose a third approach, which looks like a
-combination of both, called \textit{hierarchical dispatch}. By
-hierarchical dispatch, the method binder will look at both the \emph{static
-type} and the \emph{dynamic type} of the receiver during runtime. When there
-are multiple branches that cause unintentional conflicts, the static
-type can specify one branch among them for unambiguity, and the
-dynamic type helps to find the most specific (the newest)
-implementation. In that case both unambiguity and extensibility are
-preserved. To present this idea, we introduce a formalized model in
-Section~\ref{sec:formalization} based on Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
+%Having tolerance for unintentional method conflicts does not mean to
+%sacrifice extensibility, hence in contrast with static dispatch and
+%dynamic dispatch, 
+
+This paper proposes \textit{hierarchical dispatch}: a novel approach
+to method dispatching, which combines static and dynamic
+information. Using hierarchical dispatch, the method binder will look
+at both the \emph{static type} and the \emph{dynamic type} of the
+receiver during runtime. When there are multiple branches that cause
+unintentional conflicts, the static type can specify one branch among
+them for unambiguity, and the dynamic type helps to find the most
+specific implementation. In that case both unambiguity and
+extensibility are preserved. To present this idea, we introduce a
+formalized model in Section~\ref{sec:formalization} based on
+Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
 proofs for type soundness. In the model we also propose
-\textit{partial overrides}, where a method refinement can be applied
-only to one branch. Our model generalizes the trait
-model by providing additional support to the triangle inheritance.
+\textit{partial overrides}, where method overriding can be applied
+only to one branch of the class hierarchy. Our model can be viewed as
+a generalization of the trait model by providing additional support to
+the triangle inheritance.
 
 In summary, our contributions are: \haoyuan{will have prototype implementation in Scala if we still have time.}
 \begin{itemize}
 	\item \textbf{Hierarchical dispatch:} which integrates both the static type and dynamic type for method dispatch, and hence
 	ensures unambiguity as well as extensibility.
-	\item \textbf{Partial overrides:} a novel notion that allows method refinements on individual branches.
+	\item \textbf{Partial overrides:} a novel notion that allows
+          method overrides on individual branches of the class hierarchy.
 	\item \textbf{\name:} a formalized model based on Featherweight Java, supporting the above features. Some theorems and their proofs
-	are attached to confirm the type soundness (unambiguity?) of the model.
+	are attached to confirm the type soundness (unambiguity?) of
+        the model.\bruno{Anything about unambiguity?}
 \end{itemize}
 
  
