@@ -1,10 +1,6 @@
 \section{A Running Example: DrawableDeck}~\label{sec:overview}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
-\caption{DrawableLoggingDeck UML}\label{fig:subtyping}
-\end{figure*}
+
 \bruno{I've said this several times in the past: please use proper UML
 notation! The UML arrows are not right.}
 \bruno{This figure is never referred to in the text! You need to talk 
@@ -155,9 +151,16 @@ func(d);                 // calling draw() in Drawable
 Static dispatch in C++ finds out and invokes the most specific method ``by need''.
 
 \subsection{Problem 2: Dynamic Dispatch for Code Reuse}
+\begin{figure*}[t]
+\centering
+\includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
+\caption{DrawableLoggingDeck UML}\label{fig:drawableloggingdeck}
+\end{figure*}
+
 On the other hand, we also need dynamic dispatch as it is essential and widely used in object-oriented programming.
 C++ has the flexibility for choosing either way of dispatch by the \kwvirtual{} keyword.
-Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance, here we redefine \lstinline|Deck| to support
+Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance in Figure~\ref{fig:drawableloggingdeck}, 
+we redefine \lstinline|Deck| to support
 both \lstinline|draw()| and another operation called \lstinline|shuffleAndDraw()|:
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
