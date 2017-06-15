@@ -1,5 +1,13 @@
 \section{Formalization}~\label{sec:formalization}
 
+\bruno{There is quite a bit of teminology that we need to be careful
+  to introduce earlier in the paper. For example: ``original
+  method''. We are also still using terminology such as ``method
+  update'', which I think is now outdated.
+We need to read the paper carefully enough to spot
+  possible uses of terminology which may make sense to us, but 
+we have not introduced properly.}
+
 In this section, we present a formalization of our \MIM{} calculus, based on
 a minimal subset of Java 8 interfaces following Featherweight Java style~\cite{Igarashi01FJ}.
 The syntax, typing rules and small-step
@@ -43,7 +51,7 @@ Finally an expression can also be annotated with its static type. But \emph{anno
 hence they are not supposed to appear in the source program. A value
 ``$\langle I \rangle~\new J$''
 is the final result of multple reduction steps evaluating an
-expression. Such value is represents an object instance
+expression. Such value represents an object instance
 of $J$ with an annotated static type $I$.
 
 \begin{figure*}[t]
@@ -66,15 +74,15 @@ e.I::m(\overline{e}) \mid
 \end{array}
 \end{array}
 \end{displaymath}
-\caption{Syntax of name{}.}\label{fig:syntax}
+\caption{Syntax of \name{}.}\label{fig:syntax}
 \end{figure*}
 
 \subsection{Subtyping and Typing Rules}
-The subtyping of \MIM{} consists of only a few rules shown in Figure~\ref{fig:subtyping}.
+The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
 In short, subtyping relations are built from the inheritance in interface
-declarations. They hold both reflexivity and transitivity.
+declarations. Subtyping is both reflexive and transitive.
 
-Details of type-checking rules are displayed in Figure~\ref{fig:typingrules}, including expression
+Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
 typing, well-formedness of methods and interfaces. As a convention, an environment
 $\Gamma$ is maintained to store the types of variables, together with ``this'' type, namely
 the enclosing type. The three rules for method invocation, \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-SuperInvk)}
@@ -85,7 +93,7 @@ have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver
 path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 The method typing rule \textsc{(T-Method)} is more interesting, since the method can either be an original implementation or a partial override.
-Besides static type-checking for the return expression,
+Besides type-checking the return expression,
 we further use the helper function $\mostSpecific$ to ensure that the method update is legal. The formal definition is again in Section~\ref{subsec:auxdefs}.
 By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is a partial override, it should not overlap a total override, otherwise
 the total override would be returned instead of $J$.
@@ -98,14 +106,7 @@ in any case. The interface check is responsible to capture ambiguity during comp
 \begin{figure*}[t]
 \begin{mathpar}
 	\framebox{$ I <: J $} \hspace{.5in} \subid \\
-	\subtrans \hspace{.5in} \subextends
-\end{mathpar}
-\caption{Subtyping.}\label{fig:subtyping}
-\end{figure*}
-
-
-\begin{figure*}[t]
-\begin{mathpar}
+	\subtrans \hspace{.5in} \subextends \\
 	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
 	\tvar \\
 	\tinvk \\
@@ -115,32 +116,43 @@ in any case. The interface check is responsible to capture ambiguity during comp
 	\tmethod \\
 	\tintf
 \end{mathpar}
-\caption{Typing rules.}\label{fig:typingrules}
-\end{figure*}
+\caption{Typing and subtyping rules.}\label{fig:typingrules}
+\end{figure*}\bruno{do not use the notation ``-'' in T-METHOD, or
+  otherwise explain it.}
 
 \subsection{Small-step Semantics and Congruence}
-Figure~\ref{fig:smallstep} and Figure~\ref{fig:congruence} define small-step semantic rules and congruence rules,
-respectively. When evaluating an expression, they are invoked recursively and
-alternately to produce a single value in the end. The small-step semantics \textsc{(S-Invk)}, \textsc{(S-PathInvk)} and \textsc{(S-SuperInvk)} behave similarly, each corresponds to
-one kind of method invocation. They all invoke \mbody{} for method body lookup. Generally, one can understand $\mbody(m, I, J)$ in a way that it finds the most specific body of method $m$, when the receiver has dynamic type $I$ and static type $J$.
-Notice, for example in \textsc{(S-Invk)}, that when ``$\new{I}$'' replaces ``\lstinline|this|'', its static type should be the interface to which $m$ is dispatched. Therefore we also keep the interface type in the definition of \mbody. This point is consistent with the last paragraph in
-Section~\ref{subsec:solutionmim}.
 
-On the other hand, there is a relationship between path invocation and the regular method invocation, and it can be observed from the similarity
-between their semantic rules in Figure~\ref{fig:smallstep}. For any \lstinline|e.I::m()|, the result of evaluation remains unchanged if we set the static type of \lstinline|e| to be $I$. This can be done by an implicit cast, that is, we can define a function with one parameter type $I$, then \lstinline|e| is passed to that function and directly returned. It is just equivalent if we write explicit casts like \lstinline|((I) e).m()| in languages like Java.
+Figure~\ref{fig:smallstep} defines the small-step semantic and
+congruence rules, respectively. When evaluating an expression, they
+are invoked recursively and alternately to produce a single value in
+the end. The small-step semantics rules \textsc{(S-Invk)},
+\textsc{(S-PathInvk)} and \textsc{(S-SuperInvk)} behave similarly:
+each corresponds to one kind of method invocation. They all invoke
+\mbody{} for method body lookup. Generally, one can understand
+$\mbody(m, I, J)$ in a way that it finds the most specific body of
+method $m$, when the receiver has dynamic type $I$ and static type
+$J$.  Notice, for example in \textsc{(S-Invk)}, that when
+``$\new{I}$'' replaces ``\lstinline|this|'', its static type should be
+the interface to which $m$ is dispatched. Therefore we also keep the
+interface type in the definition of \mbody. This point is consistent
+with the last paragraph in Section~\ref{subsec:solutionmim}.
+
+On the other hand, there is a relationship between path invocation and
+the regular method invocation, and it can be observed from the
+similarity between their semantic rules in
+Figure~\ref{fig:smallstep}. For any \lstinline|e.I::m()|, the result
+of evaluation remains unchanged if we set the static type of
+\lstinline|e| to be $I$. This can be done by an implicit cast, that
+is, we can define a function with one parameter type $I$, then
+\lstinline|e| is passed to that function and directly returned. This
+is equivalent to writing explicit casts like \lstinline|((I) e).m()|
+in languages like Java.
 
 \begin{figure*}[t]
 \begin{mathpar}
 	\sinvk \\
 	\spathinvk \\
-	\ssuperinvk
-\end{mathpar}
-\caption{Small-step semantics.}\label{fig:smallstep}
-\end{figure*}
-
-
-\begin{figure*}[t]
-\begin{mathpar}
+	\ssuperinvk \\
 	\creceiver \hspace{.5in}
 	\cpathreceiver \\
 	\cargs \\
@@ -150,18 +162,24 @@ between their semantic rules in Figure~\ref{fig:smallstep}. For any \lstinline|e
 	\cfreduce \\
 	\cannoreduce
 \end{mathpar}
-\caption{Congruence.}\label{fig:congruence}
+\caption{Small-step semantics.}\label{fig:smallstep}
 \end{figure*}
 
+\begin{comment}
+\begin{figure*}[t]
+\begin{mathpar}
+\end{mathpar}
+\caption{Congruence.}\label{fig:congruence}
+\end{figure*}
+\end{comment}
 
 
 \subsection{Auxiliary Definitions}\label{subsec:auxdefs}
 
-To make our formalization concise and expressive, we have defined a list of
-auxiliary functions, collected by Figure~\ref{fig:auxfunc}. To begin with, we
+The auxiliary definitions used in our formalization are presented in 
+Figure~\ref{fig:auxfunc}. To begin with, we
 introduce the basic functions: $\ext, \overrideSet$ and $\prune$. $\ext(I, J)$
-simply indicates that interface $I$ directly extends interface $J$. Compared to
-to this is a more general case $I <: J$, meaning that $I$ is a subtype of $J$.
+simply indicates that interface $I$ directly extends interface $J$. 
 $\overrideSet(I, J)$ returns a set of methods defined in $I$ that have ``$\kwoverride \; J$''
 in their signatures. Notice that $\overrideSet(I, I)$ is a special representative of
 the ``originally-defined'' method set from $I$. The $\prune$ function takes a set of
@@ -230,7 +248,8 @@ $\mostSpecific$ is an auxiliary function that finds the most specific original i
 	\item It is along path $J$, meaning that it is either a supertype or a subtype of $J$ (including $J$ itself);
 	\item It does not have a subtype in the same set, because we have used $prune$ to filter out all super types.
 \end{itemize}
-We could have put $set1$ and $set2$ together, but the current definition leads a clearer illustration.
+We could have put $set1$ and $set2$ together, but the current
+definition is clearer.
 
 The $\mostSpecific$ function only focuses on original method implementations, all the method updates are omitted during that time. On the other hand, another auxiliary function $\mostSpecificOverride(m, I, J)$ has the assumption that $J$ defines an original $m$, and this function tries to find the most specific implementations that partially overrides such an $m$. Just as $\mostSpecific$, $\mostSpecificOverride$ also returns the set of interfaces after pruning. An interface belongs to the return set if and only if:
 \begin{itemize}
@@ -251,7 +270,7 @@ To calculate $\mbody(m, I_d, I_s)$:
 \begin{itemize}
 	\item First, it invokes $\mostSpecific(m, I_d, I_s)$ and returns a set.
 	\item If $\mostSpecific$ returns a singleton set $\{I\}$, then it is good, otherwise $\mbody$ is undefined in
-	this case. The set $\{I\}$ implies that we will use the $m$ from $I$ without ambiguity. But moreover, we have to invoke $\mostSpecificOverride(m, I_d, I)$, to check if there are updated versions of $m$ between $I_d$ and $I$. Again we forbid ambiguity, so the expected set after pruning is also a singleton set $\{J\}$.
+	this case. The set $\{I\}$ implies that we will use the $m$ from $I$ without ambiguity. Moreover, we have to invoke $\mostSpecificOverride(m, I_d, I)$, to check if there are updated versions of $m$ between $I_d$ and $I$. Again we forbid ambiguity, so the expected set after pruning is also a singleton set $\{J\}$.
 	\item Finally, we fetch the implementation of $m$ in interface $J$ and return its related information.
 \end{itemize}
 The definition of $\mtype$ used in typing rules simply relies on $\mbody$. In short,
@@ -275,12 +294,12 @@ $mbody(m, I)$ algorithm:
 
 \subsubsection{Examples}
 
-Examples on $\mbody$ are shown in Figure~\ref{fig:examplesmbody} for a better understanding. Note that we use \lstinline|m| to denote an original method, and ``\lstinline|m|$\uparrow$\lstinline|A|'' for a partial override on \lstinline|A|. For each small example, the result
+Examples for $\mbody$ are shown in Figure~\ref{fig:examplesmbody}. Note that we use \lstinline|m| to denote an original method, and ``\lstinline|m|$\uparrow$\lstinline|A|'' for a partial override on \lstinline|A|. For each small example, the result
 gives the interface to which $m$ is dispatched. (a) is a basic model for unintended method conflicts; (b) and (c) demonstrate
 that hierarchical dispatch can find the most specific original method and partial override. More interesting are the two bad examples
 (d) and (e), they both fail on $\mbody$. (d) is the well-known diamond inheritance, which our model also forbids, and (e) is similar to
 (d) because the two partial overrides are working on the same operation. Both counter-examples imply that \lstinline|new D().A::m()| will
-lead to ambiguity, and in order for type soundness, both have to be denied by the type checker. It has been guaranteed by the interface check
+lead to ambiguity, and in order for type soundness, both have to be denied by the type checker. This is guaranteed by the interface check
 \textsc{(T-Intf)} in Figure~\ref{fig:typingrules}.
 
 \subsection{Properties}
