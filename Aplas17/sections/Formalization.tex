@@ -216,7 +216,7 @@ none of them has a subtyping to one another, since all super types have been rem
    	\includegraphics[height=3cm]{pics/p5.pdf}\hspace{4pt} \\ 
    	(d) $\mbody(m,D,A) = \keyword{undefined}$\ \ \  & (e) $\mbody(m,D,A) = \keyword{undefined}$
    \end{tabular}
-	\caption{Examples on $\mbody$.}\label{fig:examplesmbody}
+	\caption{Examples on $\mbody$. ``$\uparrow$'' stands for partial overrides.}\label{fig:examplesmbody}
 	%\saveSpaceFig
 \end{figure*}
 
@@ -274,7 +274,7 @@ $mbody(m, I)$ algorithm:
 
 \subsubsection{Examples}
 
-Examples on $\mbody$ are shown in Figure~\ref{fig:examplesmbody} for a better understanding. For each small example, the result
+Examples on $\mbody$ are shown in Figure~\ref{fig:examplesmbody} for a better understanding. Note that we use \lstinline|m| to denote an original method, and ``\lstinline|m|$\uparrow$\lstinline|A|'' for a partial override on \lstinline|A|. For each small example, the result
 gives the interface to which $m$ is dispatched. (a) is a basic model for unintended method conflicts; (b) and (c) demonstrate
 that hierarchical dispatch can find the most specific original method and partial override. More interesting are the two bad examples
 (d) and (e), they both fail on $\mbody$. (d) is the well-known diamond inheritance, which our model also forbids, and (e) is similar to
