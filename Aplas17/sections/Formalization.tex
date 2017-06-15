@@ -6,44 +6,45 @@ The syntax, typing rules and small-step
 semantics are included below.
 
 \subsection{Syntax}
-
 Figure~\ref{fig:syntax} shows the syntax of \MIM{}. The multiple
 inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
 method implementations via default methods. This feature is quite
 closely related to \emph{traits}~\cite{scharli03traits}.  To demonstrate how
-unintentional method conflicts are untangled in \MIM{}, we present the
-calculus in a straightforward way, hence we only focus on a small
+unintentional method conflicts are untangled in \MIM{}, we only focus on a small
 subset of the interface model. For example, all the methods declared
 in an interface are default methods, that is to say, they always
-provide default implementations.  From this point we can view that we
-are actually modelling a class model that supports multiple
-inheritance. Then it is straightforward to do object creation like
-$\new I$. Fields and primitive types are not modelled as well.
+provide default implementations. 
+%From this point we can view that we
+%are actually modelling a class model that supports multiple
+%inheritance. 
+Object creation is directly supported via $\new I$. 
+Fields and primitive types are not modelled as well.
 
-We use uppercase letters like $I, J, K$ to represent identifiers for
-interfaces. By multiple inheritance, an interface can have a set of
-super interfaces, where such a set can be empty. Inside an interface
-is a set of method declarations. Each method body holds a return
-statement. As seen in Figure~\ref{fig:syntax}, we have introduced the
+We use uppercase letters like $I, J, K$ for interface identifiers. 
+Due to multiple inheritance, an interface can have a set of
+super interfaces, where such a set can be empty. Each interface
+has a set of method declarations. Each method body returns
+an expression. As seen in Figure~\ref{fig:syntax}, we have introduced the
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''; otherwise
 it is a partial override.
-Again for simplicity, overloading is not modelled for methods, which
+For simplicity, overloading is not modelled for methods, which
 implies we can uniquely identify a method by its name.
 
-An expression can be a variable, a method invocation, an object
-creation, furthermore, a path-invocation like
+Expressions can be standard constructs such as variables, method
+invocation, or object creation. A novel type of expressions are path-invocations like
 ``$e.I::m(\overline{e})$'', meaning that the dynamically binded
 implementation for method $m$ should be along the path $I$. Another
-case is the super-invocation, enabling a method to access an old
+interesting expression are super-invocations, which enable a method to access an old
 implementation from the specified super type. Hence a super-invocation
 can only be used inside an interface definition.
-Finally an expression can also be annotated with its static type. But annotated expressions are only intended for the semantic rules,
-hence they are not supposed to appear in the source program. A value is the final result of semantic
-rules on evaluating an expression, which looks like ``$<I> \new J$''. It is exactly an object instance
-of $J$ with annotated static type $I$.
-
+Finally an expression can also be annotated with its static type. But \emph{annotated expressions are only intended for the semantic rules},
+hence they are not supposed to appear in the source program. A value
+``$\langle I \rangle~\new J$''
+is the final result of multple reduction steps evaluating an
+expression. Such value is represents an object instance
+of $J$ with an annotated static type $I$.
 
 \begin{figure*}[t]
 \begin{displaymath}
@@ -55,17 +56,17 @@ of $J$ with annotated static type $I$.
 e.m(\overline{e}) \mid
 \new{I} \mid
 e.I::m(\overline{e}) \mid
-\kwsuper.I::m(e) \; \mid \; <I> e \\
+\kwsuper.I::m(e) \; \mid \; \langle I \rangle~e \\
 \text{Context}      & \Gamma & \Coloneqq & \overline{x:I} \\
-\text{Values}       & v & \Coloneqq & <I>\new{J} \\
-\\
-\text{Interface names} & I, J, K & & \\
-\text{Method names} & m & & \\
-\text{Variable names} & x & &
+\text{Values}       & v & \Coloneqq & \langle I \rangle~\new{J} \\
+%%\\
+%%\text{Interface names} & I, J, K & & \\
+%%\text{Method names} & m & & \\
+%%\text{Variable names} & x & &
 \end{array}
 \end{array}
 \end{displaymath}
-\caption{Syntax.}\label{fig:syntax}
+\caption{Syntax of name{}.}\label{fig:syntax}
 \end{figure*}
 
 \subsection{Subtyping and Typing Rules}
