@@ -24,12 +24,12 @@ The above mentioned models/languages support multiple inheritance, and they hand
 simply disallowing two methods with the same signature from two different units to coexist. The ambiguity is resolved either
 by programmers explicitly or by setting a linearised composition. This is the common drawback of the above mentioned models versus our model.
 
-\subsection{Resolving Unintended Method Conflicts}
-There are still a few languages that partly realize the problem. They provide limited support for unintended conflicting methods. 
+\subsection{Resolving Unintentional Method Conflicts}
+There are still a few languages that partly realize the problem. They provide limited support for unintentional conflicting methods. 
 
 \noindent {\bf C++ model.}
 C++ supports very flexible inheritance models and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
-It allows unintended conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. For example, given the following code
+It allows unintentional conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. For example, given the following code
 \begin{lstlisting}[language=Java]
 class A { public: void m() {cout << "MA" << endl;} };
 class B { public: void m() {cout << "MB" << endl;} };
