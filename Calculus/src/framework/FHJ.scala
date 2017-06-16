@@ -93,6 +93,10 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       val checkType = e.checkType(env)
       if (checkType.isEmpty) Left("Expression type-check failed") else Right(checkType.get)
     }
+    def run: Option[Value] = {
+      if (programCheck.isLeft) None
+      else Some(e.eval(new {val info = collectInfo.get; val gamma = Map[String, String]()}))
+    }
   }
   
   case class TypeDef(name: String, sups: List[String], methods: List[MethDef]) {
@@ -126,18 +130,28 @@ object FHJ extends StandardTokenParsers with PackratParsers {
   }
   
   abstract class Expr {
+    def copy: Expr
     def checkType(env: Env): Option[String]
+    def subst(map: Map[String, Expr]): Expr
+    def eval(env: Env): Value
   }
   
   case class Var(n: String) extends Expr {
+    def copy = Var(n)
     def checkType(env: Env) = env.gamma.get(n)
+    def subst(map: Map[String, Expr]) = if (map.contains(n)) map.get(n).get.copy else Var(n)
+    def eval(env: Env) = throw new Exception("Error: Var.eval.")
   }
   
   case class New(o: String) extends Expr {
+    def copy = New(o)
     def checkType(env: Env) = if (env.info.table.contains(o)) Some(o) else None
+    def subst(map: Map[String, Expr]) = New(o)
+    def eval(env: Env) = new Value(o, o)
   }
   
   case class Invk(e: Expr, m: String, args: List[Expr]) extends Expr {
+    def copy = Invk(e.copy, m, args.map(x => x.copy))
     def checkType(env: Env): Option[String] = {
       val eT = e.checkType(env)
       if (eT.isEmpty) return None
@@ -148,9 +162,20 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       val argsMismatch = mtype.get._1.zip(argsT).exists(p => p._2.isEmpty || !env.info.subType(p._2.get, p._1))
       if (argsMismatch) None else Some(mtype.get._2)
     }
+    def subst(map: Map[String, Expr]) = Invk(e.subst(map), m, args.map(x => x.subst(map)))
+    def eval(env: Env) = {
+      val eValue = e.eval(env)
+      val (tempI, tempJ) = (eValue.id, eValue.is)
+      val argsValue = args.map(x => x.eval(env))
+      val mbody = env.info.mbody(m, tempI, tempJ).get
+      val map: Map[String, Expr] = Map("this" -> AnnoExpr(mbody._1, New(tempI))) ++
+        mbody._2.zip(argsValue).map(p => p._1._2 -> AnnoExpr(p._1._1, New(p._2.id))).toMap
+      AnnoExpr(mbody._3._1, mbody._3._2.subst(map)).eval(env)
+    }
   }
   
   case class PathInvk(e: Expr, i: String, m: String, args: List[Expr]) extends Expr {
+    def copy = PathInvk(e.copy, i, m, args.map(x => x.copy))
     def checkType(env: Env): Option[String] = {
       val eT = e.checkType(env)
       if (eT.isEmpty) return None
@@ -162,9 +187,20 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       val argsMismatch = mtype.get._1.zip(argsT).exists(p => p._2.isEmpty || !env.info.subType(p._2.get, p._1))
       if (argsMismatch) None else Some(mtype.get._2)
     }
+    def subst(map: Map[String, Expr]) = PathInvk(e.subst(map), i, m, args.map(x => x.subst(map)))
+    def eval(env: Env) = {
+      val eValue = e.eval(env)
+      val (tempI, tempK) = (eValue.id, i)
+      val argsValue = args.map(x => x.eval(env))
+      val mbody = env.info.mbody(m, tempI, tempK).get
+      val map: Map[String, Expr] = Map("this" -> AnnoExpr(mbody._1, New(tempI))) ++
+        mbody._2.zip(argsValue).map(p => p._1._2 -> AnnoExpr(p._1._1, New(p._2.id))).toMap
+      AnnoExpr(mbody._3._1, mbody._3._2.subst(map)).eval(env)
+    }
   }
   
   case class SuperInvk(i: String, m: String, args: List[Expr]) extends Expr {
+    def copy = SuperInvk(i, m, args.map(x => x.copy))
     def checkType(env: Env): Option[String] = {
       val thisType = env.gamma.get("this")
       if (thisType.isEmpty) return None
@@ -176,11 +212,28 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       val argsMismatch = mtype.get._1.zip(argsT).exists(p => p._2.isEmpty || !env.info.subType(p._2.get, p._1))
       if (argsMismatch) None else Some(mtype.get._2)
     }
+    def subst(map: Map[String, Expr]) = SuperInvk(i, m, args.map(x => x.subst(map)))
+    def eval(env: Env) = {
+      val tempK = i
+      val argsValue = args.map(x => x.eval(env))
+      val mbody = env.info.mbody(m, tempK, tempK).get
+      val map: Map[String, Expr] = Map("this" -> AnnoExpr(mbody._1, New(tempK))) ++
+        mbody._2.zip(argsValue).map(p => p._1._2 -> AnnoExpr(p._1._1, New(p._2.id))).toMap
+      AnnoExpr(mbody._3._1, mbody._3._2.subst(map)).eval(env)
+    }
   }
   
   case class AnnoExpr(i: String, e: Expr) extends Expr {
+    def copy = AnnoExpr(i, e.copy)
     def checkType(env: Env) = throw new Exception("Error: AnnoExpr.checkType.")
+    def subst(map: Map[String, Expr]) = AnnoExpr(i, e.subst(map))
+    def eval(env: Env) = e match {
+      case New(o) => Value(i, o)
+      case e0 => Value(i, e0.eval(env).id)
+    }
   }
+  
+  case class Value(is: String, id: String)
   
   lexical.reserved += ("interface", "extends", "return", "new", "override", "super")
   lexical.delimiters += ("(", ")", "{", "}", ",", ".", "::", ";")
@@ -239,6 +292,6 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       "} " +
       "new C().A::m() ";
     val p: Program = parse(program)
-    println(p.programCheck)
+    println(p.run)
   }
 }
