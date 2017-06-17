@@ -46,7 +46,7 @@
   \kwinterface \; #1 \; \kwextends \; \overline{#2} \; {\{} \overline{#3} {\}}
 }
 \newcommand{\method}[6]{
-  #1 \; #2 (\overline{#3 \; #4}) \; \kwoverride \; #5 \; {\{} \kwreturn \; #6 ; {\}}
+  #1 \; #2 (\overline{#3} \; \overline{#4}) \; \kwoverride \; #5 \; {\{} \kwreturn \; #6 ; {\}}
 }
 
 \newcommand{\subid} {
@@ -112,9 +112,10 @@
 \newcommand{\tmethod} {
 \inferrule* [left=(T-Method)]
     {  I <: J \\
-	    \judgeewf {\overline{x}:\overline{I_X}, this:I	} {e_0:\_ <: I_E} \\
     \mostSpecific(m, I, J) = \{J\} \\
-    \mtype(m, J) = \overline{I_X} \to I_E
+    \mtype(m, J) = \overline{I_X} \to I_E \\
+        \judgeewf {\overline{x}:\overline{I_X}, this:I  } {e_0:I_0} \\
+        I_0 \subtype I_E
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
     }
     {\method{I_E}{m}{I_X}{x}{J}{e_0} \text{ OK IN } I}
@@ -140,22 +141,22 @@
 \newcommand{\sinvk} {
 \inferrule* [left=(S-Invk)]
 { \mbody(m, I, J) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
-{\left(\angl{J}\new{I}\right).m(\overline{\angl{I_E} e}) \to
-    \angl{I'_E}[\overline{\angl{I_X} e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
+{\left(\angl{J}\new{I}\right).m(\overline{\angl{I_E}} \overline{e}) \to
+    \angl{I'_E}[\overline{\angl{I_X}} \overline{e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\spathinvk} {
 \inferrule* [left=(S-PathInvk)]
 {\mbody(m, I, K) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
-{\left(\angl{J}\new{I}\right).K::m(\overline{\angl{I_E} e}) \to
-    \angl{I'_E}[\overline{\angl{I_X} e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
+{\left(\angl{J}\new{I}\right).K::m(\overline{\angl{I_E}} \overline{e}) \to
+    \angl{I'_E}[\overline{\angl{I_X}} \overline{e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\ssuperinvk} {
 \inferrule* [left=(S-SuperInvk)]
 {\mbody(m, K, K) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
-{\kwsuper.K::m(\overline{\angl{I_E} e}) \to
-    \angl{I'_E}[\overline{\angl{I_X} e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
+{\kwsuper.K::m(\overline{\angl{I_E}} \overline{e}) \to
+    \angl{I'_E}[\overline{\angl{I_X}} \overline{e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\deff} {
