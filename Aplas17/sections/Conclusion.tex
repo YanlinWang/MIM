@@ -6,9 +6,8 @@ and type safety, whereas \MIM{} uses a different solution called hierarchical di
 Such an approach not only offers great code reuse like dynamic dispatch, but also ensures unambiguity by
 our algorithm for method resolution. This paper also introduces method updates for refinements on branches individually.
 \MIM{} is formalized with a basis on Featherweight Java, and supported
-by a few theorems.
+by a few theorems. The prototype is implemented in Scala as a simple interpreter.
 
-Our model can certainly be improved at some aspects. We did not formalize fields, though it is difficult to
-put state and multiple inheritance together []. For simplicity, we did not formalize other common features including
-method overloading, casts, covariant return types, and so on. Moreover, we restrict method updates to target only at the
-original methods. Potentially a looser condition can better support encapsulation and modularity with respect to code design.
+Our model can certainly be improved at some aspects. We did not formalize fields as in Featherweight Java for simplicity.
+And we did not formalize other common features including
+method overloading, casts, covariant return types, and so on, some of which are orthogonal in the design space. Moreover, we restrict that hierarchical overriding can only work on original methods. Potentially a looser condition can better support encapsulation and modularity with respect to code design.

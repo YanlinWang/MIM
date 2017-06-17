@@ -92,7 +92,7 @@ only to one branch of the class hierarchy. Our model can be viewed as
 a generalization of the trait model by providing additional support to
 the triangle inheritance.
 
-In summary, our contributions are: \haoyuan{will have prototype implementation in Scala if we still have time.}
+In summary, our contributions are:
 \begin{itemize}
 	\item \textbf{Hierarchical dispatch algorithm:} an algorithm that integrates both the static type and dynamic type for method dispatch, and hence
 	ensures unambiguity as well as extensibility.
@@ -100,6 +100,7 @@ In summary, our contributions are: \haoyuan{will have prototype implementation i
           methods to override on individual branches of the class hierarchy.
 	\item \textbf{\name:} a formalized model based on Featherweight Java, supporting the above features. Some theorems and their proofs
 	are attached to confirm the type soundness of the model.\bruno{Anything about unambiguity?}
+	\item \textbf{Prototype Implementation\footnote{Available in supplementary material attached to the submission.}:} a simple interpreter implemented in Scala that follows our formalization rules, incorporating parsing, type-checking and semantic evaluation.\haoyuan{also mention in formalization.}
 \end{itemize}
 
  
