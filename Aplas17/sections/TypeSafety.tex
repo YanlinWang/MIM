@@ -10,9 +10,9 @@ $\textit{If } \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_e \; e),
  \begin{proof}~\\
  $\textit{The base case: if } m \textit{ is defined in } I, \textit{ then it is easy since } m 
  \textit{ is defined in } I \textit{ and } 
- \judgeewf {\overline{x}:\overline{I_x}, \kwthis : I} {e : I_e} \textit{ by (T-METHOD)}.
- \textit{ The induction step is also straightforward. }
- $
+ \judgeewf {\overline{x}:\overline{I_x}, \kwthis : I} {e : I_e}, \textit{by the rule \textsc{(T-Method)}}.
+ \textit{The induction step is also straightforward.} 
+ $ 
  \end{proof}
 
 
@@ -58,7 +58,7 @@ By induction hypothesis, there are some $I_0'$ and $\overline{I_e'}$ such that
 By lemma~\ref{lemma2}, 
     $mtype(m, I_0') = \overline{I_e} \rightarrow J$,
 then $\overline{I_e'} \subtype \overline{I_e}$ by the transitivity of $\subtype$.
-Therefore, by the rule (T-INVK), 
+Therefore, by the rule \textsc{(T-Invk)}, 
     $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.m([\overline{y}/\overline{x}]\overline{e}) : J}$.
 
 \noindent \textbf{Case PathInvk.}
@@ -80,7 +80,7 @@ Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be simi
 let \[ e = \angl{J}\new I.m(\overline{\angl{I_e}}\overline{e}) \] 
 Suppose \[ \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
 then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{J}\new I/\kwthis ] e_0 \] 
-By rules (T-NEW) and (T-INVK), 
+By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
   \[ \judgeewf \Gamma {\new I:I} \quad 
      \mtype(m, I, J) = \overline{I_x} \rightarrow I_{e_0} \quad 
      \judgeewf \Gamma {\overline{e} : \overline{Y_E}} \quad
@@ -101,7 +101,7 @@ So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
 let \[ e = \angl{J}\new I.K::m(\overline{\angl{I_e}} \overline{e}) \]  
 Suppose \[ \mbody(m, I, K) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
 then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{K}\new I/\kwthis ] e_0 \] 
-By rules (T-NEW) and (T-INVK), 
+By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
   \[ \judgeewf \Gamma {\new I:I} \quad 
      \mtype(m, I, K) = \overline{I_x} \rightarrow I_{e_0} \quad 
      \judgeewf \Gamma {\overline{e} : \overline{Y_E}} \quad
@@ -122,7 +122,7 @@ So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
 let \[ e = \kwsuper.K::m(\overline{\angl{I_e}} \overline{e}) \]   
 Suppose \[ \mbody(m, K, K) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
 then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}] e_0 \] 
-By rules (T-NEW) and (T-INVK), 
+By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
   \[ 
      \mtype(m, K, K) = \overline{I_x} \rightarrow I_{e_0} \quad 
      \judgeewf \Gamma {\overline{e} : \overline{Y_E}} \quad
@@ -144,8 +144,8 @@ So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
 \subsubsection{Proof for Theorem~\ref{theorem_progress}}
 \begin{proof}~\\
 \noindent \textbf{Case 1.}
-Given that $e$ is well-typed, by rule (T-INVK), $\mtype(m, J)$ is defined.
-By rule (T-INTF) for interface $I$,
+Given that $e$ is well-typed, by rule \textsc{(T-Invk)}, $\mtype(m, J)$ is defined.
+By rule \textsc{(T-Intf)} for interface $I$,
     \[ \forall J >: I, m, \mtype(m, J) \text{ is defined } \Rightarrow \mbody(m, I, J) \text{ is defined } \]
 So straightforwardly, we get $ \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and
          $\num{\overline{x}} = \num{\overline{e}}$ for some $J', \overline{I_x}, \overline{x}, I_e'$ and $e_0$
