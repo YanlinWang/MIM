@@ -190,8 +190,8 @@ none of them has a subtyping to one another, since all super types have been rem
 	\inferrule* [left=]
 		{  \mostSpecific(m, I_d, I_s) = \{I\} \\
 			\mostSpecificOverride(m, I_d, I) = \{J\} \\
-			\kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_E}{m}{I_X}{x}{I}{e_0}\ldots\}}
-		{\mbody(m, I_d, I_s) = (J, \overline{I_X} \; \overline{x}, I_E \; e_0)}
+			\kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_e}{m}{I_x}{x}{I}{e_0}\ldots\}}
+		{\mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; e_0)}
 	
 	\inferrule* [left=]
 	{ set1 = \; \{ K <: J \; $and$ \; K >: I \; | \; m \in \overrideSet(K, K) \} \\
@@ -213,7 +213,7 @@ none of them has a subtyping to one another, since all super types have been rem
 	{\ext(I, J)}
 	
 	\inferrule* [left=]
-	{   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_E \; m(\overline{I_X} \; \overline{x}) \;
+	{   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
 		\kwoverride \; J \ldots \} }
 	{m \in \overrideSet(I, J)}
 	\end{mathpar}
@@ -273,7 +273,7 @@ To calculate $\mbody(m, I_d, I_s)$:
 	\item Finally, we fetch the implementation of $m$ in interface $J$ and return its related information.
 \end{itemize}
 The definition of $\mtype$ used in typing rules simply relies on $\mbody$. In short,
-$$\mbody(m, I, I) = (J, \overline{I_x}\ \overline{x}, I_E\ e) \ \Longrightarrow\ \mtype(m, I) = \overline{I_x}\rightarrow I_E$$
+$$\mbody(m, I, I) = (J, \overline{I_x}\ \overline{x}, I_e\ e) \ \Longrightarrow\ \mtype(m, I) = \overline{I_x}\rightarrow I_e$$
 
 \begin{comment}
 $mbody(m, I)$ algorithm:
@@ -321,15 +321,15 @@ See Appendix~\ref{appendix_proof}.
 \begin{theorem}[Progress]~\label{theorem_progress}
 $\textit{Suppose } e \textit{ is a well-typed expression } $ \\
 \begin{enumerate}
-\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).m(\overline{\angl{I_E}} \; \overline{e})$ as a subexpression,
-    then $ \emph{\mbody}(m, I, J) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
-         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$.
-\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).K::m(\overline{\angl{I_E}} \overline{e})$ as a subexpression,
-    then $ \emph{\mbody}(m, I, K) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
-         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$.
-\item If $e$ includes $\emph{\kwsuper}.K::m(\overline{\angl{I_E}} \overline{e})$ as a subexpression,
-    then $ \emph{\mbody}(m, K, K) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
-         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$.
+\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).m(\overline{\angl{I_e}} \; \overline{e})$ as a subexpression,
+    then $ \emph{\mbody}(m, I, J) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
+\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).K::m(\overline{\angl{I_e}} \overline{e})$ as a subexpression,
+    then $ \emph{\mbody}(m, I, K) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and 
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
+\item If $e$ includes $\emph{\kwsuper}.K::m(\overline{\angl{I_e}} \overline{e})$ as a subexpression,
+    then $ \emph{\mbody}(m, K, K) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and 
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
 \end{enumerate}
 \end{theorem}
 \begin{proof}
