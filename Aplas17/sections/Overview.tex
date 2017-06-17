@@ -12,9 +12,9 @@ throughout the paper, and all types are defined with the keyword
 interfaces with default methods~\cite{bono14} and traits. For simplicity, an interface in our model has
 the following characteristics:
 \begin{itemize}
-	\item It allows multiple inheritance.
-	\item Every method represents a behaviour and requires a body for its implementation (like Java 8 default methods). There are no abstract methods.
-	\item It can be directly instantiated by the \lstinline|new| keyword.
+  \item It allows multiple inheritance.
+  \item Every method represents a behaviour and requires a body for its implementation (like Java 8 default methods). There are no abstract methods.
+  \item It can be directly instantiated by the \lstinline|new| keyword.
 \end{itemize}
 Furthermore for simplicity, our formalization does not model state at
 this stage. %%, but that should not block our discussions below.
@@ -71,30 +71,30 @@ we can allow them to coexist in the extending interface in a type-safe way.\\
 
 \noindent\textbf{Potential Fixes} There are several workarounds that come to our mind:
 \begin{itemize}
-	\item \textbf{I. Delegation.} As an alternative to multiple inheritance,
-	delegation can be used by introducing two fields with
-	\lstinline|Drawable| type and \lstinline|Deck| type,
-	respectively. This avoids method conflicts. Nevertheless, it is known
-	that using delegation makes it hard to correctly maintain
-	self-references \haoyuan{need to cite} in an extensible system [], and also
-	introduces a lot of boilerplate code.
-	\item \textbf{II. Refactor Drawable and/or Deck to rename the methods.} If
-	the code for \lstinline|Drawable| or \lstinline|Deck| are available
-	then it may be possible to rename one of the \lstinline|draw|
-	methods. However this approach is non-modular, as it requires 
-	modifying existing code, and may not be possible if code is unavailable.
-	\item \textbf{III. Method exclusion/renaming in traits.} Some trait models
-	support method exclusion/renaming. Those features
-	provided can eliminate conflicts, although most
-	programming languages do not support them. In a traditional OO system,
-	they can break the subtyping. Moreover, in
-	contrast with exclusion, renaming can indeed preserve both conflicted
-	behaviours, however, it is cumbersome in practice, as introducing new
-	names can affect other code blocks.
-	\item \textbf{IV. Static dispatch.} Some other languages like C++ have
-	direct support for the triangle inheritance. While conflicting methods are
-	both preserved, the ambiguity of method call is resolved by static dispatch.
-	Qualified names are used to specify the branch to give the right implementation.
+  \item \textbf{I. Delegation.} As an alternative to multiple inheritance,
+  delegation can be used by introducing two fields with
+  \lstinline|Drawable| type and \lstinline|Deck| type,
+  respectively. This avoids method conflicts. Nevertheless, it is known
+  that using delegation makes it hard to correctly maintain
+  self-references \haoyuan{need to cite} in an extensible system [], and also
+  introduces a lot of boilerplate code.
+  \item \textbf{II. Refactor Drawable and/or Deck to rename the methods.} If
+  the code for \lstinline|Drawable| or \lstinline|Deck| are available
+  then it may be possible to rename one of the \lstinline|draw|
+  methods. However this approach is non-modular, as it requires 
+  modifying existing code, and may not be possible if code is unavailable.
+  \item \textbf{III. Method exclusion/renaming in traits.} Some trait models
+  support method exclusion/renaming. Those features
+  provided can eliminate conflicts, although most
+  programming languages do not support them. In a traditional OO system,
+  they can break the subtyping. Moreover, in
+  contrast with exclusion, renaming can indeed preserve both conflicted
+  behaviours, however, it is cumbersome in practice, as introducing new
+  names can affect other code blocks.
+  \item \textbf{IV. Static dispatch.} Some other languages like C++ have
+  direct support for the triangle inheritance. While conflicting methods are
+  both preserved, the ambiguity of method call is resolved by static dispatch.
+  Qualified names are used to specify the branch to give the right implementation.
 \end{itemize}
 
 \noindent\textbf{Solution in \name{}:} below is the pseudo-code that shows the triangle
@@ -122,6 +122,7 @@ our work.
 
 \subsection{Problem 2: Dynamic Dispatch for Code Reuse}\label{subsec:problem2}
 
+\bruno{Emphasizing hierarchical dispatch and triangle inheritance.}\haoyuan{Done}
 On the other hand, we also need dynamic dispatch as it is essential and widely used in object-oriented programming.
 C++ has the flexibility for choosing either way of dispatch by the \kwvirtual{} keyword.
 Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance, 
@@ -161,9 +162,9 @@ d.shuffleAndDraw(); // ambiguous draw if dynamically dispatched
 \end{lstlisting}\vspace{3pt}
 
 \begin{figure*}[t]
-	\centering
-	\includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
-	\caption{UML graph for \lstinline|DrawableLoggingDeck|.}\label{fig:drawableloggingdeck}
+  \centering
+  \includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
+  \caption{UML graph for \lstinline|DrawableLoggingDeck|.}\label{fig:drawableloggingdeck}
 \end{figure*}
 If we try to keep the triangle inheritance, but apply dynamic dispatch, calling \lstinline|shuffleAndDraw| would trigger ambiguity. 
 In principle we want \lstinline|shuffleAndDraw| to invoke \lstinline|LoggingDeck.draw|, because they belong to the same branch, 
@@ -190,17 +191,16 @@ interface Deck {
 \end{lstlisting}\vspace{3pt}
 It is because the compiler is able to know that the receiver ``\lstinline|this|'' exactly has static type \lstinline|Deck|. Hence hierarchical dispatch eliminates ambiguity.
 
-\subsection{Partial Overrides in \MIM	}\label{subsec:partialoverrides}
+\subsection{Problem 3: Overriding on Individual Branches}\label{subsec:partialoverrides}
 
-Method overriding is commonly supported by many OO languages as a kind of polymorphism.
-We have seen that \MIM{} is able to preserve several conflicted branches simultaneously and let them coexist.
-In that case, a traditional method overriding, like one in Java, will override all the inherited methods, and hence
-hide all those conflicted branches. Besides, \MIM{} also allows partial overrides to offer independent extensibility.
-A partial override will specify one of the branches, and only refine the method from that branch. It ensures that
-other branches are not affected.
+We have seen that hierarchical dispatch can dynamically find the latest implementation of a method from one path (or branch). But when
+several branches are merged by triangle inheritance, there is usually demand for updating them separately. For example, someone plans to
+reuse the other features of \lstinline|DrawableLoggingDeck|, but updates the \lstinline|draw| from \lstinline|Drawable| by setting the canvas
+invisible. Unfortunately in traditional models, the merged branches cannot be separately overridden any longer, since overriding
+will hide all branches and break coexistence. Modifying existing code is again unsatisfactory as it affects modularity.\\
 
-For example, we define an interface \lstinline|DrawableLoggingDeck2|, and in its definition we refine the \lstinline|draw()| from \lstinline|Drawable()| by setting
-the canvas invisible:
+\noindent\textbf{Solution in \name{}:} an additional feature of \name{} is \textit{hierarchical overriding}. It allows conflicting methods
+to be overridden on individual branches, and hence offers independent extensibility. The above example can be easily realized by:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableLoggingDeck2 extends DrawableLoggingDeck {
   void draw() override Drawable {
@@ -209,13 +209,11 @@ interface DrawableLoggingDeck2 extends DrawableLoggingDeck {
     ...
   }
 }
+
+// main program
+new DrawableLoggingDeck2().Drawable::draw()      // calling draw in DrawableLoggingDeck2
 \end{lstlisting}\vspace{3pt}
-Here the partial override specifies \lstinline|Drawable| to be refined. The use of it ensures that both branches of \lstinline|draw()| are preserved. At the same time, we should notice that the methods we present in previous examples are called ``original methods'', and they are actually created by ``total overrides'', rather than partial overrides. Some client code is shown below: \haoyuan{which words should we use instead of "total overrides"?}
-\vspace{3pt}\begin{lstlisting}
-DrawableLoggingDeck2 d2 = new DrawableLoggingDeck2();
-d2.Drawable::draw(); // calling draw() in DrawableLoggingDeck2
-d2.Deck::draw();       // calling draw() in LoggingDeck
-\end{lstlisting}\vspace{3pt}
+\haoyuan{TODO: introduce the concept of original methods.}
 
 In \MIM{}, hierarchical dispatch first finds the most specific original method (branch), then it finds the most specific partial override on that branch. A quick counter-example is when there are two partial overrides on \lstinline|Drawable| in \lstinline|DrawableLoggingDeck2|, it leads to ambiguity. The compiler is supposed to forbid that during compile time.
 
