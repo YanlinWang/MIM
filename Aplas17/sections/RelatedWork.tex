@@ -123,21 +123,29 @@ same signature. However, there are two critical differences to \MIM{}:
 (2) there is only one level of partial overrides (implementations).
 
 \subsection{Hierarchical Dispatch}
-As we have discussed before, the mix of static and dynamic dispatch is particularly useful under certain circumstances,
-yet there is little attention from related work. In the prototype-based language \self~\cite{Chambers1991}, inheritance is a basic feature.
+As we have discussed before, although the mix of static and dynamic dispatch is 
+particularly useful under certain circumstances, it has received little research attention. 
+In the prototype-based language \self{}~\cite{Chambers1991}, inheritance is a basic feature.
 It does not include classes but instead allow individual objects to inherit from (or delegate to) other objects. 
 Although it is different from class-based languages, the multiple inheritance model is somehow similar. The \self{}
 language supports multiple (object) inheritance in a clever way. It not only develops the new inheritance
-relation with \emph{prioritized parents}, but also adopts \emph{sender path tiebreaker rule} for method lookup, which is similar with our approach, using hierarchical information in method resolution, but in a prototype-based language setting.\haoyuan{Do they have updates?}
+relation with \emph{prioritized parents}, but also adopts \emph{sender path tiebreaker rule} for method lookup.
+It specifies that ``\emph{if two slots with the same name are defined in equal-priority parents of the receiver, but only 
+one of the parents is an ancestor or descendant of the object containing the method that is sending the message,
+then that parent's slot takes precedence over the over parent's slot}''. 
+Similar to our model, this sender path tiebreaker rule resolves ambiguities between unrelated abstractions. However,
+it is used in a prototype-based language setting and it does not support method hierarchical overriding as \MIM{} does.
 
 \subsection{Formalization Based on Featherweight Java}
-Featherweight Java (FJ)~\cite{Igarashi01FJ} is a minimal core calculus of Java language, proposed by Igarashi et. al\haoyuan{Need cite}. There are
-many models built on
-Featherweight Java, including FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, and so on.
+Featherweight Java (FJ)~\cite{Igarashi01FJ} is a minimal core calculus of Java language, 
+proposed by Igarashi et. al. There are many models built on Featherweight Java, 
+including FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, 
+Featherweight Scala~\cite{Cremet2006}, and so on.
 FJ provides the standard model of formalizing a Java-like object-oriented language, and 
 is easily extensible. In terms of formalization, the key novelty of our model is the use of 
 static types as annotations along with various terms. As far as we
-know, this technique has not appeared in the literature before.
+know, this technique has not appeared in the literature before. The static type annotation is of vital 
+importance in our hierarchical dispatch algorithm.
 
 
 
