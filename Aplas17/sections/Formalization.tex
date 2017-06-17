@@ -48,7 +48,7 @@ implementation from the specified super type. Hence a super-invocation
 can only be used inside an interface definition.
 Finally an expression can also be annotated with its static type. But \emph{annotated expressions are only intended for the semantic rules},
 hence they are not supposed to appear in the source program. A value
-``$\langle I \rangle~\new J$''
+``$\angl{I}\new{J}$''
 is the final result of multple reduction steps evaluating an
 expression. Such value represents an object instance
 of $J$ with an annotated static type $I$.
@@ -63,9 +63,9 @@ of $J$ with an annotated static type $I$.
 e.m(\overline{e}) \mid
 \new{I} \mid
 e.I::m(\overline{e}) \mid
-\kwsuper.I::m(e) \; \mid \; \langle I \rangle~e \\
+\kwsuper.I::m(e) \; \mid \; \angl{I}e \\
 \text{Context}      & \Gamma & \Coloneqq & \overline{x:I} \\
-\text{Values}       & v & \Coloneqq & \langle I \rangle~\new{J} \\
+\text{Values}       & v & \Coloneqq & \angl{I} \new{J} \\
 %%\\
 %%\text{Interface names} & I, J, K & & \\
 %%\text{Method names} & m & & \\
@@ -321,13 +321,13 @@ See Appendix~\ref{appendix_proof}.
 \begin{theorem}[Progress]~\label{theorem_progress}
 $\textit{Suppose } e \textit{ is a well-typed expression } $ \\
 \begin{enumerate}
-\item If $e$ includes $\left(<J>\emph{\kwnew}\;I()\right).m(\overline{<I_E>} \; \overline{e})$ as a subexpression,
+\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).m(\overline{\angl{I_E}} \; \overline{e})$ as a subexpression,
     then $ \emph{\mbody}(m, I, J) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and
          $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$.
-\item If $e$ includes $\left(<J>\emph{\kwnew}\;I()\right).K::m(\overline{<I_E> e})$ as a subexpression,
+\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).K::m(\overline{\angl{I_E} e})$ as a subexpression,
     then $ \emph{\mbody}(m, I, K) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
          $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$.
-\item If $e$ includes $\emph{\kwsuper}.K::m(\overline{<I_E> e})$ as a subexpression,
+\item If $e$ includes $\emph{\kwsuper}.K::m(\overline{\angl{I_E} e})$ as a subexpression,
     then $ \emph{\mbody}(m, K, K) = (J', \overline{I_X} \; \overline{x}, I'_E \; e_0) $ and 
          $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_X}, \overline{x}, I_E'$ and $e_0$.
 \end{enumerate}

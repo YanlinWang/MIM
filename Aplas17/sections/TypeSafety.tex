@@ -77,9 +77,9 @@ Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be simi
 \subsubsection{Proof for Theorem~\ref{theorem_subject}}
 \begin{proof} ~\\
 \noindent \textbf{Case Invk.} 
-let \[ e = <J>\new I.m(<\overline{I_E}>\overline{e}) \] 
+let \[ e = \angl{J}\new I.m(\overline{\angl{I_E}}\overline{e}) \] 
 Suppose \[ \mbody(m, I, J) = (J', \overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
-then \[ e' =  [<\overline{I_X}>\overline{e}/\overline{x}, \; <J>\new I/\kwthis ] e_0 \] 
+then \[ e' =  [\overline{\angl{I_X}} \overline{e}/\overline{x}, \; \angl{J}\new I/\kwthis ] e_0 \] 
 By rules (T-NEW) and (T-INVK), 
   \[ \judgeewf \Gamma {\new I:I} \quad 
      \mtype(m, I, J) = \overline{I_X} \rightarrow I_{E_0} \quad 
@@ -93,14 +93,14 @@ By Lemma~\ref{lemma0},
     \]
 By Lemma~\ref{lemma1},
     \[
-    \judgeewf {\Gamma} {[<\overline{I_X}>\overline{e}/\overline{x}, \; <J>\new I/\kwthis ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
+    \judgeewf {\Gamma} {[\overline{\angl{I_X}} \overline{e}/\overline{x}, \; \angl{J}\new I/\kwthis ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
     \]
 So $I_G <: I_{E_0}$, finally just let $I' = I_G$.
 
 \noindent \textbf{Case PathInvk.}
-let \[ e = <J>\new I.K::m(<\overline{I_E}>\overline{e}) \]  
+let \[ e = \angl{J}\new I.K::m(\overline{\angl{I_E}} \overline{e}) \]  
 Suppose \[ \mbody(m, I, K) = (J', \overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
-then \[ e' =  [<\overline{I_X}>\overline{e}/\overline{x}, \; <K>\new I/\kwthis ] e_0 \] 
+then \[ e' =  [\overline{\angl{I_X}} \overline{e}/\overline{x}, \; \angl{K}\new I/\kwthis ] e_0 \] 
 By rules (T-NEW) and (T-INVK), 
   \[ \judgeewf \Gamma {\new I:I} \quad 
      \mtype(m, I, K) = \overline{I_X} \rightarrow I_{E_0} \quad 
@@ -114,14 +114,14 @@ By Lemma~\ref{lemma0},
     \]
 By Lemma~\ref{lemma1},
     \[
-    \judgeewf {\Gamma} {[<\overline{I_X}>\overline{e}/\overline{x}, \; <K>\new I/\kwthis ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
+    \judgeewf {\Gamma} {[\overline{\angl{I_X}} \overline{e}/\overline{x}, \; \angl{K}\new I/\kwthis ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
     \]
 So $I_G <: I_{E_0}$, finally just let $I' = I_G$.
 
 \noindent \textbf{Case Super-Invk.}
-let \[ e = \kwsuper.K::m(<\overline{I_E}>\overline{e}) \]   
+let \[ e = \kwsuper.K::m(\overline{\angl{I_E}} \overline{e}) \]   
 Suppose \[ \mbody(m, K, K) = (J', \overline{I_X} \; \overline{x}, I_{E_0} \; e_0) \] 
-then \[ e' =  [<\overline{I_X}>\overline{e}/\overline{x}] e_0 \] 
+then \[ e' =  [\overline{\angl{I_X}} \overline{e}/\overline{x}] e_0 \] 
 By rules (T-NEW) and (T-INVK), 
   \[ 
      \mtype(m, K, K) = \overline{I_X} \rightarrow I_{E_0} \quad 
@@ -135,7 +135,7 @@ By Lemma~\ref{lemma0},
     \]
 By Lemma~\ref{lemma1},
     \[
-    \judgeewf {\Gamma} {[<\overline{I_X}>\overline{e}/\overline{x} ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
+    \judgeewf {\Gamma} {[\overline{\angl{I_X}} \overline{e}/\overline{x} ] e_0  :  I_G} \textit{, for some } I_G \subtype I_F 
     \]
 So $I_G <: I_{E_0}$, finally just let $I' = I_G$.
 
