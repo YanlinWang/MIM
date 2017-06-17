@@ -1,24 +1,42 @@
 \section{Related Work}
+Here we describe related work in four parts. We discuss from mainstream popular multiple 
+inheritance models to several specific models (C++ and \csharp) which are closest to our work. Then we 
+discuss similar techniques used in \self. Finally we discuss the foundation and related work of our formalization.
 
 \subsection{Mainstream Multiple Inheritance Models}
 Multiple inheritance is an useful feature in object-oriented
 programming, although it is difficult to model and can 
-cause various problems (e.g. the diamond problem~\cite{Sak89dis,Singh1995}).  There are many existing languages/models that support multiple 
-inheritance. The Mixin model~\cite{} allows naming components 
+cause various problems (e.g. the diamond problem~\cite{Sak89dis,Singh1995}).  
+There are many existing languages/models that support multiple 
+inheritance~\cite{ellis1990annotated,scala-overview,bracha90mixin,scharli03traits,malayeri2009cz,csharpdoc,Moon1986,Flatt1998,Ancona2003}. 
+The Mixin model~\cite{bracha90mixin} allows naming components 
 that can be applied to various classes as reusable functionality units. However, the linearization (total ordering) of mixin 
 inheritance cannot provide a satisfactory resolution in some cases and restricts the flexibility of mixin composition. 
+Scala traits~\cite{scala-overview} are in fact linearized mixins and hence have the same problem as mixins.
 
-Simplifying the mixins approach, traits~\cite{scharli03traits} draw a
-strong line between units of reuse and object factories.  Traits act
+Simplifying the mixins approach, traits~\cite{scharli03traits,Ducasse:2006:TMF:1119479.1119483} draw a
+strong line between units of reuse and object factories. Traits act
 as units of reuse, containing functionality code; while classes,
-assembled from traits, act as object factories.\bruno{Should talk
+assembled from traits, act as object factories. Java 8
+interfaces are closely related to traits: concrete method
+implementations are allowed (via the \textbf{\texttt{default}}
+keyword) inside interfaces and there are also proposals such as FeatherTrait Java~\cite{Liquori08ftj} 
+for extending Java with traits. There are extensions~\cite{reppy2006foundation,Reppy:2007:MT:2394758.2394784} to 
+the original trait model with various advanced features such as \emph{renaming}. As discussed in Section~\ref{sec:overview},
+the renaming feature helps to solve the unintentional method conflicts problem, however, it breaks structural subtyping.
+\bruno{Should talk
   about work on traits that support renaming.}\bruno{I remember Yanlin
   had a presentation with alot of related work on multiple
-  inheritance. Many of those seem to be missing here} Java 8
-interfaces~\cite{} are closely related to traits: concrete method
-implementations are allowed (via the \textbf{\texttt{default}}
-keyword) inside interfaces.  The introduction of default methods opens
-the gate for various flavors of multiple inheritance in Java.
+  inheritance. Many of those seem to be missing here}
+
+\begin{comment}
+There are also proposals for extending Java with traits. For example, 
+FeatherTrait Java (FTJ) [14] extends FJ [13] with statically-typed traits, 
+adding trait-based inheritance in Java. Except for few, mostly syntac- tic details, 
+their work can be emulated with Java 8 interfaces. There are also extensions 
+to the original trait model, with operations (e.g. renaming [18], which breaks 
+structural sub- typing) that default methods and interfaces cannot model.
+\end{comment}
 
 Malayeri and Aldrich proposed a model CZ~\cite{malayeri2009cz} which
 aims to do multiple inheritance without the diamond problem.
@@ -80,7 +98,7 @@ int main() {
 Now the running result will be $MB \; MC$. With virtual methods, dynamic dispatch is used and 
 method lookup algorithm will find the most specific method definition of $m$, namely \lstinline|C.m| at this time.
 Although C++ support this flexibility, dynamic dispatching on
-conflicting methods is problematic.\bruno{why? give example of
+unintentional conflicting methods is problematic, as discussed in Section~\ref{sec:overview}.\bruno{why? give example of
   something that goes wrong?}
 Furthermore, C++ does not support partial overrides compared to our
 model.
