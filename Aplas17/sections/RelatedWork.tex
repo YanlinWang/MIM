@@ -4,7 +4,7 @@ inheritance models to several specific models (C++ and \csharp) which are closes
 discuss similar techniques used in \self. Finally we discuss the foundation and related work of our formalization.
 
 \subsection{Mainstream Multiple Inheritance Models}
-Multiple inheritance is an useful feature in object-oriented
+Multiple inheritance is a useful feature in object-oriented
 programming, although it is difficult to model and can 
 cause various problems (e.g. the diamond problem~\cite{Sak89dis,Singh1995}).  
 There are many existing languages/models that support multiple 
@@ -27,7 +27,7 @@ the renaming feature helps to solve the unintentional method conflicts problem, 
 \bruno{Should talk
   about work on traits that support renaming.}\bruno{I remember Yanlin
   had a presentation with alot of related work on multiple
-  inheritance. Many of those seem to be missing here}
+  inheritance. Many of those seem to be missing here}\yanlin{Done}
 
 \begin{comment}
 There are also proposals for extending Java with traits. For example, 
@@ -100,7 +100,7 @@ method lookup algorithm will find the most specific method definition of $m$, na
 Although C++ support this flexibility, dynamic dispatching on
 unintentional conflicting methods is problematic, as discussed in Section~\ref{sec:overview}.\bruno{why? give example of
   something that goes wrong?}
-Furthermore, C++ does not support partial overrides compared to our
+Furthermore, C++ does not support hierarchical overriding compared to our
 model.
 
 \noindent  {\bf \csharp{} Explicit method implementation.}
@@ -120,7 +120,7 @@ interface that is of no interest to a consumer of that class or struct.
 Secondly, they allow disambiguation of interface members with the 
 same signature. However, there are two critical differences to \MIM{}:
 (1) default implementations are not allowed in \csharp{} interfaces; 
-(2) there is only one level of partial overrides (implementations).
+(2) there is only one level of hierarchical overriding to refine conflicting methods individually.
 
 \subsection{Hierarchical Dispatch}
 As we have discussed before, although the mix of static and dynamic dispatch is 
