@@ -2,7 +2,7 @@
 Inheritance in Object-Oriented Programming (OOP) offers a mechanism
 for code reuse. However many OOP languages are restricted to single
 inheritance, which is less expressive and flexible than multiple
-inheritance. Nevertheless different flavours of multiple inheritance
+inheritance. Nevertheless, different flavours of multiple inheritance
 have been adopted in some popular OOP languages. C++ has had 
 multiple inheritance from the start. Scala adapts ideas from traits~\cite{scharli03traits} 
 and mixins~\cite{bracha90mixin} to offer a disciplined form of multiple inheritance. Java 8 
@@ -24,15 +24,15 @@ languages and research have taken care of this case extensively. Other issues
 including how multiple inheritance deals with state, 
 have also been discussed quite extensively~\cite{classless,malayeri2009cz,stroustrup1995}.
 
-In contrast with the diamond inheritance, a second case of ambiguity
+In contrast with the diamond inheritance, the second case of ambiguity
 is \textit{unintentional method conflicts}~\cite{scharli03traits}. That is conflicting 
 methods that do not actually refer to the same feature. 
 In a nominal system, methods can be designed for different
 functionality, but they just happen to have same names (and
 signatures).
-A simple example of this situation are two \lstinline{draw} methods that
+A simple example of this situation is two \lstinline{draw} methods that
 are inherited from a deck of cards and a drawable widget. 
-In such context the two \lstinline{draw} methods have very different meanings, 
+In such context, the two \lstinline{draw} methods have very different meanings, 
 but they happen to share the same name.
 %%This issue was proposed by the trait paper, so-called
 When inheritance is used to compose these methods, a compilation 
@@ -61,7 +61,7 @@ Some other workarounds or approaches include delegation, and
 renaming/exclusion in the trait model. Yet they still have various
 drawbacks as we will discuss in Section~\ref{sec:overview}. Closest to our work
 are mechanisms available in C++ and C\# that allow for two
-unintentionally conflicting methods to coexist in a class. Among them
+unintentionally conflicting methods to coexist in a class. Among them, 
 C++ is a representative that accepts the triangle inheritance and
 resolves the ambiguity by \emph{static dispatching}. However, C++ has
 limited support for virtual methods with unintentional conflicts, and
@@ -82,7 +82,7 @@ at both the \emph{static type} and the \emph{dynamic type} of the
 receiver during runtime. When there are multiple branches that cause
 unintentional conflicts, the static type can specify one branch among
 them for unambiguity, and the dynamic type helps to find the most
-specific implementation. In that case both unambiguity and
+specific implementation. In that case, both unambiguity and
 extensibility are preserved. To present this idea, we introduce a
 formalized model \MIM{} in Section~\ref{sec:formalization} based on
 Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
