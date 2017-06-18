@@ -58,7 +58,7 @@ none of them has a subtyping to one another, since all super types have been rem
     \includegraphics[height=3cm]{pics/p5.pdf}\hspace{4pt} \\ 
     (d) $\mbody(m,D,A) = \keyword{undefined}$\ \ \  & (e) $\mbody(m,D,A) = \keyword{undefined}$
    \end{tabular}
-    \caption{Examples on $\mbody$. ``$\uparrow$'' stands for partial overrides.}\label{fig:examplesmbody}
+    \caption{Examples on $\mbody$. ``$\uparrow$'' stands for hierarchical overriding.}\label{fig:examplesmbody}
     %\saveSpaceFig
 \end{figure*}
 
@@ -74,20 +74,20 @@ $\mostSpecific$ is an auxiliary function that finds the most specific original i
 We could have put $set1$ and $set2$ together, but the current
 definition is clearer.
 
-The $\mostSpecific$ function only focuses on original method implementations, all the method updates are omitted during that time. On the other hand, another auxiliary function $\mostSpecificOverride(m, I, J)$ has the assumption that $J$ defines an original $m$, and this function tries to find the most specific implementations that partially overrides such an $m$. Just as $\mostSpecific$, $\mostSpecificOverride$ also returns the set of interfaces after pruning. An interface belongs to the return set if and only if:
+The $\mostSpecific$ function only focuses on original method implementations, all the hierarchical overriding methods are omitted during that time. On the other hand, another auxiliary function $\mostSpecificOverride(m, I, J)$ has the assumption that $J$ defines an original $m$, and this function tries to find the most specific implementations that hierarchically overrides such an $m$. Just as $\mostSpecific$, $\mostSpecificOverride$ also returns the set of interfaces after pruning. An interface belongs to the return set if and only if:
 \begin{itemize}
     \item It is between $I$ and $J$;
-    \item It defines a method update for $J.m$;
+    \item It hierarchically overrides $J.m$;
     \item It does not have a subtype in the same set.
 \end{itemize}
-The algorithm for finding the most specific partial overrides is quite similar to that for most specific original method. A partial override is not allowed to work on another partial override, and one can hide another if their interfaces has subtyping relations. If they do not hide each other, the result implies ambiguity.
+The algorithm for finding the most specific hierarchical overriding method is quite similar to that for most specific original method. A hierarchical overriding is not allowed to work on another hierarchical overriding, and one can hide another if their interfaces has subtyping relations. If they do not hide each other, the result implies ambiguity.
 
 \subsection{$\mbody$ and $\mtype$}
 
 $\mbody(m, I_d, I_s)$, as defined in Figure~\ref{fig:auxfunc}, denotes a method body lookup function.
 We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic
 type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation, more
-accurately, its parameters, returned expression and the types. It considers both originally defined methods and method updates, so $\mostSpecific$ and $\mostSpecificOverride$ are invoked.
+accurately, its parameters, returned expression and the types. It considers both originally defined methods and hierarchical overriding methods, so $\mostSpecific$ and $\mostSpecificOverride$ are invoked.
 
 To calculate $\mbody(m, I_d, I_s)$:
 \begin{itemize}
@@ -117,10 +117,10 @@ $mbody(m, I)$ algorithm:
 
 \subsection{Examples}
 
-Examples for $\mbody$ are shown in Figure~\ref{fig:examplesmbody}. Note that we use \lstinline|m| to denote an original method, and ``\lstinline|m|$\uparrow$\lstinline|A|'' for a partial override on \lstinline|A|. For each small example, the result
+Examples for $\mbody$ are shown in Figure~\ref{fig:examplesmbody}. Note that we use \lstinline|m| to denote an original method, and ``\lstinline|m|$\uparrow$\lstinline|A|'' for hierarchical overriding on \lstinline|A|. For each small example, the result
 gives the interface to which $m$ is dispatched. (a) is a basic model for unintentional method conflicts; (b) and (c) demonstrate
-that hierarchical dispatch can find the most specific original method and partial override. More interesting are the two bad examples
+that hierarchical dispatch can find the most specific original method and hierarchical overriding method. More interesting are the two bad examples
 (d) and (e), they both fail on $\mbody$. (d) is the well-known diamond inheritance, which our model also forbids, and (e) is similar to
-(d) because the two partial overrides are working on the same operation. Both counter-examples imply that \lstinline|new D().A::m()| will
+(d) because the two hierarchical overriding methods are working on the same operation. Both counter-examples imply that \lstinline|new D().A::m()| will
 lead to ambiguity, and in order for type soundness, both have to be denied by the type checker. This is guaranteed by the interface check
 \textsc{(T-Intf)} in Figure~\ref{fig:typingrules}.

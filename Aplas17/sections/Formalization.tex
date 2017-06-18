@@ -1,12 +1,6 @@
 \section{Formalization}~\label{sec:formalization}
 
-\bruno{There is quite a bit of teminology that we need to be careful
-  to introduce earlier in the paper. For example: ``original
-  method''. We are also still using terminology such as ``method
-  update'', which I think is now outdated.
-We need to read the paper carefully enough to spot
-  possible uses of terminology which may make sense to us, but 
-we have not introduced properly.}
+\bruno{There is quite a bit of teminology that we need to be careful.}\haoyuan{Done}
 
 In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}irarchical \textbf{J}ava}) , based on
 a minimal subset of Java 8 interfaces following Featherweight Java style~\cite{Igarashi01FJ}.
@@ -35,7 +29,7 @@ an expression. As seen in Figure~\ref{fig:syntax}, we have introduced the
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''; otherwise
-it is a partial override.
+it is hierarchical overriding.
 For simplicity, overloading is not modelled for methods, which
 implies we can uniquely identify a method by its name.
 
@@ -52,6 +46,9 @@ hence they are not supposed to appear in the source program. A value
 is the final result of multple reduction steps evaluating an
 expression. Such value represents an object instance
 of $J$ with an annotated static type $I$.
+
+For simplicity \name{} does not formalize statements like assignments and so on, because they are orthogonal features.
+A program consists of a list of interface declarations, plus a single expression.
 
 \begin{figure*}[t]
 \begin{displaymath}
@@ -91,11 +88,11 @@ illustrate later in Section~\ref{subsec:auxdefs}. After the method type is obtai
 have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
 path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
-The method typing rule \textsc{(T-Method)} is more interesting, since the method can either be an original implementation or a partial override.
+The method typing rule \textsc{(T-Method)} is more interesting, since the method can either be an original implementation or hierarchical overriding.
 Besides type-checking the return expression,
-we further use the helper function $\mostSpecific$ to ensure that the method update is legal. The formal definition is again in Section~\ref{subsec:auxdefs}.
-By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is a partial override, it should not overlap a total override, otherwise
-the total override would be returned instead of $J$.
+we further use the helper function $\mostSpecific$, again formally defined in Section~\ref{subsec:auxdefs}.
+By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is hierarchical overriding, it should not step over original methods, otherwise
+their enclosing types would be returned instead of $J$.
 
 Finally, \textsc{(T-Invk)} defines interface checking. The condition helps to ensure unambiguity and type soundness of the calculus. We will
 introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not
