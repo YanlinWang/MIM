@@ -139,7 +139,7 @@ interface Deck {
 \lstinline|shuffleAndDraw| is a typical method that invokes \lstinline|draw| in its definition. In principle, we want
 that invocation to use dynamic dispatch, because a programmer may define a subtype of \lstinline|Deck|, and override \lstinline|draw|:
 \vspace{3pt}\begin{lstlisting}
-interface LoggingDeck {
+interface LoggingDeck extends Deck {
   void draw() { // overriding
     Stack<Card> cards = this.getStack();
     if (!cards.isEmpty()) {
