@@ -1,7 +1,7 @@
 \section{Related Work}
 Here we describe related work in four parts. We discuss from mainstream popular multiple 
 inheritance models to several specific models (C++ and \csharp) which are closest to our work. Then we 
-discuss similar techniques used in \self. Finally we discuss the foundation and related work of our formalization.
+discuss similar techniques used in \self. Finally, we discuss the foundation and related work of our formalization.
 
 \subsection{Mainstream Multiple Inheritance Models}
 Multiple inheritance is a useful feature in object-oriented
@@ -46,15 +46,15 @@ implementation inheritance.  Using a combination of
 with diamond inheritance is transformed to one without
 diamonds. Moreover, fields and multiple inheritance can coexist.
 However untangling inheritance also untangles the class structure. In
-CZ, not only the number of classes, but also the class hierarchy
+CZ, not only the number of classes but also the class hierarchy
 complexity increases.
 
-The above mentioned models/languages support multiple inheritance, and
+The above-mentioned models/languages support multiple inheritance, and
 they handle method conflicts in the same way, by simply disallowing
 two methods with the same signature from two different units to
 coexist. The ambiguity is resolved either by programmers explicitly or
 by setting a linearised composition. This is the common drawback of
-the above mentioned models versus our model.
+the above-mentioned models versus our model.
 
 \subsection{Resolving Unintentional Method Conflicts}
 There are a few languages that partly realize the problem of
@@ -129,7 +129,7 @@ In the prototype-based language \self{}~\cite{Chambers1991}, inheritance is a ba
 It does not include classes but instead allow individual objects to inherit from (or delegate to) other objects. 
 Although it is different from class-based languages, the multiple inheritance model is somehow similar. The \self{}
 language supports multiple (object) inheritance in a clever way. It not only develops the new inheritance
-relation with \emph{prioritized parents}, but also adopts \emph{sender path tiebreaker rule} for method lookup.
+relation with \emph{prioritized parents} but also adopts \emph{sender path tiebreaker rule} for method lookup.
 It specifies that ``\emph{if two slots with the same name are defined in equal-priority parents of the receiver, but only 
 one of the parents is an ancestor or descendant of the object containing the method that is sending the message,
 then that parent's slot takes precedence over the over parent's slot}''. 
@@ -141,7 +141,7 @@ Featherweight Java (FJ)~\cite{Igarashi01FJ} is a minimal core calculus of Java l
 proposed by Igarashi et. al. There are many models built on Featherweight Java, 
 including FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, 
 Featherweight Scala~\cite{Cremet2006}, and so on.
-FJ provides the standard model of formalizing a Java-like object-oriented language, and 
+FJ provides the standard model of formalizing a Java-like object-oriented language and 
 is easily extensible. In terms of formalization, the key novelty of our model is the use of 
 static types as annotations along with various terms. As far as we
 know, this technique has not appeared in the literature before. The static type annotation is of vital 
