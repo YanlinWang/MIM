@@ -60,6 +60,7 @@ the above-mentioned models versus our model.
 There are a few languages that partly realize the problem of
 unintentional conflicts and provide some support for it.
 
+\begin{comment} %C++ related work with code explaination
 \noindent {\bf C++ model.}
 C++ supports a very flexible inheritance model and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
 It allows unintentional conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. For example, given the following code
@@ -100,6 +101,19 @@ method lookup algorithm will find the most specific method definition of $m$, na
 Although C++ support this flexibility, dynamic dispatching on
 unintentional conflicting methods is problematic, as discussed in Section~\ref{sec:overview}.\bruno{why? give example of
   something that goes wrong?}
+Furthermore, C++ does not support hierarchical overriding compared to our
+model.
+\end{comment}
+
+
+
+\noindent {\bf C++ model.}
+C++ supports a very flexible inheritance model and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
+It allows unintentional conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. 
+With virtual methods, dynamic dispatch is used and 
+method lookup algorithm will find the most specific method definition.
+Although C++ support this flexibility, dynamic dispatching on
+unintentional conflicting methods is problematic.
 Furthermore, C++ does not support hierarchical overriding compared to our
 model.
 

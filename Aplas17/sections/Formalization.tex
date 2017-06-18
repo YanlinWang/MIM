@@ -1,9 +1,6 @@
 \section{Formalization}~\label{sec:formalization}
-
-\bruno{There is quite a bit of teminology that we need to be careful.}\haoyuan{Done}
-
 In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}) , based on
-a minimal subset of Java 8 interfaces following Featherweight Java style~\cite{Igarashi01FJ}. We use the same
+Featherweight Java~\cite{Igarashi01FJ}. We use the same
 conventions as FJ; $\overline{I}$ is shorthand for the (possibly empty)
 list $I_1, ..., I_n$, which may be indexed by $I_i$.
 The syntax, typing rules, and small-step semantics are presented below.
@@ -11,8 +8,8 @@ The syntax, typing rules, and small-step semantics are presented below.
 \subsection{Syntax}
 Figure~\ref{fig:syntax} shows the syntax of \MIM{}. The multiple
 inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
-method implementations via default methods. This feature is quite
-closely related to \emph{traits}~\cite{scharli03traits}.  To demonstrate how
+method implementations via default methods. This feature is 
+closely related to \emph{traits}. To demonstrate how
 unintentional method conflicts are untangled in \MIM{}, we only focus on a small
 subset of the interface model. For example, all the methods declared
 in an interface are default methods, that is to say, they always
