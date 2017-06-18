@@ -37,7 +37,7 @@ but they happen to share the same name.
 %%This issue was proposed by the trait paper, so-called
 When inheritance is used to compose these methods, a compilation 
 error happens due to conflicts. However, unlike the diamond problem,
-the conflicted methods have very different meanings and do not share a
+the conflicting methods have very different meanings and do not share a
 common parent. We call such a case ``\textit{triangle inheritance}''.
 \haoyuan{Fine to have a graph with diamond and triangle shapes if we got space.}
 
@@ -61,7 +61,7 @@ Some other workarounds or approaches include delegation, and
 renaming/exclusion in the trait model. Yet they still have various
 drawbacks as we will discuss in Section~\ref{sec:overview}. Closest to our work
 are mechanisms available in C++ and C\# that allow for two
-unintentionally conflicted methods to coexist in a class. Among them
+unintentionally conflicting methods to coexist in a class. Among them
 C++ is a representative that accepts the triangle inheritance and
 resolves the ambiguity by \emph{static dispatching}. However, C++ has
 limited support for virtual methods with unintentional conflicts, and
