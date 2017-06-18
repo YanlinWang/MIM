@@ -30,6 +30,10 @@
 \newcommand{\update}{\keyword{update}}
 \newcommand{\dom}{\keyword{dom}}
 
+\newcommand{\angl}[1]{
+    \langle #1 \rangle
+}
+
 \newcommand{\num}[1]{
     \#(#1)
 }
@@ -42,7 +46,7 @@
   \kwinterface \; #1 \; \kwextends \; \overline{#2} \; {\{} \overline{#3} {\}}
 }
 \newcommand{\method}[6]{
-  #1 \; #2 (\overline{#3 \; #4}) \; \kwoverride \; #5 \; {\{} \kwreturn \; #6 ; {\}}
+  #1 \; #2 (\overline{#3} \; \overline{#4}) \; \kwoverride \; #5 \; {\{} \kwreturn \; #6 ; {\}}
 }
 
 \newcommand{\subid} {
@@ -108,12 +112,13 @@
 \newcommand{\tmethod} {
 \inferrule* [left=(T-Method)]
     {  I <: J \\
-	    \judgeewf {\overline{x}:\overline{I_X}, this:I	} {e_0:\_ <: I_E} \\
     \mostSpecific(m, I, J) = \{J\} \\
-    \mtype(m, J) = \overline{I_X} \to I_E
+    \mtype(m, J) = \overline{I_x} \to I_e \\
+        \judgeewf {\overline{x}:\overline{I_x}, this:I  } {e_0:I_0} \\
+        I_0 \subtype I_e
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
     }
-    {\method{I_E}{m}{I_X}{x}{J}{e_0} \text{ OK IN } I}
+    {\method{I_e}{m}{I_x}{x}{J}{e_0} \text{ OK IN } I}
 }
 
 % \newcommand{\tintf} {
@@ -135,30 +140,30 @@
 
 \newcommand{\sinvk} {
 \inferrule* [left=(S-Invk)]
-{ \mbody(m, I, J) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
-{\left(<J>\new{I}\right).m(\overline{<I_E> e}) \to
-    <I'_E>[\overline{<I_X> e}/\overline{x}, <I_0>\new{I}/\kwthis]e_0}
+{ \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0)}
+{\left(\angl{J}\new{I}\right).m(\overline{\angl{I_e}} \overline{e}) \to
+    \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\spathinvk} {
 \inferrule* [left=(S-PathInvk)]
-{\mbody(m, I, K) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
-{\left(<J>\new{I}\right).K::m(\overline{<I_E> e}) \to
-    <I'_E>[\overline{<I_X> e}/\overline{x}, <I_0>\new{I}/\kwthis]e_0}
+{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0)}
+{\left(\angl{J}\new{I}\right).K::m(\overline{\angl{I_e}} \overline{e}) \to
+    \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\ssuperinvk} {
 \inferrule* [left=(S-SuperInvk)]
-{\mbody(m, K, K) = (I_0, \overline{I_X} \; \overline{x}, I'_E \; e_0)}
-{\kwsuper.K::m(\overline{<I_E> e}) \to
-    <I'_E>[\overline{<I_X> e}/\overline{x}, <I_0>\new{I}/\kwthis]e_0}
+{\mbody(m, K, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0)}
+{\kwsuper.K::m(\overline{\angl{I_e}} \overline{e}) \to
+    \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{K}/\kwthis]e_0}
 }
 
 \newcommand{\deff} {
 \begin{displaymath}
     \begin{array}{l}
         \begin{array}{llrl}
-        \text{Annotated Expressions}   & f & \Coloneqq & e \mid <I>e
+        \text{Annotated Expressions}   & f & \Coloneqq & e \mid \angl{I}e
         \end{array}
     \end{array}
 \end{displaymath}
@@ -190,9 +195,9 @@
 %---------- v2.0 ---------------
 %\inferrule* [left=(C-Args)]
 %{e_1 \to f}
-%{<J>\new{I}.m(<\overline{E}>\overline{e_0}, e_1, \overline{e_2})
+%{\angl{J}\new{I}.m(<\overline{E}>\overline{e_0}, e_1, \overline{e_2})
 %\to
-%<J>\new{I}.m(<\overline{E}>\overline{e_0}, f, \overline{e_2})}
+%\angl{J}\new{I}.m(<\overline{E}>\overline{e_0}, f, \overline{e_2})}
 %}
 %---------- v3.0 ---------------
 \inferrule* [left=(C-Args)]
@@ -221,18 +226,18 @@ super.I::m(\ldots,e',\ldots)}
 \newcommand{\cstatictype} {
 \inferrule* [left=(C-StaticType)]
 {}
-{\new{I} \to \; <I>\new{I}}
+{\new{I} \to \; \angl{I}\new{I}}
 }
 
 \newcommand{\cfreduce} {
 \inferrule* [left=(C-FReduce)]
 {e \to e' \\ e \neq \new{J}}
-{<I>e \to \; <I>e'}
+{\angl{I}e \to \; \angl{I}e'}
 }
 
 \newcommand{\cannoreduce} {
 \inferrule* [left=(C-AnnoReduce)]
 {}
-{<I>(<J> \new K) \to <I> \new K}
+{\angl{I}(\angl{J} \new K) \to \angl{I} \new K}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% syntax.tex end %%%%%%%%%%%%%%%%%%%%%%%%

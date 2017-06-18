@@ -9,50 +9,34 @@ inheritance. Below we illustrate with a running example called
 Note that we use Java-like syntax
 throughout the paper, and all types are defined with the keyword
 ``\lstinline|interface|''. The concept is closely related to Java 8
-interfaces with default methods~\cite{}, and traits. For simplicity, an interface in our model has
+interfaces with default methods~\cite{bono14} and traits. For simplicity, an interface in our model has
 the following characteristics:
 \begin{itemize}
-	\item It allows multiple inheritance.
-	\item Every method represents a behaviour and requires a body for its implementation (like Java 8 default methods). There are no abstract methods.
-	\item It can be directly instantiated by the \lstinline|new| keyword.
+  \item It allows multiple inheritance.
+  \item Every method represents a behaviour and requires a body for its implementation (like Java 8 default methods). There are no abstract methods.
+  \item It can be directly instantiated by the \lstinline|new| keyword.
 \end{itemize}
 Furthermore for simplicity, our formalization does not model state at
 this stage. %%, but that should not block our discussions below.
-\bruno{I think there are two important things being discussed in this
-  section:
-1) Hierarchical dispatch: which allows methods calls to be correctly 
-dispatched based on a combination of static and dynamic type
-information; and
-2) Traingle Inheritance: i.e. allowing multiple method implementations 
-to coexist in the same class based on the superclass hierarchy. 
-
-The text in this section is good, but it could emphasize better those 
-two aspects. I think the text starts off with point 2) (the two draw
-methods), then in between the discussion moves to hierarchical
-dispatching. Later it returns to point 2. 
-}
 
 \subsection{Problem 1: Unintentional Method Conflicts}
 Suppose that two components \lstinline|Deck| and \lstinline|Drawable| 
 have been developed in a system.  \lstinline|Deck| represents a deck
-of cards, and defines \lstinline|draw()| for drawing a card from the
+of cards, and defines \lstinline|draw| for drawing a card from the
 deck.  \lstinline|Drawable| is an interface for graphics that
-can be drawn, and also includes a method called \lstinline|draw()| for
+can be drawn, and also includes a method called \lstinline|draw| for
 visual display. For illustration, the implementation of
-\lstinline|draw()| in \lstinline|Drawable| only creates a blank canvas
+\lstinline|draw| in \lstinline|Drawable| only creates a blank canvas
 on the screen, and later some instances (\lstinline|Circle|,
 \lstinline|Square|, or others) that extend \lstinline|Drawable| may
-define their own \lstinline|drawObject()| methods and invoke
-\lstinline|draw()|.
+define their own \lstinline|drawObject| methods and invoke
+\lstinline|draw|.
 
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() { // draws a card from the Deck
     Stack<Card> cards = this.getStack();
-    if (!cards.isEmpty()) {
-      Card card = cards.pop();
-      ...
-    }
+    if (!cards.isEmpty()) { Card card = cards.pop(); ... }
   }
 }
 
@@ -64,11 +48,9 @@ interface Drawable {
   }
 }
 \end{lstlisting}\vspace{3pt}
-\bruno{Space is probably going to be a problem, so you may have to
-  consider putting code side-by-side to maximize space usage.}
 Note that both methods have \lstinline|void| return type (we will not formalize
-\lstinline|void| in our calculus afterwards; here is only for illustration). In \lstinline|Deck|, \lstinline|draw()| tries to get the cards as a stack, pops
-out the top card, and so on. While in \lstinline|Drawable|, \lstinline|draw()|
+\lstinline|void| in our calculus afterwards; here is only for illustration). In \lstinline|Deck|, \lstinline|draw| tries to get the cards as a stack, pops
+out the top card, and so on. While in \lstinline|Drawable|, \lstinline|draw|
 creates a blank canvas using \lstinline|JFrame|. Now, a programmer is designing a
 card game with GUI. He may want to draw a deck on the screen, so he defines a drawable
 deck using multiple inheritance:
@@ -77,96 +59,84 @@ deck using multiple inheritance:
 interface DrawableDeck extends Drawable, Deck {...} 
 \end{lstlisting}\vspace{3pt}
 The point of using multiple inheritance is surely for composing the features from various 
-components, and to achieve code reuse. Multiple inheritance is supported by many mainstream OO
-languages. Nevertheless at this point, \lstinline|DrawableDeck| has to throw a compile
-error, since the two \lstinline|draw()| methods cause a conflict, though accidentally.
+components, and to achieve code reuse, as supported by many mainstream OO
+languages. Nevertheless at this point, languages like Java simply throw a compile
+error on \lstinline|DrawableDeck|, since the two \lstinline|draw| methods cause a conflict, though accidentally.
 
-\subsection{Potential Fixes}
+Now one may quickly comes up with a workaround, which is creating a new \lstinline|draw| in \lstinline|DrawableDeck| to
+explicitly overrides the old ones. However, the two conflicting methods have totally different functionalities, merging
+them into one does not make any sense. This non-solution will hide the old methods, and break independent extensibility. The
+feature we expect is called ``triangle inheritance'', that is to say, when the conflicting methods serve for different behaviours,
+we can allow them to coexist in the extending interface in a type-safe way.\\
 
-For that problem, there are several workarounds. We go over some of
-the main ones next.
+\noindent\textbf{Potential Fixes} There are several workarounds that come to our mind:
+\begin{itemize}
+  \item \textbf{I. Delegation.} As an alternative to multiple inheritance,
+  delegation can be used by introducing two fields with
+  \lstinline|Drawable| type and \lstinline|Deck| type,
+  respectively. This avoids method conflicts. Nevertheless, it is known
+  that using delegation makes it hard to correctly maintain
+  self-references \haoyuan{need to cite} in an extensible system [], and also
+  introduces a lot of boilerplate code.
+  \item \textbf{II. Refactor Drawable and/or Deck to rename the methods.} If
+  the code for \lstinline|Drawable| or \lstinline|Deck| are available
+  then it may be possible to rename one of the \lstinline|draw|
+  methods. However this approach is non-modular, as it requires 
+  modifying existing code, and may not be possible if code is unavailable.
+  \item \textbf{III. Method exclusion/renaming in traits.} Some trait models
+  support method exclusion/renaming. Those features
+  provided can eliminate conflicts, although most
+  programming languages do not support them. In a traditional OO system,
+  they can break the subtyping. Moreover, in
+  contrast with exclusion, renaming can indeed preserve both conflicted
+  behaviours, however, it is cumbersome in practice, as introducing new
+  names can affect other code blocks.
+  \item \textbf{IV. Static dispatch.} Some other languages like C++ have
+  direct support for the triangle inheritance. While conflicting methods are
+  both preserved, the ambiguity of method call is resolved by static dispatch.
+  Qualified names are used to specify the branch to give the right implementation.
+\end{itemize}
 
-\paragraph{I. Delegation.} As an alternative to multiple inheritance,
-delegation can be used by introducing two fields with
-\lstinline|Drawable| type and \lstinline|Deck| type,
-respectively. This avoids method conflicts. Nevertheless, it is known
-that using delegation makes it hard to correctly maintain
-self-references \haoyuan{?} in an extensible system [], and also
-introduces a lot of boilerplate code.
-
-\paragraph{II. Creating a \lstinline|draw()| method in \lstinline|DrawableDeck|, which explicitly overrides the old ones.}
-This is a non-solution. It does not make any sense to override both methods with totally different functionalities, as old
-methods have to be hidden.
-
-\paragraph{III. Refactor Drawable and/or Deck to rename the methods.} If
-the code for \lstinline|Drawable| or \lstinline|Deck| are available
-then it may be possible to rename one of the \lstinline|draw|
-methods. However this approach is non-modular, as it requires 
-modifying existing code, and may not be possible if code is unavailable.
-
-%\paragraph{III. Choosing one of them as the default method, like Mixins.} The mixin model can be applied to choose a
-%default one based on linearisation. Similarly, we want to preserve both features, rather than keeping only one of them.
-
-\paragraph{IV. Method exclusion/renaming in traits.} Some trait models
-support method exclusion/renaming. Those features
-provided can eliminate conflicts, although most
-programming languages do not support them. In a traditional OO system,
-they can break the subtyping. Moreover, in
-contrast with exclusion, renaming can indeed preserve both conflicted
-behaviours, however, it is cumbersome in practice, as introducing new
-names can affect other code blocks.
-
-\paragraph{V. Static dispatch.}
-What we really expect from the language is keeping both methods
-without renaming, and the type checker does not complain. 
-But we need to find an approach to \emph{disambiguate on method
-calls statically}.
-\bruno{Perhaps show the solution in MIM here (i.e Section 2.4), and then move to problem
-2 (which is being discussed next with shuffleAndDraw)}
-
-Certainly the compiler can ignore the conflict when
-\lstinline|DrawableDeck| is declared, but once an object of
-\lstinline|DrawableDeck| is created, a method call for
-\lstinline|draw()| on that object would be ambiguous. Nonetheless, we can adopt static dispatch for
-disambiguating. Some languages like C++ use qualified names in that
-way:
-
+\noindent\textbf{Solution in \name{}:} below is the pseudo-code that shows the triangle
+inheritance supported by \name{}.
+We can define \lstinline|DrawableDeck| by inheriting \lstinline|Drawable| and \lstinline|Deck| together while
+type safety is ensured. It is slightly different from our prototype as we do not model \lstinline|void|, though one can
+define a \lstinline|Void| interface for it.
 \vspace{3pt}\begin{lstlisting}
-void func(Drawable obj) {
-  obj.draw();
+interface DrawableDeck extends Drawable, Deck {}
+
+interface Foo {
+  void func(Deck obj) { obj.draw(); }
 }
 
-DrawableDeck d = new DrawableDeck();
-d.Drawable::draw();       // calling draw() in Drawable
-((Drawable) d).draw(); // calling draw() in Drawable
-func(d);                 // calling draw() in Drawable
+// main program
+new DrawableDeck().Drawable::draw()      // calling draw in Drawable
+new Foo().func(new DrawableDeck())       // calling draw in Deck
 \end{lstlisting}\vspace{3pt}
-Static dispatch in C++ finds out and invokes the most specific method ``by need''.
+Note that both cases in the above code are valid in C++ for disambiguation. As shown by \lstinline|func|, C++ looks at
+the static type of the receiver for static dispatching. Normally we can define such a method \lstinline|func| for ``implicit''
+casts in \name{}. C++ further allows explicit casts.
 
-\subsection{Problem 2: Dynamic Dispatch for Code Reuse}
-\begin{figure*}[t]
-\centering
-\includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
-\caption{DrawableLoggingDeck UML}\label{fig:drawableloggingdeck}
-\end{figure*}
+In the following text we will see that C++ is still unsatisfactory, as it introduces another problem on code reuse, which motivates
+our work.
 
+\subsection{Problem 2: Dynamic Dispatch for Code Reuse}\label{subsec:problem2}
+
+\bruno{Emphasizing hierarchical dispatch and triangle inheritance.}\haoyuan{Done}
 On the other hand, we also need dynamic dispatch as it is essential and widely used in object-oriented programming.
 C++ has the flexibility for choosing either way of dispatch by the \kwvirtual{} keyword.
-Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance in Figure~\ref{fig:drawableloggingdeck}, 
+Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance, 
 we redefine \lstinline|Deck| to support
-both \lstinline|draw()| and another operation called \lstinline|shuffleAndDraw()|:
+both \lstinline|draw| and another operation called \lstinline|shuffleAndDraw|:
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() {...}
-  void shuffleAndDraw() {
-    shuffle();
-    draw();
-  }
+  void shuffleAndDraw() { shuffle(); draw(); }
   ...
 }
 \end{lstlisting}\vspace{3pt}
-\lstinline|shuffleAndDraw()| is a representative method that invokes \lstinline|draw()| in its definition. In principle, we want
-that invocation to use dynamic dispatch, because a programmer may define a subtype of \lstinline|Deck|, and override \lstinline|draw()|:
+\lstinline|shuffleAndDraw| is a typical method that invokes \lstinline|draw| in its definition. In principle, we want
+that invocation to use dynamic dispatch, because a programmer may define a subtype of \lstinline|Deck|, and override \lstinline|draw|:
 \vspace{3pt}\begin{lstlisting}
 interface LoggingDeck {
   void draw() { // overriding
@@ -175,62 +145,62 @@ interface LoggingDeck {
       Card card = cards.pop();
       println("The card is: " + card.toString());
       ...
-    } else {
-      println("Empty deck.");
-    }
+    } else println("Empty deck.");
   }
 }
 \end{lstlisting}\vspace{3pt}
-Usually we want to reuse the code of \lstinline|shuffleAndDraw()| during inheritance, hence dynamic dispatch is necessary, otherwise
-programmers have to override all the other methods that invoke \lstinline|draw()|. However, as seen before, dynamic dispatch can cause
-ambiguity if we have:
+In that case, \lstinline|shuffleAndDraw| needs to be adapted to the new \lstinline|draw|. But due to static dispatch,
+it still refers to the old \lstinline|draw| in \lstinline|Deck|. Thus programmers have to copy the \lstinline|shuffleAndDraw| code in
+\lstinline|LoggingDeck|. It requires a lot of redundant work if we have to duplicate all such methods. Hence in order for code reuse,
+we cannot just rely on static dispatch. However, as seen before, dynamic dispatch would take us back to problem 1, for instance, when we
+have the UML in Figure~\ref{fig:drawableloggingdeck} and the following code:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableLoggingDeck extends Drawable, LoggingDeck {...}
 
 DrawableLoggingDeck d = new DrawableLoggingDeck();
-d.shuffleAndDraw(); // ambiguous draw()
+d.shuffleAndDraw(); // ambiguous draw if dynamically dispatched
 \end{lstlisting}\vspace{3pt}
-Since the dynamic type of the receiver is \lstinline|DrawableLoggingDeck|, calling \lstinline|shuffleAndDraw()| triggers the ambiguity. When \lstinline|shuffleAndDraw()| invokes \lstinline|draw()|, what we really want is \lstinline|LoggingDeck.draw()|, yet
-neither static dispatch nor dynamic dispatch in languages like C++ does so.
- Therefore, we need to find another algorithm for method resolution.
 
-\subsection{Solution in \MIM: \dispatchnamecaptical}\label{subsec:solutionmim}
-The \MIM{} model uses \dispatchnameit{} for method lookup. A qualified
-method invocation, for instance, \lstinline|e.I::m()|, is read as
+\begin{figure*}[t]
+  \centering
+  \includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
+  \caption{UML graph for \lstinline|DrawableLoggingDeck|.}\label{fig:drawableloggingdeck}
+\end{figure*}
+If we try to keep the triangle inheritance, but apply dynamic dispatch, calling \lstinline|shuffleAndDraw| would trigger ambiguity. 
+In principle we want \lstinline|shuffleAndDraw| to invoke \lstinline|LoggingDeck.draw|, because they belong to the same branch, 
+nonetheless, choosing either static dispatch
+or dynamic dispatch cannot ensure both the triangle inheritance and code reuse. As far as we know, C++ does not have a solution
+to it. Therefore we need to find another algorithm for method resolution.\\
+
+\noindent\textbf{Solution in \name{}:} \name{} uses \textit{hierarchical dispatch} for method lookup. A qualified
+method invocation in \name{}, for instance, \lstinline|e.I::m()|, is read as
 ``finding the most specific method \lstinline|m| along the path
 \lstinline|I|''. The meaning of ``along the path \lstinline|I|'' is
-that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an overridden version after \lstinline|I| because of dynamic dispatch. The formal definition will be introduced later. On the other hand, \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, simply behaves the same as \lstinline|e.I::m()| in our model. It is just like the difference between implicit and explicit casts.
+that, if the result of \dispatch{} is \lstinline|J.m()| for some \lstinline|J|, then such a \lstinline|J| must be a super type of \lstinline|e|'s dynamic type, and \lstinline|J| has a subtyping relation with \lstinline|I| (either \lstinline|J <: I| or \lstinline|J >: I|). Intuitively, the most specific \lstinline|m()| must be from branch \lstinline|I|, but it can be an updated version after \lstinline|I| because of dynamic dispatch. The formal definition will be introduced later.
 
-Such a dispatch algorithm make uses of both the static type and the dynamic type of the receiver. Intuitively, the static type specifies one branch of the method to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. To prevent this, we disallow this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict in that way.
+On the other hand, \lstinline|e.m()| where \lstinline|e| has static type \lstinline|I|, simply behaves the same as \lstinline|e.I::m()| in our model. Such a dispatch algorithm makes use of both the static type and the dynamic type of the receiver, so it is like a combination of static and dynamic dispatch. Intuitively, the static type specifies one branch to avoid ambiguity, and the dynamic type finds the latest version on that branch. It may still introduce ambiguity when there are multiple paths from the static type to the dynamic type, and those paths cause conflicts. \name{} disallows this kind of conflict to ensure unambiguity. That is to say, we do not allow two methods to override a same base method when they cause conflicts. This is natural, as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict, but the diamond problem.
 
-With the old example, the code below meets our expectation:
+Back to the example, we can write \lstinline|"this.Deck::draw()"| inside the implementation of \lstinline|shuffleAndDraw|, and on \lstinline|d.shuffleAndDraw()| it automatically dispatches to \lstinline|LoggingDeck.draw()|. Furthermore, the following code in \name{}
+also behaves as expected:
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() {...}
-  void shuffleAndDraw() {
-    this.Deck::shuffle();
-    this.Deck::draw();
-  }
+  void shuffleAndDraw() { shuffle(); draw(); }
   ...
 }
 \end{lstlisting}\vspace{3pt}
-It guarantees that \lstinline|shuffleAndDraw()| calls \lstinline|shuffle()| and \lstinline|draw()| from its own branch, so that the namesakes
-from other branches will not cause conflicts. Now \lstinline|d.shuffleAndDraw()| is no longer ambiguous.
+It is because the compiler is able to know that the receiver ``\lstinline|this|'' exactly has static type \lstinline|Deck|. Hence hierarchical dispatch eliminates ambiguity.
 
-Actually in \MIM{}, we can still write ``\lstinline|shuffle();|'' and ``\lstinline|draw();|'',
-because the compiler is able to know that the receiver ``\lstinline|this|'' exactly has static type \lstinline|Deck|, hence hierarchical dispatch eliminates ambiguity.
+\subsection{Problem 3: Overriding on Individual Branches}\label{subsec:partialoverrides}
 
-\subsection{Partial Overrides in \MIM	}\label{subsec:partialoverrides}
+We have seen that hierarchical dispatch can dynamically find the latest implementation of a method from one path (or branch). But when
+several branches are merged by triangle inheritance, there is usually demand for updating them separately. For example, someone plans to
+reuse the other features of \lstinline|DrawableLoggingDeck|, but updates the \lstinline|draw| from \lstinline|Drawable| by setting the canvas
+invisible. Unfortunately in traditional models, the merged branches cannot be separately overridden any longer, since overriding
+will hide all branches and break coexistence. Modifying existing code is again unsatisfactory as it affects modularity.\\
 
-Method overriding is commonly supported by many OO languages as a kind of polymorphism.
-We have seen that \MIM{} is able to preserve several conflicted branches simultaneously and let them coexist.
-In that case, a traditional method overriding, like one in Java, will override all the inherited methods, and hence
-hide all those conflicted branches. Besides, \MIM{} also allows partial overrides to offer independent extensibility.
-A partial override will specify one of the branches, and only refine the method from that branch. It ensures that
-other branches are not affected.
-
-For example, we define an interface \lstinline|DrawableLoggingDeck2|, and in its definition we refine the \lstinline|draw()| from \lstinline|Drawable()| by setting
-the canvas invisible:
+\noindent\textbf{Solution in \name{}:} an additional feature of \name{} is \textit{hierarchical overriding}. It allows conflicting methods
+to be overridden on individual branches, and hence offers independent extensibility. The above example can be easily realized by:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableLoggingDeck2 extends DrawableLoggingDeck {
   void draw() override Drawable {
@@ -239,13 +209,11 @@ interface DrawableLoggingDeck2 extends DrawableLoggingDeck {
     ...
   }
 }
+
+// main program
+new DrawableLoggingDeck2().Drawable::draw()      // calling draw in DrawableLoggingDeck2
 \end{lstlisting}\vspace{3pt}
-Here the partial override specifies \lstinline|Drawable| to be refined. The use of it ensures that both branches of \lstinline|draw()| are preserved. At the same time, we should notice that the methods we present in previous examples are called ``original methods'', and they are actually created by ``total overrides'', rather than partial overrides. Some client code is shown below: \haoyuan{which words should we use instead of "total overrides"?}
-\vspace{3pt}\begin{lstlisting}
-DrawableLoggingDeck2 d2 = new DrawableLoggingDeck2();
-d2.Drawable::draw(); // calling draw() in DrawableLoggingDeck2
-d2.Deck::draw();       // calling draw() in LoggingDeck
-\end{lstlisting}\vspace{3pt}
+\haoyuan{TODO: introduce the concept of original methods.}
 
 In \MIM{}, hierarchical dispatch first finds the most specific original method (branch), then it finds the most specific partial override on that branch. A quick counter-example is when there are two partial overrides on \lstinline|Drawable| in \lstinline|DrawableLoggingDeck2|, it leads to ambiguity. The compiler is supposed to forbid that during compile time.
 

@@ -86,20 +86,20 @@ To compute \red{$\new F.n(\new F)$}:
 \begin{itemize}
 	\item By (C-RECEIVER), we compute \red{$\new F$}:
 	\begin{itemize}
-		\item By (C-STATICTYPE): \red{$<F> \new F$}.
+		\item By (C-STATICTYPE): \red{$\angl{F} \new F$}.
 	\end{itemize}
 	\item By (C-ARGS), we compute \red{$\new F$}:
 	\begin{itemize}
-		\item By (C-STATICTYPE): \red{$<F> \new F$}.
+		\item By (C-STATICTYPE): \red{$\angl{F} \new F$}.
 	\end{itemize}
-	\item Now we get \red{$(<F> \new F).n(<F> \new F)$}. By (S-INVK):
+	\item Now we get \red{$(\angl{F} \new F).n(\angl{F} \new F)$}. By (S-INVK):
 	\begin{itemize}
 		\item Compute $\mbody(n, F, F) = \red{(B \; b, A \; b.m())}$.
-		\item Replace \red{$b$} with \red{$<B> \new F$} in \red{$b.m()$}.
-		\item Replace \red{$\kwthis$} with \red{$<F> \new F$} in \red{$b.m()$}.
+		\item Replace \red{$b$} with \red{$\angl{B} \new F$} in \red{$b.m()$}.
+		\item Replace \red{$\kwthis$} with \red{$\angl{F} \new F$} in \red{$b.m()$}.
 	\end{itemize}
-	\item Finally we get \red{$<A>((<B> \new F).m())$}.
-	\item By (C-FREDUCE), we first compute \red{$(<B> \new F).m()$}:
+	\item Finally we get \red{$\angl{A}((\angl{B} \new F).m())$}.
+	\item By (C-FREDUCE), we first compute \red{$(\angl{B} \new F).m()$}:
 	\begin{itemize}
 		\item By (S-INVK), we compute \red{$\mbody(m, F, B)$}.
 		\item In $\mbody$, we invoke \red{$\mostSpecific(m, F, B)$}.
@@ -108,11 +108,11 @@ To compute \red{$\new F.n(\new F)$}:
 		\item In $\mostSpecific_3$, \red{$set = \{B,D,E,F\}$, $\prune(set) = \{F\}$}.
 		\item Back to $\mbody$, we check \red{$F.m$} and return \red{$(-,A \; (\new F))$}.
 		\item Back to (S-INVK).
-		\item Replace \red{$\kwthis$} with \red{$<B> \new F$} in \red{$\new F$}.
-		\item Finally we get \red{$<A> \new F$}.
+		\item Replace \red{$\kwthis$} with \red{$\angl{B} \new F$} in \red{$\new F$}.
+		\item Finally we get \red{$\angl{A} \new F$}.
 	\end{itemize}
-	\item Now we have \red{$<A>(<A> \new F)$}.
-	\item By (C-ANNOREDUCE): \red{$<A> \new F$}.
+	\item Now we have \red{$\angl{A}(\angl{A} \new F)$}.
+	\item By (C-ANNOREDUCE): \red{$\angl{A} \new F$}.
 \end{itemize}
 
 \red{TODO: class encapsulation problem: interface A: m; interface B: m update A; interface C: m update B.}
