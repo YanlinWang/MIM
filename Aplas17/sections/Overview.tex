@@ -161,9 +161,11 @@ d.shuffleAndDraw(); // ambiguous draw if dynamically dispatched
 \end{lstlisting}\vspace{3pt}
 
 \begin{figure*}[t]
+\saveSpaceFig
   \centering
   \includegraphics[height=2cm]{pics/DrawableLoggingDeck.pdf}
   \caption{UML graph for \lstinline|DrawableLoggingDeck|.}\label{fig:drawableloggingdeck}
+\saveSpaceFig
 \end{figure*}
 \noindent If we try to keep the triangle inheritance while applying dynamic dispatch, calling \lstinline|shuffleAndDraw| would trigger ambiguity. 
 In principle, we want \lstinline|shuffleAndDraw| to invoke \lstinline|LoggingDeck.draw| because they belong to the same branch, 

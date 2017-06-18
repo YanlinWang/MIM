@@ -5,6 +5,7 @@ conventions as FJ; $\overline{I}$ is shorthand for the (possibly empty)
 list $I_1, ..., I_n$, which may be indexed by $I_i$.
 The syntax, typing rules, and small-step semantics are presented below.
 
+\vspace{-2ex}
 \subsection{Syntax}
 Figure~\ref{fig:syntax} shows the syntax of \MIM{}. The multiple
 inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
@@ -50,6 +51,7 @@ For simplicity, \name{} does not formalize statements like assignments and so on
 A program consists of a list of interface declarations, plus a single expression.
 
 \begin{figure*}[t]
+\saveSpaceFig
 \begin{displaymath}
 \begin{array}{l}
 \begin{array}{llrl}
@@ -70,6 +72,7 @@ e.I::m(\overline{e}) \mid
 \end{array}
 \end{displaymath}
 \caption{Syntax of \name{}.}\label{fig:syntax}
+\saveSpaceFig
 \end{figure*}
 
 \subsection{Subtyping and Typing Rules}
@@ -99,6 +102,7 @@ ambiguous during runtime. Therefore the condition says that if an expression typ
 in any case. The interface check is responsible for capturing ambiguity during compilation.
 
 \begin{figure*}[t]
+\saveSpaceFig
 \begin{mathpar}
 	\framebox{$ I <: J $} \hspace{.5in} \subid \\
 	\subtrans \hspace{.5in} \subextends \\
@@ -112,6 +116,7 @@ in any case. The interface check is responsible for capturing ambiguity during c
 	\tintf
 \end{mathpar}
 \caption{Typing and subtyping rules.}\label{fig:typingrules}
+\saveSpaceFig
 \end{figure*}
 
 \subsection{Small-step Semantics and Congruence}
@@ -142,6 +147,7 @@ is equivalent to writing explicit casts like \lstinline|((I) e).m()|
 in languages like Java.
 
 \begin{figure*}[t]
+\saveSpaceFig
 \begin{mathpar}
 	\sinvk \\
 	\spathinvk \\
@@ -156,6 +162,7 @@ in languages like Java.
 	\cannoreduce
 \end{mathpar}
 \caption{Small-step semantics.}\label{fig:smallstep}
+\saveSpaceFig
 \end{figure*}
 
 \begin{comment}
