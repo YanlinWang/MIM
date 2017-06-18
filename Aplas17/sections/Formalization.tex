@@ -2,11 +2,11 @@
 
 \bruno{There is quite a bit of teminology that we need to be careful.}\haoyuan{Done}
 
-In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}irarchical \textbf{J}ava}) , based on
+In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}) , based on
 a minimal subset of Java 8 interfaces following Featherweight Java style~\cite{Igarashi01FJ}. We use the same
 conventions as FJ; $\overline{I}$ is shorthand for the (possibly empty)
 list $I_1, ..., I_n$, which may be indexed by $I_i$.
-The syntax, typing rules and small-step semantics are presented below.
+The syntax, typing rules, and small-step semantics are presented below.
 
 \subsection{Syntax}
 Figure~\ref{fig:syntax} shows the syntax of \MIM{}. The multiple
@@ -37,19 +37,19 @@ implies we can uniquely identify a method by its name.
 
 Expressions can be standard constructs such as variables, method
 invocation, or object creation. A novel type of expressions are path-invocations like
-``$e.I::m(\overline{e})$'', meaning that the dynamically binded
+``$e.I::m(\overline{e})$'', meaning that the dynamically bound
 implementation for method $m$ should be along the path $I$. Another
 interesting expression are super-invocations, which enable a method to access an old
 implementation from the specified super type. Hence a super-invocation
 can only be used inside an interface definition.
-Finally an expression can also be annotated with its static type. But \emph{annotated expressions are only intended for the semantic rules},
+Finally, an expression can also be annotated with its static type. But \emph{annotated expressions are only intended for the semantic rules},
 hence they are not supposed to appear in the source program. A value
 ``$\angl{I}\new{J}$''
-is the final result of multple reduction steps evaluating an
+is the final result of multiple reduction steps evaluating an
 expression. Such value represents an object instance
 of $J$ with an annotated static type $I$.
 
-For simplicity \name{} does not formalize statements like assignments and so on, because they are orthogonal features.
+For simplicity, \name{} does not formalize statements like assignments and so on because they are orthogonal features.
 A program consists of a list of interface declarations, plus a single expression.
 
 \begin{figure*}[t]
@@ -90,7 +90,7 @@ illustrate later in Section~\ref{subsec:auxdefs}. After the method type is obtai
 have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
 path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
-The method typing rule \textsc{(T-Method)} is more interesting, since the method can either be an original implementation or hierarchical overriding.
+The method typing rule \textsc{(T-Method)} is more interesting since the method can either be an original implementation or hierarchical overriding.
 Besides type-checking the return expression,
 we further use the helper function $\mostSpecific$, again formally defined in Section~\ref{subsec:auxdefs}.
 By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is hierarchical overriding, it should not step over original methods, otherwise
@@ -99,7 +99,7 @@ their enclosing types would be returned instead of $J$.
 Finally, \textsc{(T-Invk)} defines interface checking. The condition helps to ensure unambiguity and type soundness of the calculus. We will
 introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not
 ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime
-in any case. The interface check is responsible to capture ambiguity during compilation.
+in any case. The interface check is responsible for capturing ambiguity during compilation.
 
 \begin{figure*}[t]
 \begin{mathpar}
@@ -173,7 +173,7 @@ in languages like Java.
 \subsection{Properties}
 Previously the definitions of our model are given, now we should proceed to prove the type soundness of 
 the model, which relates typing to computation. The type soundness states that, if an expression is 
-well-typed, then after many reduction steps it must reduce to a value, with its annotation to be subtype of the original expression type.
+well-typed, then after many reduction steps it must reduce to a value, with its annotation to be a subtype of the original expression type.
 Following the Featherweight Java paper~\cite{Igarashi01FJ}, the type-soundness theorem 
 (Theorem~\ref{theorem_soundness}) is proved by using the standard technique of subject reduction (Theorem~\ref{theorem_subject})
 and progress (Theorem~\ref{theorem_progress})~\cite{Wright1994}. In Theorem~\ref{theorem_progress} ``$\#(\overline{x})$'' denotes the number of
