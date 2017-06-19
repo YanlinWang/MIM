@@ -3,6 +3,7 @@
 \subsection{Proofs}~\label{appendix_proof}
 \input{sections/TypeSafety.tex}
 
+\begin{comment}
 \subsection{A Non-Trivial Example}
 
 \begin{lstlisting}
@@ -28,38 +29,6 @@ A n(B b) override F {return b.m(); }
 new F().n(new F())
 \end{lstlisting}
 
-\begin{comment}
-\[
-\begin{array}{l}
-\kwinterface \; A \; \kwextends \; \{ \\
-\; \; \; \; A \; m() \; \kwoverride \; A \; \{\kwreturn \; \new A;\} \\
-\} \\
-\\
-\kwinterface \; B \; \kwextends \; A \; \{ \\
-\; \; \; \; A \; m() \; \kwoverride \; B \; \{\kwreturn \; \new B;\} \\
-\} \\
-\\
-\kwinterface \; C \; \kwextends \; A \; \{ \\
-\; \; \; \; A \; m() \; \kwoverride \; C \; \{\kwreturn \; \new C;\} \\
-\} \\
-\\
-\kwinterface \; D \; \kwextends \; B, \; C \; \{ \\
-\; \; \; \; A \; m() \; \kwoverride \; B \; \{\kwreturn \; \new D;\} \\
-\} \\
-\\
-\kwinterface \; E \; \kwextends \; B \; \{ \\
-\; \; \; \; A \; m() \; \kwoverride \; B \; \{\kwreturn \; \new E;\} \\
-\} \\
-\\
-\kwinterface \; F \; \kwextends \; D, \; E \; \{ \\
-\; \; \; \; A \; m() \; \kwoverride \; B \; \{\kwreturn \; \new F;\} \\
-\; \; \; \; A \; n(B \; b) \; \kwoverride \; F \; \{\kwreturn \; b.m();\} \\
-\} \\
-\\
-\new F.n(\new F)
-\end{array}
-\]
-\end{comment}
 
 ~\red{Unfortunately I think this example shows that it is hard to reuse
 	$D.m$ on path $B$ and $E.m$ on path $B$ in $F$?}
@@ -115,4 +84,4 @@ To compute \red{$\new F.n(\new F)$}:
 	\item By (C-ANNOREDUCE): \red{$\angl{A} \new F$}.
 \end{itemize}
 
-\red{TODO: class encapsulation problem: interface A: m; interface B: m update A; interface C: m update B.}
+\end{comment}
