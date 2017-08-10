@@ -17,6 +17,7 @@
 \newcommand{\definedin}{\keyword{definedin}}
 \newcommand{\collectMethods}{\keyword{collectMethods}}
 \newcommand{\mbody}{\keyword{mbody}}
+\newcommand{\mbodyStatic}{\keyword{mbodyStatic}}
 \newcommand{\Undefined}{\keyword{Undefined}}
 \newcommand{\Error}{\keyword{Error}}
 \newcommand{\needed}{\keyword{needed}}
@@ -31,6 +32,7 @@
 \newcommand{\dom}{\keyword{dom}}
 
 \newcommand{\canInstantiate}{\keyword{canInstantiate}}
+% \newcommand{\mbodyStatic}{\keyword{mbodyStatic}}
 
 \newcommand{\angl}[1]{
     \langle #1 \rangle
@@ -80,7 +82,8 @@
 \newcommand{\tinvk} {
 \inferrule* [left=(T-Invk)]
     {  \judgeewf \Gamma {e_0:I_0}
-    \\ \mtype(m, I_0) = \overline{J} \to I
+    % \\ \mtype(m, I_0) = \overline{J} \to I
+    \\ \mbody(m, I_0, I_0) = (K, \overline{J} \; \overline{x}, I \; e) 
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
@@ -91,22 +94,31 @@
 \inferrule* [left=(T-PathInvk)]
     {  \judgeewf \Gamma {e_0:I_0}
     \\ I_0 \subtype J_0
-    \\ \mtype(m, J_0) = \overline{J} \to I
+    \\ \mbody(m, I_0, J_0) = (K, \overline{J} \; \overline{x}, I \; e) 
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
-    {\judgeewf \Gamma e_0.J_0::m(\overline{e}):I}
+    {\judgeewf \Gamma e_0.J_0?m(\overline{e}):I}
 }
 
-\newcommand{\tsuperinvk} {
-\inferrule* [left=(T-SuperInvk)]
-    {  \ext(\Gamma(this), J_0)
-    \\ \mtype(m, J_0) = \overline{J} \to I
+\newcommand{\tstaticinvk} {
+\inferrule* [left=(T-StaticInvk)]
+    {  \mbodyStatic(m, J_0) = (K, \overline{J} \; \overline{x}, I \; e)
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
-    {\judgeewf \Gamma {\kwsuper.J_0::m(\overline{e})}:I}
+    {\judgeewf \Gamma {e_0.J_0::m(\overline{e})}:I}
 }
+
+% \newcommand{\tsuperinvk} {
+% \inferrule* [left=(T-SuperInvk)]
+%     {  \ext(\Gamma(this), J_0)
+%     \\ \mtype(m, J_0) = \overline{J} \to I
+%     \\ \judgeewf \Gamma \overline{e}:\overline{I}
+%     \\ \overline{I} \subtype \overline{J}
+%     }
+%     {\judgeewf \Gamma {\kwsuper.J_0::m(\overline{e})}:I}
+% }
 
 \newcommand{\tnew} {
 \inferrule* [left=(T-New)]

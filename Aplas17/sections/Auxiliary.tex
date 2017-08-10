@@ -98,6 +98,21 @@ The algorithm is decribed below:
 then $\canInstantiate(I) = true$, else $\canInstantiate(I) = false$.
 \end{enumerate}
 
+\subsection{$\mbodyStatic$}
+The auxilary function $\mbodyStatic$ serves for method loopup for static method invocation. 
+The brief description of the algorithm follows:
+\begin{mathpar}
+    \inferrule* [left=]
+        {  \mostSpecific(m, I, I) = \{J\} \\
+            \kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_e}{m}{I_x}{x}{J}{e_0}\ldots\}}
+        {\mbodyStatic(m, I) = (J, \overline{I_x} \; \overline{x}, I_e \; e_0)}
+
+    \inferrule* [left=]
+        {  \mostSpecific(m, I, I) = \{J\} \\
+            \kwinterface \; J \; \kwextends \; \overline{J} \; \{\absmethod{I_e}{m}{I_x}{x}{J}\ldots\}}
+        {\mbodyStatic(m, I) = (J, \overline{I_x} \; \overline{x}, I_e \; \o)}
+\end{mathpar}    
+
 \subsection{$\mbody$ and $\mtype$}
 
 $\mbody(m, I_d, I_s)$, as defined in Figure~\ref{fig:auxfunc}, denotes a method body lookup function.
