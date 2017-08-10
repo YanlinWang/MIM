@@ -88,6 +88,16 @@ The $\mostSpecific$ function only focuses on original method implementations, al
 \end{itemize}
 The algorithm for finding the most specific hierarchical overriding method is quite similar to that for finding the most specific original method. A hierarchical overriding is not allowed to work on another hierarchical overriding, and one can hide another if their interfaces have subtyping relations. If they do not hide each other, the result implies ambiguity.
 
+
+\subsection{$\canInstantiate$}
+We use the auxilary function $\canInstantiate(I)$ to check whether an interface $I$ can be instantiated or not.
+The algorithm is decribed below:
+\begin{enumerate}
+\item Suppose $\mostSpecific(m, I, I) = \overline{J}$, where $\overline{J}$ is a list of interfaces.
+\item If $\forall J_i \in \overline{J}, if \mostSpecificOverride(m, I, J_i) = \{ K \} $ and $m$ in $K$ is not abstract, 
+then $\canInstantiate(I) = true$, else $\canInstantiate(I) = false$.
+\end{enumerate}
+
 \subsection{$\mbody$ and $\mtype$}
 
 $\mbody(m, I_d, I_s)$, as defined in Figure~\ref{fig:auxfunc}, denotes a method body lookup function.

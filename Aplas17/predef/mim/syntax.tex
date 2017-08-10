@@ -30,6 +30,8 @@
 \newcommand{\update}{\keyword{update}}
 \newcommand{\dom}{\keyword{dom}}
 
+\newcommand{\canInstantiate}{\keyword{canInstantiate}}
+
 \newcommand{\angl}[1]{
     \langle #1 \rangle
 }
@@ -108,7 +110,7 @@
 
 \newcommand{\tnew} {
 \inferrule* [left=(T-New)]
-    {\interface{I}{I}{M}}
+    {\interface{I}{I}{M} \\ \canInstantiate(I) } 
     {\judgeewf \Gamma \new{I}:I}
 }
 
