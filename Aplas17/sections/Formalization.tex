@@ -56,7 +56,8 @@ A program consists of a list of interface declarations, plus a single expression
 \begin{array}{l}
 \begin{array}{llrl}
 \text{Interfaces}   & IL & \Coloneqq & \interface{I}{I}{M} \\
-\text{Methods}      & M  & \Coloneqq & \method{I}{m}{I_x}{x}{J}{e} \\
+\text{Methods}      & M  & \Coloneqq & \method{I}{m}{I_x}{x}{J}{e}  \mid
+									   \absmethod{I}{m}{I_x}{x}{J} \\
 \text{Expressions}  & e  & \Coloneqq & x \mid
 e.m(\overline{e}) \mid
 \new{I} \mid
@@ -113,6 +114,7 @@ in any case. The interface check is responsible for capturing ambiguity during c
 	\tsuperinvk \\
 	\tnew \\
 	\tmethod \\
+	\tabsmethod \\
 	\tintf
 \end{mathpar}
 \caption{Typing and subtyping rules.}\label{fig:typingrules}
