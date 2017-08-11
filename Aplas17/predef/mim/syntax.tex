@@ -33,6 +33,8 @@
 
 \newcommand{\canInstantiate}{\keyword{canInstantiate}}
 % \newcommand{\mbodyStatic}{\keyword{mbodyStatic}}
+\newcommand{\pathIvk}{?}
+\newcommand{\staticIvk}{::}
 
 \newcommand{\angl}[1]{
     \langle #1 \rangle
@@ -175,16 +177,23 @@
 \newcommand{\spathinvk} {
 \inferrule* [left=(S-PathInvk)]
 {\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) \\ e_0 \neq \o}
-{\left(\angl{J}\new{I}\right).K::m(\overline{\angl{I_e}} \overline{e}) \to
+{\left(\angl{J}\new{I}\right).K?m(\overline{\angl{I_e}} \overline{e}) \to
     \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
-\newcommand{\ssuperinvk} {
-\inferrule* [left=(S-SuperInvk)]
-{\mbody(m, K, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) \\ e_0 \neq \o}
-{\kwsuper.K::m(\overline{\angl{I_e}} \overline{e}) \to
-    \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{K}/\kwthis]e_0}
+\newcommand{\sstaticinvk} {
+\inferrule* [left=(S-StaticInvk)]
+{\mbodyStatic(m, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) \\ e_0 \neq \o}
+{\left(\angl{J}\new{I}\right).K::m(\overline{\angl{I_e}} \overline{e}) \to
+    \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{I}//\kwthis]e_0}
 }
+
+% \newcommand{\ssuperinvk} {
+% \inferrule* [left=(S-SuperInvk)]
+% {\mbody(m, K, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) \\ e_0 \neq \o}
+% {\kwsuper.K::m(\overline{\angl{I_e}} \overline{e}) \to
+%     \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{K}/\kwthis]e_0}
+% }
 
 \newcommand{\deff} {
 \begin{displaymath}
@@ -210,7 +219,7 @@
 \newcommand{\cpathreceiver} {
 \inferrule* [left=(C-PathReceiver)]
 {e_0 \to e'_0}
-{e_0.K::m(\overline{e}) \to e'_0.K::m(\overline{e})}
+{e_0.K\pathIvk m(\overline{e}) \to e'_0.K\pathIvk m(\overline{e})}
 }
 
 \newcommand{\cargs} {
@@ -237,18 +246,26 @@ e_0.m(\ldots,e',\ldots)}
 \newcommand{\cpathargs} {
 \inferrule* [left=(C-PathArgs)]
 {e \to e'}
-{e_0.I::m(\ldots,e,\ldots)
+{e_0.I\pathIvk m(\ldots,e,\ldots)
 \to
-e_0.I::m(\ldots,e',\ldots)}
+e_0.I\pathIvk m(\ldots,e',\ldots)}
 }
 
-\newcommand{\csuperargs} {
-\inferrule* [left=(C-SuperArgs)]
+\newcommand{\cstaticargs} {
+\inferrule* [left=(C-StaticArgs)]
 {e \to e'}
-{super.I::m(\ldots,e,\ldots)
+{e_0.I\staticIvk m(\ldots,e,\ldots)
 \to
-super.I::m(\ldots,e',\ldots)}
+e_0.I\staticIvk m(\ldots,e',\ldots)}
 }
+
+% \newcommand{\csuperargs} {
+% \inferrule* [left=(C-SuperArgs)]
+% {e \to e'}
+% {super.I::m(\ldots,e,\ldots)
+% \to
+% super.I::m(\ldots,e',\ldots)}
+% }
 
 \newcommand{\cstatictype} {
 \inferrule* [left=(C-StaticType)]
