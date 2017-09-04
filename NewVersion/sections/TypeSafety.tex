@@ -1,0 +1,154 @@
+\begin{lemma}~\label{lemma0}
+% $\textit{If } \mtype(m, I, J) = \overline{D} \rightarrow D, \textit{ and } \mbody(m, I, J) = \overline{x}.e, 
+%  \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists C <: D, \textit{ such that }  
+%  \judgeewf {\overline{x}:\overline{D}, \kwthis:J_0} {e:C} $.
+$\textit{If } \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_e \; e), 
+ \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists I' <: I_e, \textit{ such that }  
+ \judgeewf {\overline{x}:\overline{I_x}, \kwthis:J_0} {e : I'} $.
+\end{lemma}
+
+ \begin{proof}~\\
+ $\textit{The base case: if } m \textit{ is defined in } I, \textit{ then it is easy since } m 
+ \textit{ is defined in } I \textit{ and } 
+ \judgeewf {\overline{x}:\overline{I_x}, \kwthis : I} {e : I_e}, \textit{by the rule \textsc{(T-Method)}}.
+ \textit{The induction step is also straightforward.} 
+ $ 
+ \end{proof}
+
+
+\begin{lemma}[Method Type Preservation]~\label{lemma2}
+$\textit{If } \mtype(m, I) = \overline{I_x} \rightarrow I_e, \textit{ then } \mtype(m, J) = \overline{I_x} \rightarrow I_e 
+\textit{ for all } J \subtype I.
+$
+\begin{proof}~\\
+Straight induction on the derivation of $J \subtype I$. Whether $m$ is defined in $J$ or not, $\mtype(m, J)$ should 
+be the same as $\mtype(m, K)$ where $J \; \kwextends \; K \{...\}$.
+\end{proof}
+\end{lemma}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{lemma}[Term Substitution Preserves Typing]~\label{lemma1}
+$\textit{If } \ \judgeewf {\Gamma, \ \overline{x}:\overline{I_x}} { e : I } \textit{ , and }
+\judgeewf {\Gamma} {\overline{y}:\overline{I_y}} \textit{ where } \overline{I_y} \subtype \overline{I_x}
+\textit{, then } \judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I'} \textit{ for some } I' \subtype I.
+$
+
+\begin{proof}~\\
+\noindent \textbf{Case Var.}
+$ e = x \quad I = \Gamma(x) $. \\
+If $x \notin \overline{x}$, then the conclusion is immediate, since $[\overline{y}/\overline{x}]x = x$.
+On the other hand, if $x = x_i$ and $I = {I_x}_i$, then since $[\overline{y}/\overline{x}]x = [\overline{y}/\overline{x}]x_i = y_i$,
+letting $I' = {I_y}_i$ finishes the case.
+
+\noindent \textbf{Case New.}
+$e = \new I$ and there are no term for substitution, the conclusion is obvious.
+
+\noindent \textbf{Case Invk.}
+$ e = e_0.m(\overline{e}) \quad
+  \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} $
+$$ mtype(m, I_0) = \overline{I_e} \rightarrow J $$
+$$ \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e}:\overline{I}} \quad
+    \overline{I} \subtype \overline{I_e} $$
+By induction hypothesis, there are some $I_0'$ and $\overline{I_e'}$ such that
+    $$ \judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0'} \quad 
+        I_0' \subtype I_0 $$
+    $$ \judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e'}} \quad  
+        \overline{I_e'} \subtype \overline{I}$$    
+By lemma~\ref{lemma2}, 
+    $mtype(m, I_0') = \overline{I_e} \rightarrow J$,
+then $\overline{I_e'} \subtype \overline{I_e}$ by the transitivity of $\subtype$.
+Therefore, by the rule \textsc{(T-Invk)}, 
+    $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.m([\overline{y}/\overline{x}]\overline{e}) : J}$.
+
+\noindent \textbf{Case PathInvk.}
+$ e = e_0.I::m(\overline{e}) $ and proof is similar as case Var.
+
+\noindent \textbf{Case SuperInvk.}
+$ e = \kwsuper.I::m(\overline{e}) $ \\
+Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be similar as case Var.
+\end{proof}
+
+\end{lemma}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsubsection{Proof for Theorem~\ref{theorem_subject}}
+\begin{proof} ~\\
+\noindent \textbf{Case Invk.} 
+let \[ e = \angl{J}\new I.m(\overline{\angl{I_e}}\overline{e}) \] 
+Suppose \[ \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
+then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{J}\new I/\kwthis ] e_0 \] 
+By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
+  \[ \judgeewf \Gamma {\new I:I} \quad 
+     \mtype(m, I, J) = \overline{I_x} \rightarrow I_{e_0} \quad 
+     \judgeewf \Gamma {\overline{e} : \overline{I_e'}} \quad
+     \overline{I_e'} \subtype \overline{I_x} \quad
+     \textit{, for some } \; \overline{I_e'}
+  \]
+By Lemma~\ref{lemma0},
+    \[
+    \judgeewf {\Gamma, \overline{x}:\overline{I_x}, \kwthis:J_0} {e_0:I_f} \textit{, for some } J \subtype J_0 \textit{ and } I_f \subtype I_{e_0}
+    \]
+By Lemma~\ref{lemma1},
+    \[
+    \judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{J}\new I/\kwthis ] e_0  :  I_g} \textit{, for some } I_g \subtype I_f 
+    \]
+So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
+
+\noindent \textbf{Case PathInvk.}
+let \[ e = \angl{J}\new I.K::m(\overline{\angl{I_e}} \overline{e}) \]  
+Suppose \[ \mbody(m, I, K) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
+then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{K}\new I/\kwthis ] e_0 \] 
+By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
+  \[ \judgeewf \Gamma {\new I:I} \quad 
+     \mtype(m, I, K) = \overline{I_x} \rightarrow I_{e_0} \quad 
+     \judgeewf \Gamma {\overline{e} : \overline{I_e'}} \quad
+     \overline{I_e'} \subtype \overline{I_x} \quad
+     \textit{, for some } \; \overline{I_e'}
+  \]
+By Lemma~\ref{lemma0},
+    \[
+    \judgeewf {\Gamma, \overline{x}:\overline{I_x}, \kwthis:J_0} {e_0:I_f} \textit{, for some } K \subtype J_0 \textit{ and } I_f \subtype I_{e_0}
+    \]
+By Lemma~\ref{lemma1},
+    \[
+    \judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{K}\new I/\kwthis ] e_0  :  I_g} \textit{, for some } I_g \subtype I_f 
+    \]
+So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
+
+\noindent \textbf{Case Super-Invk.}
+let \[ e = \kwsuper.K::m(\overline{\angl{I_e}} \overline{e}) \]   
+Suppose \[ \mbody(m, K, K) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
+then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}] e_0 \] 
+By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
+  \[ 
+     \mtype(m, K, K) = \overline{I_x} \rightarrow I_{e_0} \quad 
+     \judgeewf \Gamma {\overline{e} : \overline{I_e'}} \quad
+     \overline{I_e'} \subtype \overline{I_x} \quad
+     \textit{, for some } \; \overline{I_e'}
+  \]
+By Lemma~\ref{lemma0},
+    \[
+    \judgeewf {\Gamma, \overline{x}:\overline{I_x}, \kwthis:J_0} {e_0:I_f} \textit{, for some } K \subtype J_0 \textit{ and } I_f \subtype I_{e_0}
+    \]
+By Lemma~\ref{lemma1},
+    \[
+    \judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{e}/\overline{x} ] e_0  :  I_g} \textit{, for some } I_g \subtype I_f 
+    \]
+So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
+
+\end{proof}
+
+\subsubsection{Proof for Theorem~\ref{theorem_progress}}
+\begin{proof}~\\
+\noindent \textbf{Case 1.}
+Given that $e$ is well-typed, by rule \textsc{(T-Invk)}, $\mtype(m, J)$ is defined.
+By rule \textsc{(T-Intf)} for interface $I$,
+    \[ \forall J >: I, m, \mtype(m, J) \text{ is defined } \Rightarrow \mbody(m, I, J) \text{ is defined } \]
+So straightforwardly, we get $ \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $J', \overline{I_x}, \overline{x}, I_e'$ and $e_0$
+         
+\noindent \textbf{Case 2 and 3.} Proof for case 2 and 3 is similar to case 1, and we omit it here.
+\end{proof}

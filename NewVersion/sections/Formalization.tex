@@ -1,0 +1,223 @@
+\section{Formalization}~\label{sec:formalization}
+In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}) , based on
+Featherweight Java~\cite{Igarashi01FJ}. We use the same
+conventions as FJ; $\overline{I}$ is shorthand for the (possibly empty)
+list $I_1, ..., I_n$, which may be indexed by $I_i$.
+The syntax, typing rules, and small-step semantics are presented below.
+
+\vspace{-2ex}
+\subsection{Syntax}
+Figure~\ref{fig:syntax} shows the syntax of \MIM{}. The multiple
+inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
+method implementations via default methods. This feature is 
+closely related to \emph{traits}. To demonstrate how
+unintentional method conflicts are untangled in \MIM{}, we only focus on a small
+subset of the interface model. For example, all the methods declared
+in an interface are default methods, that is to say, they always
+provide default implementations. 
+%From this point we can view that we
+%are actually modelling a class model that supports multiple
+%inheritance. 
+Object creation is directly supported via $\new I$. 
+Fields and primitive types are not modelled in \MIM{}.
+
+We use uppercase letters like $I, J, K$ for interface identifiers. 
+Due to multiple inheritance, an interface can have a set of
+super interfaces, where such a set can be empty. Each interface
+has a set of method declarations. Each method body returns
+an expression. As seen in Figure~\ref{fig:syntax}, we have introduced the
+\kwoverride{} keyword to override an old implementation of the
+method. If the interface that it overrides is exactly the enclosing
+interface, then such a method is seen as ``originally defined''; otherwise
+it is hierarchical overriding.
+For simplicity, overloading is not modelled for methods, which
+implies we can uniquely identify a method by its name.
+
+Expressions can be standard constructs such as variables, method
+invocation, or object creation. A novel type of expressions are path-invocations like
+``$e.I::m(\overline{e})$'', meaning that the dynamically bound
+implementation for method $m$ should be along the path $I$. Another
+interesting expression are super-invocations, which enable a method to access an old
+implementation from the specified super type. Hence a super-invocation
+can only be used inside an interface definition.
+Finally, an expression can also be annotated with its static type. But \emph{annotated expressions are only intended for the semantic rules},
+hence they are not supposed to appear in the source program. A value
+``$\angl{I}\new{J}$''
+is the final result of multiple reduction steps evaluating an
+expression. Such value represents an object instance
+of $J$ with an annotated static type $I$.
+
+For simplicity, \name{} does not formalize statements like assignments and so on because they are orthogonal features.
+A program consists of a list of interface declarations, plus a single expression.
+
+\begin{figure*}[t]
+\saveSpaceFig
+\begin{displaymath}
+\begin{array}{l}
+\begin{array}{llrl}
+\text{Interfaces}   & IL & \Coloneqq & \interface{I}{I}{M} \\
+\text{Methods}      & M  & \Coloneqq & \method{I}{m}{I_x}{x}{J}{e}  \mid
+									   \absmethod{I}{m}{I_x}{x}{J} \\
+\text{Expressions}  & e  & \Coloneqq & x \mid
+e.m(\overline{e}) \mid
+\new{I} \mid
+e.\staAnno{I}{J}m(\overline{e}) \mid
+e.I?m(e) \; \mid \; \angl{I}e \\
+\text{Context}      & \Gamma & \Coloneqq & \overline{x}:\overline{I} \\
+\text{Values}       & v & \Coloneqq & \angl{I} \new{J} \\
+%%\\
+%%\text{Interface names} & I, J, K & & \\
+%%\text{Method names} & m & & \\
+%%\text{Variable names} & x & &
+\end{array}
+\end{array}
+\end{displaymath}
+\caption{Syntax of \name{}.}\label{fig:syntax}
+\saveSpaceFig
+\end{figure*}
+
+\subsection{Subtyping and Typing Rules}
+The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
+In short, subtyping relations are built from the inheritance in interface
+declarations. Subtyping is both reflexive and transitive.
+
+Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
+typing, well-formedness of methods and interfaces. As a convention, an environment
+$\Gamma$ is maintained to store the types of variables, together with ``this'' type, namely
+the enclosing type. The three rules for method invocation, \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-SuperInvk)}
+are very similar, in the sense that they all check the type of the specific method, by using
+an auxiliary function \mtype. \mtype{} is the function for looking up method types, which we will
+illustrate later in Section~\ref{subsec:auxdefs}. After the method type is obtained, they all check that arguments and the receiver
+have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
+path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
+
+The method typing rule \textsc{(T-Method)} is more interesting since the method can either be an original implementation or hierarchical overriding.
+Besides type-checking the return expression,
+we further use the helper function $\mostSpecific$, again formally defined in Section~\ref{subsec:auxdefs}.
+By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is hierarchical overriding, it should not step over original methods, otherwise
+their enclosing types would be returned instead of $J$.
+
+Finally, \textsc{(T-Invk)} defines interface checking. The condition helps to ensure unambiguity and type soundness of the calculus. We will
+introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not
+ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime
+in any case. The interface check is responsible for capturing ambiguity during compilation.
+
+\begin{figure*}[t]
+\saveSpaceFig
+\begin{mathpar}
+	\framebox{$ I <: J $} \hspace{.5in} \subid \\
+	\subtrans \hspace{.5in} \subextends \\
+	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
+	\tvar \\
+	\tinvk \\
+	\tpathinvk \\
+	% \tsuperinvk \\
+	\tstaticinvk \\
+	\tnew \\
+	\tmethod \\
+	\tabsmethod \\
+	\tintf
+\end{mathpar}
+\caption{Typing and subtyping rules.}\label{fig:typingrules}
+\saveSpaceFig
+\end{figure*}
+
+\subsection{Small-step Semantics and Congruence}
+Figure~\ref{fig:smallstep} defines the small-step semantic and
+congruence rules, respectively. When evaluating an expression, they
+are invoked recursively and alternately to produce a single value in
+the end. The small-step semantics rules \textsc{(S-Invk)},
+\textsc{(S-PathInvk)} and \textsc{(S-SuperInvk)} behave similarly:
+each corresponds to one kind of method invocation. They all invoke
+\mbody{} for method body lookup. Generally, one can understand
+$\mbody(m, I, J)$ in a way that it finds the most specific body of
+method $m$, when the receiver has dynamic type $I$ and static type
+$J$.  Notice, for example in \textsc{(S-Invk)}, that when
+``$\new{I}$'' replaces ``\lstinline|this|'', its static type should be
+the interface to which $m$ is dispatched. Therefore we also keep the
+interface type in the definition of \mbody. This point is consistent
+with the last paragraph in Section~\ref{subsec:problem2}.
+
+On the other hand, there is a relationship between path invocation and
+the regular method invocation, and it can be observed from the
+similarity between their semantic rules in
+Figure~\ref{fig:smallstep}. For any \lstinline|e.I::m()|, the result
+of evaluation remains unchanged if we set the static type of
+\lstinline|e| to be $I$. This can be done by an implicit cast, that
+is, we can define a function with one parameter type $I$, then
+\lstinline|e| is passed to that function and directly returned. This
+is equivalent to writing explicit casts like \lstinline|((I) e).m()|
+in languages like Java.
+
+\begin{figure*}[t]
+\saveSpaceFig
+\begin{mathpar}
+	\sinvk \\
+	\spathinvk \\
+	% \ssuperinvk \\
+	\sstaticinvk \\
+	\creceiver \hspace{.5in}
+	\cpathreceiver \\
+	\cargs \\
+	\cpathargs \\
+	% \csuperargs \\
+	\cstaticargs \\
+	\cstatictype \\
+	\cfreduce \\
+	\cannoreduce
+\end{mathpar}
+\caption{Small-step semantics.}\label{fig:smallstep}
+\saveSpaceFig
+\end{figure*}
+
+\begin{comment}
+\begin{figure*}[t]
+\begin{mathpar}
+\end{mathpar}
+\caption{Congruence.}\label{fig:congruence}
+\end{figure*}
+\end{comment}
+
+
+\subsection{Properties}
+Previously the definitions of our model are given, now we should proceed to prove the type soundness of 
+the model, which relates typing to computation. The type soundness states that, if an expression is 
+well-typed, then after many reduction steps it must reduce to a value, with its annotation to be a subtype of the original expression type.
+Following the Featherweight Java paper~\cite{Igarashi01FJ}, the type-soundness theorem 
+(Theorem~\ref{theorem_soundness}) is proved by using the standard technique of subject reduction (Theorem~\ref{theorem_subject})
+and progress (Theorem~\ref{theorem_progress})~\cite{Wright1994}. In Theorem~\ref{theorem_progress} ``$\#(\overline{x})$'' denotes the number of
+elements.
+
+\begin{theorem}[Subject Reduction]~\label{theorem_subject}
+$\textit{If } \ \judgeewf \Gamma {e : I} \; \textit{ and } \ e \rightarrow e',\ 
+\textit{then } \judgeewf \Gamma {e' : I'} \ \textit{ for some } \ I' <: I.$
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
+
+\begin{theorem}[Progress]~\label{theorem_progress}
+$\textit{Suppose } e \textit{ is a well-typed expression } $ \\
+\begin{enumerate}
+\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).m(\overline{\angl{I_e}} \; \overline{e})$ as a subexpression,
+    then $ \emph{\mbody}(m, I, J) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
+\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).K::m(\overline{\angl{I_e}} \overline{e})$ as a subexpression,
+    then $ \emph{\mbody}(m, I, K) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and 
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
+\item If $e$ includes $\emph{\kwsuper}.K::m(\overline{\angl{I_e}} \overline{e})$ as a subexpression,
+    then $ \emph{\mbody}(m, K, K) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and 
+         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
+
+\begin{theorem}[Type Soundness]~\label{theorem_soundness}
+If $\judgeewf \o {e : I}$ and $e \to^* e'$ with $e'$ a normal form, then $e'$ is 
+a value $v$ with $\judgeewf \o {v:J}$ and $J \subtype I$.
+\end{theorem}
+\begin{proof}
+Immediate from Theorem~\ref{theorem_subject} and Theroem~\ref{theorem_progress}.
+\end{proof}
