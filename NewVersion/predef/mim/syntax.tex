@@ -89,7 +89,7 @@
 \inferrule* [left=(T-Invk)]
     {  \judgeewf \Gamma {e_0:I_0}
     % \\ \mtype(m, I_0) = \overline{J} \to I
-    \\ \mbody(m, I_0, I_0) = (K, \overline{J} \; \overline{x}, I \; e) 
+    \\ \mbody(m, I_0, I_0) = (K, \overline{J} \; \overline{x}, I \; \marcoT{\_}) 
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
@@ -100,7 +100,7 @@
 \inferrule* [left=(T-PathInvk)]
     {  \judgeewf \Gamma {e_0:I_0}
     \\ I_0 \subtype J_0
-    \\ \mbody(m, I_0, J_0) = (K, \overline{J} \; \overline{x}, I \; e) 
+    \\ \mbody(m, I_0, J_0) = (K, \overline{J} \; \overline{x}, I \; \marcoT{\_}) 
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
@@ -111,7 +111,7 @@
 \inferrule* [left=(T-StaticInvk)]
     {\marcoT{\judgeewf \Gamma {e_0:I_0}}
    \\ \marcoT{I_0 \subtype J_0}
-    \\  \mbodyStatic(m, J_0, J_1) = (K, \overline{J} \; \overline{x}, I \; e)
+    \\  \mbodyStatic(m, J_0, J_1) = (K, \overline{J} \; \overline{x}, I \; \marcoT{\_})
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
@@ -166,8 +166,8 @@
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
     {  \marco{Is needed?\overline{I} \text{ OK}}
-    \\ \overline{M} \text{ OK IN } I
-    \\ \forall J >: I \text{ and } m, \mtype(m, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined}
+    \\ \marco{Is this premise ok? \overline{M} \text{ OK IN } I
+    \\ \forall J >: I \text{ and } m, \mtype(m, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined}}
     }
     { \interface{I}{I}{M} \text{ OK }}
 }
