@@ -165,7 +165,7 @@
 % }
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
-    {  \overline{I} \text{ OK}
+    {  \marco{Is needed?\overline{I} \text{ OK}}
     \\ \overline{M} \text{ OK IN } I
     \\ \forall J >: I \text{ and } m, \mtype(m, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined}
     }
@@ -175,23 +175,36 @@
 
 \newcommand{\sinvk} {
 \inferrule* [left=(S-Invk)]
-{ \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) \\ e_0 \neq \o}
-{\left(\angl{J}\new{I}\right).m(\overline{\angl{I_e}} \overline{e}) \to
-    \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
+{ \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) 
+%\\ e_0 \neq \o
+}
+{\left(\angl{J}\new{I}\right).m(\overline{v}) \to
+    \angl{I'_e}[
+  %\overline{\angl{I_x}}\overline{e}
+  \overline{\angl{I_x}}\overline{v}
+   /\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\spathinvk} {
 \inferrule* [left=(S-PathInvk)]
-{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) \\ e_0 \neq \o}
-{\left(\angl{J}\new{I}\right).K?m(\overline{\angl{I_e}} \overline{e}) \to
-    \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
+{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) 
+%\\ e_0 \neq \o
+}
+{\left(\angl{J}\new{I}\right).K?m(\overline{v}) \to
+    \angl{I'_e}[
+  \overline{\angl{I_x}} \overline{v}
+  /\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\sstaticinvk} {
 \inferrule* [left=(S-StaticInvk)]
-{\mbodyStatic(m, K, K') = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) \\ e_0 \neq \o}
-{\left(\angl{J}\new{I}\right).\staAnno{K}{K'}m(\overline{\angl{I_e}} \overline{e}) \to
-    \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{I}//\kwthis]e_0}
+{\mbodyStatic(m, K, K') = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) 
+%\\ e_0 \neq \o
+}
+{\left(\angl{J}\new{I}\right).\staAnno{K}{K'}m(\marcoT{\overline{v}}) \to
+    \angl{I'_e}[
+  \marcoT{\overline{\angl{I_x}} \overline{v}}
+  /\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
 % \newcommand{\ssuperinvk} {

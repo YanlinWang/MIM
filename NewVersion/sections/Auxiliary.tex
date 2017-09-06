@@ -24,23 +24,23 @@ none of them has a subtyping to one another, since all super types have been rem
         {\mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; \o)}
     
     \inferrule* [left=]
-    { set1 = \; \{ K <: J \; $and$ \; K >: I \; | \; m \in \overrideSet(K, K) \} \\
-        set2 = \; \{ K >: J \; | \; m \in \overrideSet(K, K) \} }
+    { set1 = \; \{K\mid I <: K, \; K <: J\; $and$\; m \in \overrideSet(K, K) \} \\
+        set2 = \; \{K\mid  J <: K \; $and$\; m \in \overrideSet(K, K) \} }
     {\mostSpecific(m, I, J) = \left\{{\begin{tabular}{ll}
                 $prune(set1)$ & if $set1$ is not empty \\ $prune(set2)$ & otherwise
             \end{tabular}}\right.}
     
     \inferrule* [left=]
-        { set = \; \{ K <: J \; $and$ \; K >: I \; | \;
+        { set = \; \{ K\mid I <: K, \; K <: J\; $and$ \;
             m \in \overrideSet(K, J)  \} }
         {\mostSpecificOverride(m, I, J) = prune(set)}
     
-    prune(set) = \{I \in set \; | \; \nexists J \in set, J <: I, J \neq I \}
+    prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\}
     
     \inferrule* [left=]
     {   \interface{I}{I}{M}
         \\ J \in \overline{I} }
-    {\ext(I, J)}
+    {\ext(I, J) \marco{Is this ever used?}}
     
     \inferrule* [left=]
     {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
