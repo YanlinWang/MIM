@@ -109,7 +109,9 @@
 
 \newcommand{\tstaticinvk} {
 \inferrule* [left=(T-StaticInvk)]
-    {  \mbodyStatic(m, J_0, J_1) = (K, \overline{J} \; \overline{x}, I \; e)
+    {\marcoT{\judgeewf \Gamma {e_0:I_0}}
+   \\ \marcoT{I_0 \subtype J_0}
+    \\  \mbodyStatic(m, J_0, J_1) = (K, \overline{J} \; \overline{x}, I \; e)
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
