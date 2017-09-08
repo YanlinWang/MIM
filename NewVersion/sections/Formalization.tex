@@ -112,13 +112,14 @@ in any case. The interface check is responsible for capturing ambiguity during c
 	\tinvk \\
 	\tpathinvk \\
 	% \tsuperinvk \\
-	\tstaticinvk \\
+	\tstaticinvk  \yanlin{refined.}\\
 	\tnew \\
 	\tmethod \\
 	\tabsmethod \\
-	\tintf
+	\tintf \yanlin{refined.}
 \end{mathpar}
 \marco{There is no typing rule for <I>e}
+\yanlin{annotation <I> is not created by programmers, do we need to type check it, maybe not?}
 \caption{Typing and subtyping rules.}\label{fig:typingrules}
 \saveSpaceFig
 \end{figure*}
@@ -157,6 +158,8 @@ in languages like Java.
 	\spathinvk \\
 	% \ssuperinvk \\
 	\sstaticinvk \\
+	\yanlin{\textit{we were using e, if change to v, then this <I>v annotation is OK.}}
+	\\
 	\creceiver \hspace{.5in}
 	\cpathreceiver \\
 	\cargs \\

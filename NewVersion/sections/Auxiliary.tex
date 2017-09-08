@@ -40,7 +40,7 @@ none of them has a subtyping to one another, since all super types have been rem
     \inferrule* [left=]
     {   \interface{I}{I}{M}
         \\ J \in \overline{I} }
-    {\ext(I, J) \marco{Is this ever used?}}
+    {\ext(I, J) \marco{Is this ever used?} \yanlin{Previously used, new version not used.}}
     
     \inferrule* [left=]
     {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
@@ -104,12 +104,12 @@ The brief description of the algorithm follows:
 \begin{mathpar}
     \inferrule* [left=]
         {  %\mostSpecific(m, I, I) = \{J\} \\
-            \kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_e}{m}{I_x}{x}{\marcoT{J'}}{e_0}\ldots\}}
+            \kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_e}{m}{I_x}{x}{J'}{e_0}\ldots\}}
         {\mbodyStatic(m, J, J') = (J, \overline{I_x} \; \overline{x}, I_e \; e_0)}
 
     \inferrule* [left=]
         {  %\mostSpecific(m, I, I) = \{J\} \\
-            \kwinterface \; J \; \kwextends \; \overline{J} \; \{\absmethod{I_e}{m}{I_x}{x}{\marcoT{J'}}\ldots\}}
+            \kwinterface \; J \; \kwextends \; \overline{J} \; \{\absmethod{I_e}{m}{I_x}{x}{J'}\ldots\}}
         {\mbodyStatic(m, J, J') = (J, \overline{I_x} \; \overline{x}, I_e \; \o)}
 \end{mathpar}    
 
