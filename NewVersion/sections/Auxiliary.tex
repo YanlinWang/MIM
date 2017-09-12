@@ -37,10 +37,10 @@ none of them has a subtyping to one another, since all super types have been rem
     
     prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\}
     
-    \inferrule* [left=]
-    {   \interface{I}{I}{M}
-        \\ J \in \overline{I} }
-    {\ext(I, J) \marco{Is this ever used?} \yanlin{Previously used, new version not used.}}
+    % \inferrule* [left=]
+    % {   \interface{I}{I}{M}
+    %     \\ J \in \overline{I} }
+    % {\ext(I, J) \marco{Is this ever used?} \yanlin{Previously used, new version not used.}}
     
     \inferrule* [left=]
     {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;

@@ -89,7 +89,7 @@
 \inferrule* [left=(T-Invk)]
     {  \judgeewf \Gamma {e_0:I_0}
     % \\ \mtype(m, I_0) = \overline{J} \to I
-    \\ \mbody(m, I_0, I_0) = (K, \overline{J} \; \overline{x}, I \; \marcoT{\_}) 
+    \\ \mbody(m, I_0, I_0) = (K, \overline{J} \; \overline{x}, I \; \_) 
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
@@ -100,7 +100,7 @@
 \inferrule* [left=(T-PathInvk)]
     {  \judgeewf \Gamma {e_0:I_0}
     \\ I_0 \subtype J_0
-    \\ \mbody(m, I_0, J_0) = (K, \overline{J} \; \overline{x}, I \; \marcoT{\_}) 
+    \\ \mbody(m, I_0, J_0) = (K, \overline{J} \; \overline{x}, I \; \_) 
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
@@ -111,7 +111,7 @@
 \inferrule* [left=(T-StaticInvk)]
     {\judgeewf \Gamma {e_0:I_0}
    \\ I_0 \subtype J_0
-    \\  \mbodyStatic(m, J_0, J_1) = (K, \overline{J} \; \overline{x}, I \; \marcoT{\_})
+    \\  \mbodyStatic(m, J_0, J_1) = (K, \overline{J} \; \overline{x}, I \; \_)
     \\ \judgeewf \Gamma \overline{e}:\overline{I}
     \\ \overline{I} \subtype \overline{J}
     }
@@ -138,7 +138,7 @@
 \inferrule* [left=(T-Method)]
     {  I <: J \\
     \mostSpecific(m, I, J) = \{J\} \\
-    \mtype(m, J) = \overline{I_x} \to I_e \\
+    \mbody(m, J, J) = (K, \overline{I_x} \; \overline{x}, I_e \; \_) \\
         \judgeewf {\overline{x}:\overline{I_x}, this:I  } {e_0:I_0} \\
         I_0 \subtype I_e
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
@@ -150,7 +150,8 @@
 \inferrule* [left=(T-AbsMethod)]
     {  I <: J \\
     \mostSpecific(m, I, J) = \{J\} \\
-    \mtype(m, J) = \overline{I_x} \to I_e 
+    % \mtype(m, J) = \overline{I_x} \to I_e 
+    \mbody(m, J, J) = (K, \overline{I_x} \; \overline{x}, I_e \; \_)
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
     }
     {\absmethod{I_e}{m}{I_x}{x}{J} \text{ OK IN } I}
@@ -165,10 +166,17 @@
 % }
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
-    {  \marco{Is this premise ok?} \overline{M} \text{ OK IN } I
-    \\ \forall J >: I \text{ and } m, \mtype(m, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined}
+    {  \overline{M} \text{ OK IN } I
+    \\ \forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined}
     }
     { \interface{I}{I}{M} \text{ OK }}
+}
+
+\newcommand{\tanno} {
+\inferrule* [left=\red{(T-Anno)}]
+    {  \judgeewf \Gamma e:I  \\
+       J \subtype I  }
+    { \judgeewf \Gamma {\angl{J}e : I} }
 }
 
 
@@ -200,9 +208,9 @@
 {\mbodyStatic(m, K, K') = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) 
 %\\ e_0 \neq \o
 }
-{\left(\angl{J}\new{I}\right).\staAnno{K}{K'}m(\marcoT{\overline{v}}) \to
+{\left(\angl{J}\new{I}\right).\staAnno{K}{K'}m(\overline{v}) \to
     \angl{I'_e}[
-  \marcoT{\overline{\angl{I_x}} \overline{v}}
+  \overline{\angl{I_x}} \overline{v}
   /\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }
 
