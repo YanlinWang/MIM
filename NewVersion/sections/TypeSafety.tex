@@ -107,16 +107,9 @@ Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be simi
   $$\textcolor{red}{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0)}$$
 \textcolor{red}{Since $e$ is well typed, $\angl{J}\new{I}$ is well typed, and}
   $$\textcolor{red}{\judgeewf {\Gamma} {\angl{J}\new{I} : I}}$$
-\textcolor{red}{By \textsc{(T-Anno)}, we have $I \subtype J$.}
+\textcolor{red}{By \textsc{(T-Anno)}, we have $I \subtype J$. Also, by \textsc{(T-PathInvk)}, $\judgeewf {\Gamma} {\overline{v} : \overline{I_v} \subtype \overline{I_x}}$.}
 
-\noindent\textcolor{red}{Suppose that the original form of $(\angl{J}\new{I}).K?m(\overline{v})$ is $e_T.K?m(\overline{e_T})$ by reduction.
-	The original expression should be type-checked already by \textsc{(T-PathInvk)}. Suppose that}
-  $$\textcolor{red}{\judgeewf {\Gamma} {e_T : I_T} \quad \judgeewf {\Gamma} {\overline{e_T} : \overline{I_T}}}$$
-\textcolor{red}{By induction hypothesis, $I \subtype I_T$. By lemma~\ref{lemma2_new},}
-  $$\textcolor{red}{\mbody(m, I_T, K) = (\_, \overline{I_x}\ \_, I_e\ \_)}$$
-\textcolor{red}{Therefore $\overline{I_T} \subtype \overline{I_x}$. By induction hypothesis,}
-  $$\textcolor{red}{\judgeewf {\Gamma} {\overline{v} : \overline{I_v} \subtype \overline{I_T} \subtype \overline{I_x}}}$$
-\textcolor{red}{So the first substitution preserves typing, On the other hand, .... the second one also preserves typing. Hence $I'_e \subtype$ type of $e_0 \subtype I_e$.}
+\noindent \textcolor{red}{So the first substitution preserves typing, On the other hand, .... the second one also preserves typing. Hence $I'_e \subtype$ type of $e_0 \subtype I_e$.}
 
 \noindent \textbf{Case Invk.} 
 let \[ e = \angl{J}\new I.m(\overline{\angl{I_e}}\overline{e}) \] 
