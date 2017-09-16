@@ -61,7 +61,6 @@ A program consists of a list of interface declarations, plus a single expression
 \text{Expressions}  & e  & \Coloneqq & x \mid
 e.m(\overline{e}) \mid
 \new{I} \mid
-e.\staAnno{I}{J}m(\overline{e}) \mid
 e.I?m(e) \; \mid \; \angl{I}e \\
 \text{Context}      & \Gamma & \Coloneqq & \overline{x}:\overline{I} \\
 \text{Values}       & v & \Coloneqq & \angl{I} \new{J} \\
@@ -112,7 +111,7 @@ in any case. The interface check is responsible for capturing ambiguity during c
 	\tinvk \\
 	\tpathinvk \\
 	% \tsuperinvk \\
-	\tstaticinvk  \\
+	% \tstaticinvk  \\
 	\tnew \\
 	\tmethod \\
 	\tabsmethod \\
@@ -156,13 +155,13 @@ in languages like Java.
 	\sinvk \\
 	\spathinvk \\
 	% \ssuperinvk \\
-	\sstaticinvk \\
+	% \sstaticinvk \\
 	\creceiver \hspace{.5in}
 	\cpathreceiver \\
 	\cargs \\
 	\cpathargs \\
 	% \csuperargs \\
-	\cstaticargs \\
+	% \cstaticargs \\
 	\cstatictype \\
 	\cfreduce \\
 	\cannoreduce
