@@ -9,6 +9,24 @@ the ``originally-defined'' method set from $I$. The $\prune$ function takes a se
 types, and filters out those that have subtypes in the same set. Finally in the returned set,
 none of them has a subtyping to one another, since all super types have been removed.
 
+
+% $\begin{array}{l}
+% \InTextDef{15ex}{
+% \mBody(\m,\C_0)
+% }{
+% \override(\methods(\m),
+% \tops(\m,\Cs))
+% }\\
+% \InTextWith{\metaVar{IT}(\C_0) =
+% \ \ann\ \QM{interface}\ \C_0\ \QM{extends}\ \C_1\ldots\C_n}\\
+% \hspace{1.2in}\oC\methods\ \cC \mbox{ and } \C\in\Cs \mbox{ if } \C_i\subtype\C, i\in 1..n
+
+% \end{array}$
+
+% \noindent The definition of $\mBody$ reconstructs the full set of supertypes $\Cs$ and then delegates the work to two other auxiliary functions:
+%  $\tops(m,\Cs)$ and $\override(\method,\methods)$.
+
+
 \begin{figure*}[t]
     \begin{mathpar}
     \inferrule* [left=]
@@ -24,18 +42,16 @@ none of them has a subtyping to one another, since all super types have been rem
         {\mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; \o)}
     
     \inferrule* [left=]
-    { set1 = \; \{K\mid I <: K, \; K <: J\; $and$\; m \in \overrideSet(K, K) \} \\
-        set2 = \; \{K\mid  J <: K \; $and$\; m \in \overrideSet(K, K) \} }
-    {\mostSpecific(m, I, J) = \left\{{\begin{tabular}{ll}
-                $prune(set1)$ & if $set1$ is not empty \\ $prune(set2)$ & otherwise
-            \end{tabular}}\right.}
+    { originalIntfs = \; \{K \mid \subt{I}{K} \; \land \subt{K}{J} \; \lor \; \subt{J}{K}, \; $and$\; m \in \overrideSet(K, K) \} }
+    {\mostSpecific(m, I, J) = \prune(originalIntfs) }
+
     
     \inferrule* [left=]
-        { set = \; \{ K\mid I <: K, \; K <: J\; $and$ \;
+        { overrideIntfs = \; \{ K\mid I <: K, \; K <: J\; $and$ \;
             m \in \overrideSet(K, J)  \} }
-        {\mostSpecificOverride(m, I, J) = prune(set)}
+        {\mostSpecificOverride(m, I, J) = \prune(overrideIntfs)}
     
-    prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\}
+    \prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\}
     
     % \inferrule* [left=]
     % {   \interface{I}{I}{M}
