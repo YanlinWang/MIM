@@ -26,6 +26,13 @@ be the same as $\mtype(m, K)$ where $J \; \kwextends \; K \{...\}$.
 \end{proof}
 \end{lemma}
 
+\textcolor{red}{
+\begin{lemma}[Method Type Preservation]~\label{lemma2_new}
+$\textit{If } \mbody(m, I_0, J_0) = (K, \overline{I_x}\ \overline{x}, I_e\ e)$, $\textit{ and }
+\mbody(m, I'_0, J_0) = (K', \overline{I'_x}\ \overline{x'}, I'_e\ e') \textit{ for some }I'_0 \subtype I_0, \textit{ then }
+\overline{I'_x} = \overline{I_x}$ $\textit{and } I'_e = I_e.$
+\end{lemma}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{lemma}[Term Substitution Preserves Typing]~\label{lemma1}
@@ -56,8 +63,9 @@ By induction hypothesis, there are some $I_0'$ and $\overline{I_e'}$ such that
     $$ \judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e'}} \quad  
         \overline{I_e'} \subtype \overline{I}$$    
 By lemma~\ref{lemma2}, 
-    $mtype(m, I_0') = \overline{I_e} \rightarrow J$,
-then $\overline{I_e'} \subtype \overline{I_e}$ by the transitivity of $\subtype$.
+    $mtype(m, I_0') = \overline{I_e} \rightarrow J$.
+    
+\noindent Then $\overline{I_e'} \subtype \overline{I_e}$ by the transitivity of $\subtype$.
 Therefore, by the rule \textsc{(T-Invk)}, 
     $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.m([\overline{y}/\overline{x}]\overline{e}) : J}$.
 
@@ -67,6 +75,23 @@ $ e = e_0.I::m(\overline{e}) $ and proof is similar as case Var.
 \noindent \textbf{Case SuperInvk.}
 $ e = \kwsuper.I::m(\overline{e}) $ \\
 Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be similar as case Var.
+
+\noindent\textcolor{red}{\textbf{Case PathInvk.} $e = e_0.J_0?m(\overline{e})$. By \textsc{(T-PathInvk)}, suppose}
+	$$\textcolor{red}{\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad I_0 \subtype J_0}$$
+	$$\textcolor{red}{\mbody(m, I_0, J_0) = (\_, \overline{J}\ \_, I\ \_)}$$
+	$$\textcolor{red}{\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e} : \overline{I_e}} \quad 
+	  \overline{I_e} \subtype \overline{J} \quad \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e : I}}$$
+\textcolor{red}{By induction hypothesis, there are some $I'_0$ and some $\overline{I'_e}$ such that}
+	$$\textcolor{red}{\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0'} \quad I_0' \subtype I_0 \subtype J_0}$$
+	$$\textcolor{red}{\judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e'}} \quad 
+	  \overline{I_e'} \subtype \overline{I_e} \subtype \overline{J}}$$   
+\textcolor{red}{By lemma~\ref{lemma2_new}, if $[\overline{y}/\overline{x}]e$ is well typed,}
+	$$\textcolor{red}{\mbody(m, I'_0, J_0) = (\_, \overline{J}\ \_, I\ \_)}$$
+\textcolor{red}{Therefore, by the rule \textsc{(T-Invk)}, 
+	$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.m([\overline{y}/\overline{x}]\overline{e}) : I}$.}
+
+
+
 \end{proof}
 
 \end{lemma}
@@ -76,6 +101,23 @@ Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be simi
 
 \subsubsection{Proof for Theorem~\ref{theorem_subject}}
 \begin{proof} ~\\
+\noindent\textcolor{red}{\textbf{Case PathInvk.} Let} \haoyuan{where to use lemma 1}
+  $$\textcolor{red}{e = (\angl{J}\new{I}).K?m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}}$$
+  $$\textcolor{red}{e' = \angl{I_e}[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0 \quad \judgeewf {\Gamma} {e' : I'_e}}$$
+  $$\textcolor{red}{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0)}$$
+\textcolor{red}{Since $e$ is well typed, $\angl{J}\new{I}$ is well typed, and}
+  $$\textcolor{red}{\judgeewf {\Gamma} {\angl{J}\new{I} : I}}$$
+\textcolor{red}{By \textsc{(T-Anno)}, we have $I \subtype J$.}
+
+\noindent\textcolor{red}{Suppose that the original form of $(\angl{J}\new{I}).K?m(\overline{v})$ is $e_T.K?m(\overline{e_T})$ by reduction.
+	The original expression should be type-checked already by \textsc{(T-PathInvk)}. Suppose that}
+  $$\textcolor{red}{\judgeewf {\Gamma} {e_T : I_T} \quad \judgeewf {\Gamma} {\overline{e_T} : \overline{I_T}}}$$
+\textcolor{red}{By induction hypothesis, $I \subtype I_T$. By lemma~\ref{lemma2_new},}
+  $$\textcolor{red}{\mbody(m, I_T, K) = (\_, \overline{I_x}\ \_, I_e\ \_)}$$
+\textcolor{red}{Therefore $\overline{I_T} \subtype \overline{I_x}$. By induction hypothesis,}
+  $$\textcolor{red}{\judgeewf {\Gamma} {\overline{v} : \overline{I_v} \subtype \overline{I_T} \subtype \overline{I_x}}}$$
+\textcolor{red}{So the first substitution preserves typing, On the other hand, .... the second one also preserves typing. Hence $I'_e \subtype$ type of $e_0 \subtype I_e$.}
+
 \noindent \textbf{Case Invk.} 
 let \[ e = \angl{J}\new I.m(\overline{\angl{I_e}}\overline{e}) \] 
 Suppose \[ \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
