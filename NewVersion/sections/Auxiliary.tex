@@ -42,7 +42,7 @@ none of them has a subtyping to one another, since all super types have been rem
         {\mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; \o)}
     
     \inferrule* [left=]
-    { originalIntfs = \; \{K \mid \subt{I}{K} \; \land \subt{K}{J} \; \lor \; \subt{J}{K}, \; $and$\; m \in \overrideSet(K, K) \} }
+    { originalIntfs = \; \{K \mid \subt{I}{K}, \; \subt{K}{J} \; \lor \; \subt{J}{K}, \; $and$\; m \in \overrideSet(K, K) \} }
     {\mostSpecific(m, I, J) = \prune(originalIntfs) }
 
     
