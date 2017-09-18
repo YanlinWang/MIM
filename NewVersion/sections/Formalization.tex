@@ -197,18 +197,9 @@ See Appendix~\ref{appendix_proof}.
 \end{proof}
 
 \begin{theorem}[Progress]~\label{theorem_progress}
-$\textit{Suppose } e \textit{ is a well-typed expression } $ \\
-\begin{enumerate}
-\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).m(\overline{\angl{I_e}} \; \overline{e})$ as a subexpression,
-    then $ \emph{\mbody}(m, I, J) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and
-         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
-\item If $e$ includes $\left(\angl{J}\emph{\kwnew}\;I()\right).K::m(\overline{\angl{I_e}} \overline{e})$ as a subexpression,
-    then $ \emph{\mbody}(m, I, K) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and 
-         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
-\item If $e$ includes $\emph{\kwsuper}.K::m(\overline{\angl{I_e}} \overline{e})$ as a subexpression,
-    then $ \emph{\mbody}(m, K, K) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and 
-         $\num{\overline{x}} = \num{\overline{e}}$ for some $\overline{I_x}, \overline{x}, I_e'$ and $e_0$.
-\end{enumerate}
+$\textit{Suppose } e \textit{ is a well-typed expression, if } e \textit{ includes} $
+
+\noindent $\left(\angl{J}\emph{\kwnew}\;I()\right).K?m(\overline{v}) \textit{ as a subexpression, then } \emph{\mbody}(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0) $ $\textit{and } \num{\overline{x}} = \num{\overline{e}} \textit{ for some } \overline{I_x}, \overline{x}, I_e \textit{ and } e_0.$
 \end{theorem}
 \begin{proof}
 See Appendix~\ref{appendix_proof}.

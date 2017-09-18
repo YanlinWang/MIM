@@ -32,6 +32,7 @@
 \newcommand{\dom}{\keyword{dom}}
 
 \newcommand{\canInstantiate}{\keyword{canInstantiate}}
+\newcommand{\canOverride}{\keyword{canOverride}}
 % \newcommand{\mbodyStatic}{\keyword{mbodyStatic}}
 \newcommand{\pathIvk}{?}
 \newcommand{\staticIvk}{::}
@@ -151,7 +152,7 @@
 
 \newcommand{\tabsmethod} {
 \inferrule* [left=(T-AbsMethod)]
-    {  I <: J \\
+    {  I <: J \quad
     \mostSpecific(m, I, J) = \{J\} \\
     % \mtype(m, J) = \overline{I_x} \to I_e 
     \mbody(m, J, J) = (K, \overline{I_x} \; \overline{x}, I_e \; \_)
@@ -169,8 +170,9 @@
 % }
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
-    {  \overline{M} \text{ OK IN } I
-    \\ \forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined}
+    {  \overline{M} \text{ OK IN } I \\
+    \forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined} \\ 
+    \forall J >: I \text{ and } m \in \overrideSet(I, I), m \in \overrideSet(J, J)  \Rightarrow \canOverride(m, I, J)
     }
     { \interface{I}{I}{M} \text{ OK }}
 }
@@ -178,30 +180,25 @@
 \newcommand{\tanno} {
 \inferrule* [left=\red{(T-Anno)}]
     {  \judgeewf \Gamma e:I  \\
-       J \subtype I  }
+       I \subtype J  }
     { \judgeewf \Gamma {\angl{J}e : I} }
 }
 
 
 \newcommand{\sinvk} {
 \inferrule* [left=(S-Invk)]
-{ \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) 
-%\\ e_0 \neq \o
-}
+{}
 {\left(\angl{J}\new{I}\right).m(\overline{v}) \to
-    \angl{I'_e}[
-  %\overline{\angl{I_x}}\overline{e}
-  \overline{\angl{I_x}}\overline{v}
-   /\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
+    \left(\angl{J}\new{I}\right).J?m(\overline{v})}
 }
 
 \newcommand{\spathinvk} {
 \inferrule* [left=(S-PathInvk)]
-{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) 
+{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0) 
 %\\ e_0 \neq \o
 }
 {\left(\angl{J}\new{I}\right).K?m(\overline{v}) \to
-    \angl{I'_e}[
+    \angl{I_e}[
   \overline{\angl{I_x}} \overline{v}
   /\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
 }

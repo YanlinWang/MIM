@@ -15,23 +15,30 @@ $\textit{If } \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_e \; e),
  $ 
  \end{proof}
 
-
-\begin{lemma}[Method Type Preservation]~\label{lemma2}
-$\textit{If } \mtype(m, I) = \overline{I_x} \rightarrow I_e, \textit{ then } \mtype(m, J) = \overline{I_x} \rightarrow I_e 
-\textit{ for all } J \subtype I.
-$
-\begin{proof}~\\
-Straight induction on the derivation of $J \subtype I$. Whether $m$ is defined in $J$ or not, $\mtype(m, J)$ should 
-be the same as $\mtype(m, K)$ where $J \; \kwextends \; K \{...\}$.
-\end{proof}
-\end{lemma}
-
 \textcolor{red}{
 \begin{lemma}[Method Type Preservation]~\label{lemma2_new}
-$\textit{If } \mbody(m, I_0, J_0) = (K, \overline{I_x}\ \overline{x}, I_e\ e)$, $\textit{ and }
-\mbody(m, I'_0, J_0) = (K', \overline{I'_x}\ \overline{x'}, I'_e\ e') \textit{ for some }I'_0 \subtype I_0, \textit{ then }
+$\textit{If } \mbody(m, I_0, J_0) = (K, \overline{I_x}\ \_, I_e\ \_)$, $\mbody(m, I'_0, J_0) = (K', \overline{I'_x}\ \_, I'_e\ \_) \textit{ for some }I'_0 \subtype I_0, \textit{ then }
 \overline{I'_x} = \overline{I_x}$ $\textit{and } I'_e = I_e.$
 \end{lemma}}
+\begin{proof}
+	
+Trivial for the case $I'_0 = I_0$. And since the lemma has transitivity on subtyping, it suffices to prove the following cases and rely on induction, where we can suppose that $I'_0$ directly extends $I_0$.
+
+Suppose that $$\mostSpecific(m, I_0, J_0) = \{I\}$$ $$\mostSpecificOverride(m, I_0, I) = \{K\}$$
+
+\textbf{(1) The body of $I'_0$ does not contain $m$.} Trivial because $\mbody(m, I_0, J_0) = \mbody(m, I'_0, J_0)$. \haoyuan{Non-trivial. m may be inherited from other super types. TODO.}
+
+\textbf{(2) $m \in \overrideSet(I'_0, I'_0)$.} In that case $I'_0$ defines an original method $m$.
+ So
+$$\mostSpecific(m, I'_0, J_0) = \{I'_0\}$$ $$\mostSpecificOverride(m, I'_0, I'_0) = \{I'_0\}$$
+Hence $\mbody(m, I'_0, J_0)$ returns the original $m$ from $I'_0$. By $\textsc{(T-Intf)}$, we know that $\canOverride(m, I'_0, I)$ holds, which means that $I'_0$ has the same type as $I$ for $m$. On the other hand, from $\textsc{(T-Method)}$ and $\textsc{(T-AbsMethod)}$, the type of $m$ is also preserved between $I$ and $K$ (method override needs to keep the type). Finally $\mbody(m, I'_0, J_0)$ has the same type as $\mbody(m, I_0, J_0)$.
+
+\textbf{(3) $m \in \overrideSet(I'_0, I)$.} Similar to (2), $I$ and $K$ have the same type for $m$. Moreover, $\textsc{(T-Method)}$ and $\textsc{(T-AbsMethod)}$ also ensure that $I'_0$ and $I$ have the same type for $m$. \haoyuan{But findOrigin may no longer be I.}
+
+\textbf{(4) $m \in \overrideSet(I'_0, J)$ for some other $J$.} Same as (1). Such an $m$ does not affect the result of $\mbody$.
+%Straight induction on the derivation of $J \subtype I$. Whether $m$ is defined in $J$ or not, $\mtype(m, J)$ should 
+%be the same as $\mtype(m, K)$ where $J \; \kwextends \; K \{...\}$.
+\end{proof}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,6 +58,7 @@ letting $I' = {I_y}_i$ finishes the case.
 \noindent \textbf{Case New.}
 $e = \new I$ and there are no term for substitution, the conclusion is obvious.
 
+\begin{comment}
 \noindent \textbf{Case Invk.}
 $ e = e_0.m(\overline{e}) \quad
   \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} $
@@ -75,6 +83,7 @@ $ e = e_0.I::m(\overline{e}) $ and proof is similar as case Var.
 \noindent \textbf{Case SuperInvk.}
 $ e = \kwsuper.I::m(\overline{e}) $ \\
 Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be similar as case Var.
+\end{comment}
 
 \noindent\textcolor{red}{\textbf{Case PathInvk.} $e = e_0.J_0?m(\overline{e})$. By \textsc{(T-PathInvk)}, suppose}
 	$$\textcolor{red}{\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad I_0 \subtype J_0}$$
@@ -101,16 +110,23 @@ Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be simi
 
 \subsubsection{Proof for Theorem~\ref{theorem_subject}}
 \begin{proof} ~\\
-\noindent\textcolor{red}{\textbf{Case PathInvk.} Let} \haoyuan{where to use lemma 1}
+\noindent\textcolor{red}{\textbf{Case Invk.} TODO. By t-invk and t-intf.}
+
+\noindent\textcolor{red}{\textbf{Case PathInvk.} Let}
   $$\textcolor{red}{e = (\angl{J}\new{I}).K?m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}}$$
-  $$\textcolor{red}{e' = \angl{I_e}[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0 \quad \judgeewf {\Gamma} {e' : I'_e}}$$
+  $$\textcolor{red}{e' = \angl{I_e}[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}$$
   $$\textcolor{red}{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0)}$$
-\textcolor{red}{Since $e$ is well typed, $\angl{J}\new{I}$ is well typed, and}
-  $$\textcolor{red}{\judgeewf {\Gamma} {\angl{J}\new{I} : I}}$$
-\textcolor{red}{By \textsc{(T-Anno)}, we have $I \subtype J$. Also, by \textsc{(T-PathInvk)}, $\judgeewf {\Gamma} {\overline{v} : \overline{I_v} \subtype \overline{I_x}}$.}
+\textcolor{red}{Since $\mbody(m, I, K)$ is defined, the definition of $\mbody$ ensures that $I \subtype I_0$. And since $e$ is well typed, by \textsc{(T-PathInvk)},}
+  $$\textcolor{red}{\judgeewf {\Gamma} {\overline{v} : \overline{I_v} \subtype \overline{I_x}}}$$
 
-\noindent \textcolor{red}{So the first substitution preserves typing, On the other hand, .... the second one also preserves typing. Hence $I'_e \subtype$ type of $e_0 \subtype I_e$.}
+\noindent \textcolor{red}{By \textsc{(T-New)}, \textsc{(T-Anno)} and lemma~\ref{lemma0},}
+  $$\textcolor{red}{\judgeewf {\Gamma} {\angl{I_0}\new{I} : I} \quad \judgeewf {\Gamma, \overline{x} : \overline{I_x}, \kwthis : I_0} {e_0 : I_{e_0} \subtype I_e}}$$
 
+\noindent \textcolor{red}{Hence by lemma~\ref{lemma1}, the substitution preserves typing, thus}
+  $$\textcolor{red}{\judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0 : I'_{e_0} \subtype I_{e_0} \subtype I_e}}$$
+\noindent \textcolor{red}{By \textsc{(T-Anno)}, $\judgeewf {\Gamma} {e' : I'_{e_0} \subtype I_e}$.}
+
+\begin{comment}
 \noindent \textbf{Case Invk.} 
 let \[ e = \angl{J}\new I.m(\overline{\angl{I_e}}\overline{e}) \] 
 Suppose \[ \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
@@ -174,16 +190,10 @@ By Lemma~\ref{lemma1},
     \]
 So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
 
+\end{comment}
 \end{proof}
 
 \subsubsection{Proof for Theorem~\ref{theorem_progress}}
 \begin{proof}~\\
-\noindent \textbf{Case 1.}
-Given that $e$ is well-typed, by rule \textsc{(T-Invk)}, $\mtype(m, J)$ is defined.
-By rule \textsc{(T-Intf)} for interface $I$,
-    \[ \forall J >: I, m, \mtype(m, J) \text{ is defined } \Rightarrow \mbody(m, I, J) \text{ is defined } \]
-So straightforwardly, we get $ \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I'_E \; e_0) $ and
-         $\num{\overline{x}} = \num{\overline{e}}$ for some $J', \overline{I_x}, \overline{x}, I_e'$ and $e_0$
-         
-\noindent \textbf{Case 2 and 3.} Proof for case 2 and 3 is similar to case 1, and we omit it here.
+\noindent \textcolor{red}{TODO. t-pathinvk. t-new. remember canInstantiate() to ensure $e_0$ is not empty.}
 \end{proof}

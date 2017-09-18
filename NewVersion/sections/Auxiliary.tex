@@ -62,6 +62,14 @@ none of them has a subtyping to one another, since all super types have been rem
     {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
         \kwoverride \; J \ldots \} }
     {m \in \overrideSet(I, J)}
+    
+      \inferrule* [left=]
+    {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
+        	\kwoverride \; I \ldots \} \\
+        \kwinterface \; J \; \kwextends \; \overline{J} \; \{ I_e \; m(\overline{I_x} \; \overline{y}) \;
+      	    \kwoverride \; J \ldots \} \\
+    }
+    {\canOverride(m, I, J)}
     \end{mathpar}
     \caption{Auxiliary functions.}\label{fig:auxfunc}
 \end{figure*}
