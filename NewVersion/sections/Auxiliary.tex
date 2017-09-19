@@ -116,8 +116,10 @@ The algorithm for finding the most specific hierarchical overriding method is qu
 \subsection{$\canInstantiate$}
 We use the auxilary function $\canInstantiate(I)$ to check whether an interface $I$ can be instantiated or not.
 The algorithm is decribed below:
+
+$$\forall m, \forall J \in \mostSpecific(m, I, I), $$
 \begin{enumerate}
-\item Suppose $\mostSpecific(m, I, I) = \overline{J}$, where $\overline{J}$ is a list of interfaces.
+\item For any $m$, suppose $\mostSpecific(m, I, I) = \overline{J}$, where $\overline{J}$ is a list of interfaces.
 \item If $\forall J_i \in \overline{J}, if \mostSpecificOverride(m, I, J_i) = \{ K \} $ and $m$ in $K$ is not abstract, 
 then $\canInstantiate(I) = true$, else $\canInstantiate(I) = false$.
 \end{enumerate}
