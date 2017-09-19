@@ -1,3 +1,6 @@
+\haoyuan{For lemma~\ref{lemma1} and Theorem 1, we can have a stricter form. But that is from the design choice that
+we do not accept covariant return types. So we keep it more general at this stage.}
+
 \begin{lemma}~\label{lemma0}
 % $\textit{If } \mtype(m, I, J) = \overline{D} \rightarrow D, \textit{ and } \mbody(m, I, J) = \overline{x}.e, 
 %  \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists C <: D, \textit{ such that }  
@@ -16,12 +19,11 @@ $\textit{If } \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_e \; e),
  \end{proof}
 
 \begin{lemma}[Method Type Preservation]~\label{lemma2_new}
-$\textit{If } \mbody(m, I_0, J_0) = (K, \overline{I_x}\ \_, I_e\ \_)$, $\mbody(m, I'_0, J_0) = (K', \overline{I'_x}\ \_, I'_e\ \_) \textit{ for some }I'_0 \subtype I_0, \textit{ then }
-\overline{I'_x} = \overline{I_x}$ $\textit{and } I'_e = I_e.$
+$\textit{If } \mbody(m, I_0, J_0) = (K, \overline{I_x}\ \_, I_e\ \_)$, $\textit{Then for any } I'_0 \subtype I_0, \mbody(m, I'_0, J_0) = (K', \overline{I_x}\ \_, I_e\ \_).$
 \end{lemma}
 \begin{proof}
 	
-Suppose that $$\mostSpecific(m, I_0, J_0) = \{I\}$$ $$\mostSpecificOverride(m, I_0, I) = \{K\}$$
+Since $\mbody(m, I_0, J_0)$ is defined, by \textsc{(T-Intf)} we derive that $\mbody(m, I'_0, J_0)$ is also defined. Suppose that $$\mostSpecific(m, I_0, J_0) = \{I\}$$ $$\mostSpecificOverride(m, I_0, I) = \{K\}$$
 $$\mostSpecific(m, I'_0, J_0) = \{I'\}$$ $$\mostSpecificOverride(m, I'_0, I') = \{K'\}$$
 
 Below we use $I[m\uparrow J]$ to denote the type of method $m$ defined in $I$ that overrides $J$. We have to prove that $K'[m\uparrow I'] = K[m\uparrow I]$.
@@ -46,7 +48,9 @@ $\textit{If } \ \judgeewf {\Gamma, \ \overline{x}:\overline{I_x}} { e : I } \tex
 \textit{, then } \judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I'} \textit{ for some } I' \subtype I.
 $
 
-\begin{proof}~\\
+\begin{proof}
+
+\begin{comment}
 \noindent \textbf{Case Var.}
 $ e = x \quad I = \Gamma(x) $. \\
 If $x \notin \overline{x}$, then the conclusion is immediate, since $[\overline{y}/\overline{x}]x = x$.
@@ -55,8 +59,6 @@ letting $I' = {I_y}_i$ finishes the case.
 
 \noindent \textbf{Case New.}
 $e = \new I$ and there are no term for substitution, the conclusion is obvious.
-
-\begin{comment}
 \noindent \textbf{Case Invk.}
 $ e = e_0.m(\overline{e}) \quad
   \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} $
@@ -82,20 +84,23 @@ $ e = e_0.I::m(\overline{e}) $ and proof is similar as case Var.
 $ e = \kwsuper.I::m(\overline{e}) $ \\
 Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be similar as case Var.
 \end{comment}
+~\\
+\indent\textbf{Case PathInvk.} $e = e_0.J_0?m(\overline{e})$. By \textsc{(T-PathInvk)}, suppose
+	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad I_0 \subtype J_0$$
+	$$\mbody(m, I_0, J_0) = (\_, \overline{J}\ \_, I\ \_)$$
+	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e} : \overline{I_e}} \quad 
+	  \overline{I_e} \subtype \overline{J} \quad \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e : I}$$
 
-\noindent\textcolor{red}{\textbf{Case PathInvk.} $e = e_0.J_0?m(\overline{e})$. By \textsc{(T-PathInvk)}, suppose}
-	$$\textcolor{red}{\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad I_0 \subtype J_0}$$
-	$$\textcolor{red}{\mbody(m, I_0, J_0) = (\_, \overline{J}\ \_, I\ \_)}$$
-	$$\textcolor{red}{\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e} : \overline{I_e}} \quad 
-	  \overline{I_e} \subtype \overline{J} \quad \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e : I}}$$
-\textcolor{red}{By induction hypothesis, there are some $I'_0$ and some $\overline{I'_e}$ such that}
-	$$\textcolor{red}{\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0'} \quad I_0' \subtype I_0 \subtype J_0}$$
-	$$\textcolor{red}{\judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e'}} \quad 
-	  \overline{I_e'} \subtype \overline{I_e} \subtype \overline{J}}$$   
-\textcolor{red}{By lemma~\ref{lemma2_new}, if $[\overline{y}/\overline{x}]e$ is well typed,}
-	$$\textcolor{red}{\mbody(m, I'_0, J_0) = (\_, \overline{J}\ \_, I\ \_)}$$
-\textcolor{red}{Therefore, by the rule \textsc{(T-Invk)}, 
-	$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.m([\overline{y}/\overline{x}]\overline{e}) : I}$.}
+By induction hypothesis, there are some $I'_0$ and some $\overline{I'_e}$ such that
+	$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0'} \quad I_0' \subtype I_0 \subtype J_0$$
+	$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e'}} \quad 
+	  \overline{I_e'} \subtype \overline{I_e} \subtype \overline{J}$$   
+
+By Lemma~\ref{lemma2_new},
+	$$\mbody(m, I'_0, J_0) = (\_, \overline{J}\ \_, I\ \_)$$
+	
+Therefore, by the rule \textsc{(T-Invk)}, 
+	$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.J_0?m([\overline{y}/\overline{x}]\overline{e}) : I}$.
 
 
 
@@ -108,21 +113,23 @@ Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be simi
 
 \subsubsection{Proof for Theorem~\ref{theorem_subject}}
 \begin{proof} ~\\
-\noindent\textcolor{red}{\textbf{Case Invk.} TODO. By t-invk and t-intf.}
+\indent \textbf{Case S-Invk.} Trivial from \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-Anno)}, as both $e$ and $e'$ invoke $\mbody(m, J, J)$.
 
-\noindent\textcolor{red}{\textbf{Case PathInvk.} Let}
-  $$\textcolor{red}{e = (\angl{J}\new{I}).K?m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}}$$
-  $$\textcolor{red}{e' = \angl{I_e}[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}$$
-  $$\textcolor{red}{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0)}$$
-\textcolor{red}{Since $\mbody(m, I, K)$ is defined, the definition of $\mbody$ ensures that $I \subtype I_0$. And since $e$ is well typed, by \textsc{(T-PathInvk)},}
-  $$\textcolor{red}{\judgeewf {\Gamma} {\overline{v} : \overline{I_v} \subtype \overline{I_x}}}$$
+\textbf{Case S-PathInvk.} Let
+  $$e = (\angl{J}\new{I}).K?m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
+  $$e' = \angl{I'_e}[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0$$
+  $$\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0)$$
 
-\noindent \textcolor{red}{By \textsc{(T-New)}, \textsc{(T-Anno)} and lemma~\ref{lemma0},}
-  $$\textcolor{red}{\judgeewf {\Gamma} {\angl{I_0}\new{I} : I} \quad \judgeewf {\Gamma, \overline{x} : \overline{I_x}, \kwthis : I_0} {e_0 : I_{e_0} \subtype I_e}}$$
+Since $\mbody(m, I, K)$ is defined, the definition of $\mbody$ ensures that $I \subtype I_0$. And since $e$ is well typed, by \textsc{(T-PathInvk)},
+  $$\judgeewf {\Gamma} {\overline{v} : \overline{I_v} \subtype \overline{I_x}}$$
 
-\noindent \textcolor{red}{Hence by lemma~\ref{lemma1}, the substitution preserves typing, thus}
-  $$\textcolor{red}{\judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0 : I'_{e_0} \subtype I_{e_0} \subtype I_e}}$$
-\noindent \textcolor{red}{By \textsc{(T-Anno)}, $\judgeewf {\Gamma} {e' : I'_{e_0} \subtype I_e}$.}
+By \textsc{(T-New)}, \textsc{(T-Anno)} and Lemma~\ref{lemma0},
+  $$\judgeewf {\Gamma} {\angl{I_0}\new{I} : I_0} \quad \judgeewf {\Gamma, \overline{x} : \overline{I_x}, \kwthis : I_0} {e_0 : I_{e_0} \subtype I'_e}$$
+
+Hence by Lemma~\ref{lemma1}, the substitution preserves typing, thus
+  $$\judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0 : I'_{e_0} \subtype I_{e_0} \subtype I'_e}$$
+  
+Hence the conditions of \textsc{(T-Anno)} are satisfied, $\judgeewf {\Gamma} {e' : I'_e}$. It suffices to prove that $I'_e \subtype I_e$. Since $I'_e$ is from $\mbody(m, I, K)$, whereas $I_e$ is from $\mbody(m, J, K)$, by the rule  \textsc{(T-PathInvk)}. By $\textsc{(T-Anno)}$ and the condition that $e$ type-checks, we know that $I \subtype J$. By Lemma~\ref{lemma2_new}, $I'_e = I_e$.
 
 \begin{comment}
 \noindent \textbf{Case Invk.} 
@@ -192,6 +199,15 @@ So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
 \end{proof}
 
 \subsubsection{Proof for Theorem~\ref{theorem_progress}}
-\begin{proof}~\\
-\noindent \textcolor{red}{TODO. t-pathinvk. t-new. remember canInstantiate() to ensure $e_0$ is not empty.}
+\begin{proof}
+	
+Since $e$ is well typed, by \textsc{(T-PathInvk)} and \textsc{(T-Anno)} we know that
+$$I \subtype J\textrm{, and }\mbody(m, J, K) \textrm{ is defined}$$
+
+By Lemma~\ref{lemma2_new}, $\mbody(m, I, K)$ is also defined, and the type checker ensures the expected number of arguments.
+
+On the other hand, $I \subtype K$. By the definition of $\mostSpecific$, $$\mostSpecific(m, I, K) \subseteq \mostSpecific(m, I, I)$$
+
+By \textsc{(T-New)}, $\canOverride(I)$ should be true. By the definition of $\canOverride$, any $J\in\mostSpecific(m, I, I)$ satisfies that
+$\mostSpecificOverride(m, I, J)$ contains only one interface, in which the $m$ that overrides $J$ is a concrete method. Therefore $\mbody(m, I, K)$ also provides a concrete method, which finishes the proof.
 \end{proof}

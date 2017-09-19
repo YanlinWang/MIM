@@ -171,7 +171,7 @@
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
     {  \overline{M} \text{ OK IN } I \\
-    \forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined} \\ 
+    \forall J >: I, K >:J \text{ and } m, \mbody(m, J, K) \text{ is defined} \Rightarrow \mbody(m, I, K) \text{ is defined} \\ 
     \forall J >: I \text{ and } m \in \overrideSet(I, I), m \in \overrideSet(J, J)  \Rightarrow \canOverride(m, I, J)
     }
     { \interface{I}{I}{M} \text{ OK }}
@@ -181,7 +181,7 @@
 \inferrule* [left=\red{(T-Anno)}]
     {  \judgeewf \Gamma e:I  \\
        I \subtype J  }
-    { \judgeewf \Gamma {\angl{J}e : I} }
+    { \judgeewf \Gamma {\angl{J}e : J} }
 }
 
 
