@@ -7,12 +7,11 @@ The syntax, typing rules, and small-step semantics are presented below.
 
 \vspace{-2ex}
 \subsection{Syntax}
-Figure~\ref{fig:syntax} shows the syntax of \MIM{}. The multiple
+The abstract syntax of \MIM{} interface declarations, method declarations, and expressions is given at Figure~\ref{fig:syntax}. The multiple
 inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
 method implementations via default methods. This feature is 
 closely related to \emph{traits}. To demonstrate how
-unintentional method conflicts are untangled in \MIM{}, we only focus on a small
-subset of the interface model. For example, all the methods declared
+unintentional method conflicts are untangled in \MIM{}, we only focus on a small subset of the interface model. For example, all the methods declared
 in an interface are default methods, that is to say, they always
 provide default implementations. 
 %From this point we can view that we
@@ -21,11 +20,10 @@ provide default implementations.
 Object creation is directly supported via $\new I$. 
 Fields and primitive types are not modelled in \MIM{}.
 
-We use uppercase letters like $I, J, K$ for interface identifiers. 
-Due to multiple inheritance, an interface can have a set of
-super interfaces, where such a set can be empty. Each interface
+The metavariables $I, J, K$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. In order to achieve multiple inheritance, an interface can have a set of 
+parent interfaces, where such a set can be empty. Each interface
 has a set of method declarations. Each method body returns
-an expression. As seen in Figure~\ref{fig:syntax}, we have introduced the
+an expression. As shown in Figure~\ref{fig:syntax}, we have introduced the
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''; otherwise
