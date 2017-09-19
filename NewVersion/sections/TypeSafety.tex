@@ -15,29 +15,27 @@ $\textit{If } \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_e \; e),
  $ 
  \end{proof}
 
-\textcolor{red}{
 \begin{lemma}[Method Type Preservation]~\label{lemma2_new}
 $\textit{If } \mbody(m, I_0, J_0) = (K, \overline{I_x}\ \_, I_e\ \_)$, $\mbody(m, I'_0, J_0) = (K', \overline{I'_x}\ \_, I'_e\ \_) \textit{ for some }I'_0 \subtype I_0, \textit{ then }
 \overline{I'_x} = \overline{I_x}$ $\textit{and } I'_e = I_e.$
-\end{lemma}}
+\end{lemma}
 \begin{proof}
 	
-Trivial for the case $I'_0 = I_0$. And since the lemma has transitivity on subtyping, it suffices to prove the following cases and rely on induction, where we can suppose that $I'_0$ directly extends $I_0$.
-
 Suppose that $$\mostSpecific(m, I_0, J_0) = \{I\}$$ $$\mostSpecificOverride(m, I_0, I) = \{K\}$$
+$$\mostSpecific(m, I'_0, J_0) = \{I'\}$$ $$\mostSpecificOverride(m, I'_0, I') = \{K'\}$$
 
-\textbf{(1) The body of $I'_0$ does not contain $m$.} Trivial because $\mbody(m, I_0, J_0) = \mbody(m, I'_0, J_0)$. \haoyuan{Non-trivial. m may be inherited from other super types. TODO.}
+Below we use $I[m\uparrow J]$ to denote the type of method $m$ defined in $I$ that overrides $J$. We have to prove that $K'[m\uparrow I'] = K[m\uparrow I]$.
+Two facts:
+\begin{itemize}
+	\item A. By $\textsc{(T-Intf)}$, $\canOverride$ ensures that an override between any two original methods preserves the method type. Formally, $$I_1 \subtype I_2 \ \ \Rightarrow\ \ I_1[m\uparrow I_1] = I_2[m\uparrow I_2]$$
+	\item B. By $\textsc{(T-Method)}$ and $\textsc{(T-AbsMethod)}$, any partial override also preserves method type. Formally,
+	  $$I_1 \subtype I_2\ \ \Rightarrow\ \ I_1[m\uparrow I_2] = I_2[m\uparrow I_2]$$
+\end{itemize}
 
-\textbf{(2) $m \in \overrideSet(I'_0, I'_0)$.} In that case $I'_0$ defines an original method $m$.
- So
-$$\mostSpecific(m, I'_0, J_0) = \{I'_0\}$$ $$\mostSpecificOverride(m, I'_0, I'_0) = \{I'_0\}$$
-Hence $\mbody(m, I'_0, J_0)$ returns the original $m$ from $I'_0$. By $\textsc{(T-Intf)}$, we know that $\canOverride(m, I'_0, I)$ holds, which means that $I'_0$ has the same type as $I$ for $m$. On the other hand, from $\textsc{(T-Method)}$ and $\textsc{(T-AbsMethod)}$, the type of $m$ is also preserved between $I$ and $K$ (method override needs to keep the type). Finally $\mbody(m, I'_0, J_0)$ has the same type as $\mbody(m, I_0, J_0)$.
+Since $K \subtype I, K' \subtype I'$, by Fact B, $$K[m\uparrow I] = I[m\uparrow I] \quad K'[m\uparrow I'] = I'[m\uparrow I']$$
 
-\textbf{(3) $m \in \overrideSet(I'_0, I)$.} Similar to (2), $I$ and $K$ have the same type for $m$. Moreover, $\textsc{(T-Method)}$ and $\textsc{(T-AbsMethod)}$ also ensure that $I'_0$ and $I$ have the same type for $m$. \haoyuan{But findOrigin may no longer be I.}
-
-\textbf{(4) $m \in \overrideSet(I'_0, J)$ for some other $J$.} Same as (1). Such an $m$ does not affect the result of $\mbody$.
-%Straight induction on the derivation of $J \subtype I$. Whether $m$ is defined in $J$ or not, $\mtype(m, J)$ should 
-%be the same as $\mtype(m, K)$ where $J \; \kwextends \; K \{...\}$.
+Hence it suffices to prove that $I'[m\uparrow I'] = I[m\uparrow I]$. Since $I'_0 \subtype I_0$, by the definition of $\mostSpecific$ and $\prune$, $I'$ and $I$
+appear in the same set that is pruned, hence $I' \subtype I$. By Fact A, the proof is done.
 \end{proof}
 
 
