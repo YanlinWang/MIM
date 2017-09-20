@@ -1,9 +1,6 @@
 \section{Formalization}~\label{sec:formalization}
 In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}) , based on
-Featherweight Java~\cite{Igarashi01FJ}. We use the same
-conventions as FJ; $\overline{I}$ is shorthand for the (possibly empty)
-list $I_1, ..., I_n$, which may be indexed by $I_i$.
-The syntax, typing rules, and small-step semantics are presented below.
+Featherweight Java~\cite{Igarashi01FJ}. The syntax, typing rules, and small-step semantics are presented below.
 
 \vspace{-2ex}
 \subsection{Syntax}
@@ -20,9 +17,13 @@ provide default implementations.
 Object creation is directly supported via $\new I$. 
 Fields and primitive types are not modelled in \MIM{}.
 
-The metavariables $I, J, K$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. In order to achieve multiple inheritance, an interface can have a set of 
-parent interfaces, where such a set can be empty. Each interface
-has a set of method declarations. Each method body returns
+The metavariables $I, J, K$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
+conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in the obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
+
+In order to achieve multiple inheritance, an interface can have a set of 
+parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
+
+Each method body returns
 an expression. As shown in Figure~\ref{fig:syntax}, we have introduced the
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
