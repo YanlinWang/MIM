@@ -23,8 +23,7 @@ conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty seq
 In order to achieve multiple inheritance, an interface can have a set of 
 parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
-Each method body returns
-an expression. As shown in Figure~\ref{fig:syntax}, we have introduced the
+The method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a method named $m$ with result type $I$, parameters $\overline{x}$ of type $\overline{I_x}$ and the overriding target $J$. The body of the method is the single statement $ \kwreturn \; e;$. We also allow defining abstract methods with $\absmethod{I}{m}{I_x}{x}{J}$, which is similar as normal method but without a method body. Notebly, We have introduced the
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''; otherwise
@@ -33,12 +32,9 @@ For simplicity, overloading is not modelled for methods, which
 implies we can uniquely identify a method by its name.
 
 Expressions can be standard constructs such as variables, method
-invocation, or object creation. A novel type of expressions are path-invocations like
-``$e.I\pathIvk m(\overline{e})$'', meaning that the dynamically bound
-implementation for method $m$ should be along the path $I$. Another
-interesting expression are super-invocations, which enable a method to access an old
-implementation from the specified super type. Hence a super-invocation
-can only be used inside an interface definition.
+invocation, or object creation. \name{} allows two types of method invocations, one is the normal method invocation $e.m(\overline{e})$ that we are familiar with, another is the novel type of expressions: path-invocations like ``$e.I\pathIvk m(\overline{e})$'', meaning that the dynamically bound
+implementation for method $m$ should be along the path $I$. 
+% Another interesting expression are super-invocations, which enable a method to access an old implementation from the specified super type. Hence a super-invocation can only be used inside an interface definition.
 Finally, an expression can also be annotated with its static type. But \emph{annotated expressions are only intended for the semantic rules},
 hence they are not supposed to appear in the source program. A value
 ``$\angl{I}\new{J}$''
