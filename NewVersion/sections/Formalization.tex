@@ -32,7 +32,7 @@ For simplicity, overloading is not modelled for methods, which
 implies we can uniquely identify a method by its name.
 
 Expressions can be standard constructs such as variables, method
-invocation, or object creation. \name{} allows two types of method invocations, one is the normal method invocation $e.m(\overline{e})$ that we are familiar with, another is the novel type of expressions: path-invocations like ``$e.I\pathIvk m(\overline{e})$'', meaning that the dynamically bound
+invocation, or object creation. \name{} allows two types of method invocations, one is the normal method invocation $e.m(\overline{e})$ that we are familiar with, another is the novel type of method invocation: path-invocations like ``$e.I\pathIvk m(\overline{e})$'', meaning that the dynamically bound
 implementation for method $m$ should be along the path $I$. 
 % Another interesting expression are super-invocations, which enable a method to access an old implementation from the specified super type. Hence a super-invocation can only be used inside an interface definition.
 Finally, an expression can also be annotated with its static type. But \emph{annotated expressions are only intended for the semantic rules},
@@ -73,7 +73,7 @@ e.I?m(e) \; \mid \; \angl{I}e \\
 \subsection{Subtyping and Typing Rules}
 The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
 In short, subtyping relations are built from the inheritance in interface
-declarations. Subtyping is both reflexive and transitive.
+declarations. Subtyping is both symmetric, reflexive and transitive.
 
 Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
 typing, well-formedness of methods and interfaces. As a convention, an environment
@@ -96,11 +96,12 @@ introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(
 ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime
 in any case. The interface check is responsible for capturing ambiguity during compilation.
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \saveSpaceFig
 \begin{mathpar}
 	\framebox{$ I <: J $} \hspace{.5in} \subid \\
 	\subtrans \hspace{.5in} \subextends \\
+	
 	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
 	\tvar \\
 	\tinvk \\
@@ -113,9 +114,10 @@ in any case. The interface check is responsible for capturing ambiguity during c
 	\tintf \\
 	\tanno
 \end{mathpar}
+\caption{Typing Rules of \name{}.}
 \label{fig:typingrules}
 \saveSpaceFig
-\end{figure*}
+\end{figure}
 
 \subsection{Small-step Semantics and Congruence}
 Figure~\ref{fig:smallstep} defines the small-step semantic and
