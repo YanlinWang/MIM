@@ -1,25 +1,27 @@
-\haoyuan{For lemma~\ref{lemma1} and Theorem 1, we can have a stricter form. But that is from the design choice that
-we do not accept covariant return types. So we keep it more general at this stage.}
-
-\begin{lemma}~\label{lemma0}
+\begin{lemma}~\label{lemma:return_expr_typing}
 % $\textit{If } \mtype(m, I, J) = \overline{D} \rightarrow D, \textit{ and } \mbody(m, I, J) = \overline{x}.e, 
 %  \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists C <: D, \textit{ such that }  
 %  \judgeewf {\overline{x}:\overline{D}, \kwthis:J_0} {e:C} $.
-$\textit{If } \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_e \; e), 
- \textit{ then for some } J_0 \textit{ with } I <: J_0, \  \exists I' <: I_e, \textit{ such that }  
- \judgeewf {\overline{x}:\overline{I_x}, \kwthis:J_0} {e : I'} $.
+If $\mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; e_0)$, then
+ $\judgeewf {\overline{x}:\overline{I_x}, \kwthis:J} {e_0 : I_0}$ for some $I_0 \subtype I_e$.
 \end{lemma}
 
- \begin{proof}~\\
- $\textit{The base case: if } m \textit{ is defined in } I, \textit{ then it is easy since } m 
- \textit{ is defined in } I \textit{ and } 
- \judgeewf {\overline{x}:\overline{I_x}, \kwthis : I} {e : I_e}, \textit{by the rule \textsc{(T-Method)}}.
- \textit{The induction step is also straightforward.} 
- $ 
- \end{proof}
+\begin{proof}
+By the definition of $\mbody$, the target method $m$ is found in $J$. By the method typing rule \textsc{(T-Method)}, there exists some 
+$I_0 \subtype I_e$ such that $\judgeewf {\overline{x}:\overline{I_x}, \kwthis:J} {e_0 : I_0}$. 
+\end{proof}
 
-\begin{lemma}[Method Type Preservation]~\label{lemma2_new}
-$\textit{If } \mbody(m, I_0, J_0) = (K, \overline{I_x}\ \_, I_e\ \_)$, $\textit{Then for any } I'_0 \subtype I_0, \mbody(m, I'_0, J_0) = (K', \overline{I_x}\ \_, I_e\ \_).$
+\begin{lemma}[Weakening]~\label{lemma:weakening}
+	If $\judgeewf {\Gamma} {e : I}$, then $\judgeewf {\Gamma, x : J} {e : I}$.
+\end{lemma}
+
+\begin{proof}
+Straightforward induction.
+\end{proof}
+
+
+\begin{lemma}[Method Type Preservation]~\label{lemma:mbody_type_preservation}
+If $\mbody(m, I_0, J_0) = (K, \overline{I_x}\ \_, I_e\ \_)$, then for any $I'_0 \subtype I_0$, $\mbody(m, I'_0, J_0) = (K', \overline{I_x}\ \_, I_e\ \_)$.
 \end{lemma}
 \begin{proof}
 	
@@ -42,11 +44,10 @@ appear in the same set that is pruned, hence $I' \subtype I$. By Fact A, the pro
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{lemma}[Term Substitution Preserves Typing]~\label{lemma1}
-$\textit{If } \ \judgeewf {\Gamma, \ \overline{x}:\overline{I_x}} { e : I } \textit{ , and }
-\judgeewf {\Gamma} {\overline{y}:\overline{I_y}} \textit{ where } \overline{I_y} \subtype \overline{I_x}
-\textit{, then } \judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I'} \textit{ for some } I' \subtype I.
-$
+\begin{lemma}[Term Substitution Preserves Typing]~\label{lemma:subst_type_preservation}
+If $\judgeewf {\Gamma, \overline{x}:\overline{I_x}} { e : I }$, and
+$\judgeewf {\Gamma} {\overline{y}:\overline{I_x}}$, then
+$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
 
 \begin{proof}
 
@@ -84,24 +85,37 @@ $ e = e_0.I::m(\overline{e}) $ and proof is similar as case Var.
 $ e = \kwsuper.I::m(\overline{e}) $ \\
 Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be similar as case Var.
 \end{comment}
-~\\
-\indent\textbf{Case PathInvk.} $e = e_0.J_0?m(\overline{e})$. By \textsc{(T-PathInvk)}, suppose
+We prove by induction. The expression $e$ has the following cases:
+
+\textbf{Case Var.} Let $e = x$. If $x \notin \overline{x}$, then the substitution does not change anything. Otherwise,
+since $\overline{y}$ have the same types as $\overline{x}$, it immediately finishes the case.
+
+\textbf{Case Invk.} Let $e = e_0.m(\overline{e})$. By \textsc{(T-Invk)} we can suppose that
+	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad \mbody(m, I_0, I_0) = (\_, \overline{J}\ \_, I\ \_)$$
+	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e} : \overline{I_e}} \quad 
+	\overline{I_e} \subtype \overline{J} \quad \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e : I}$$
+	
+By induction hypothesis, 
+	$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0} \quad
+	  \judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e}}$$
+	  
+Again by \textsc{(T-Invk)}, $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
+
+\textbf{Case PathInvk.} $e = e_0.J_0?m(\overline{e})$. By \textsc{(T-PathInvk)}, suppose
 	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad I_0 \subtype J_0$$
 	$$\mbody(m, I_0, J_0) = (\_, \overline{J}\ \_, I\ \_)$$
 	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e} : \overline{I_e}} \quad 
 	  \overline{I_e} \subtype \overline{J} \quad \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e : I}$$
 
-By induction hypothesis, there are some $I'_0$ and some $\overline{I'_e}$ such that
-	$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0'} \quad I_0' \subtype I_0 \subtype J_0$$
-	$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e'}} \quad 
-	  \overline{I_e'} \subtype \overline{I_e} \subtype \overline{J}$$   
+By induction hypothesis, 
+$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0} \quad
+\judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e}}$$ 
 
-By Lemma~\ref{lemma2_new},
-	$$\mbody(m, I'_0, J_0) = (\_, \overline{J}\ \_, I\ \_)$$
-	
-Therefore, by the rule \textsc{(T-Invk)}, 
-	$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.J_0?m([\overline{y}/\overline{x}]\overline{e}) : I}$.
+Again by \textsc{(T-PathInvk)}, $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
 
+\textbf{Case New.} Straightforward.
+
+\textbf{Case Anno.} Straightforward by induction hypothesis and \textsc{(T-Anno)}.
 
 
 \end{proof}
@@ -113,23 +127,53 @@ Therefore, by the rule \textsc{(T-Invk)},
 
 \subsubsection{Proof for Theorem~\ref{theorem_subject}}
 \begin{proof} ~\\
-\indent \textbf{Case S-Invk.} Trivial from \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-Anno)}, as both $e$ and $e'$ invoke $\mbody(m, J, J)$.
+\indent \textbf{Case S-Invk.} Let
+   $$e = (\angl{J}\new{I}).m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
+   $$e' = (\angl{J}\new{I}).J?m(\overline{v})$$
+   
+Since $e$ is well-typed, $\angl{J}\new{I}$ is also well-typed. By \textsc{(T-Anno)},
+  $$\judgeewf {\Gamma} {\angl{J}\new{I} : J} \quad I \subtype J$$
+  
+By \textsc{(T-Invk)} on $e$,
+  $$\mbody(m, J, J) = (\_, \overline{I_x}\ \_, I_e\ \_) \quad \judgeewf {\Gamma} {\overline{v} : \overline{I_v}} \quad \overline{I_v}  \subtype \overline{I_x}$$
+  
+At this moment, \textsc{(T-PathInvk)} is immediately applicable by the above conditions, including that $e'$ also invokes $\mbody(m, J, J)$. Hence $\judgeewf {\Gamma} {e' : I_e}$.
 
 \textbf{Case S-PathInvk.} Let
   $$e = (\angl{J}\new{I}).K?m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
-  $$e' = \angl{I'_e}[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0$$
-  $$\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0)$$
+  $$e' = \angl{I_{e_0}}[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0$$
+  $$\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_{e_0} \; e_0)$$
 
-Since $\mbody(m, I, K)$ is defined, the definition of $\mbody$ ensures that $I \subtype I_0$. And since $e$ is well typed, by \textsc{(T-PathInvk)},
-  $$\judgeewf {\Gamma} {\overline{v} : \overline{I_v} \subtype \overline{I_x}}$$
+Since $\mbody(m, I, K)$ is defined, the definition of $\mbody$ ensures that $I \subtype I_0$. And since $e$ is well-typed, by \textsc{(T-PathInvk)},
+  $$\judgeewf {\Gamma} {\overline{v} : \overline{I_v}} \quad \overline{I_v} \subtype \overline{I_x}$$
 
-By \textsc{(T-New)}, \textsc{(T-Anno)} and Lemma~\ref{lemma0},
-  $$\judgeewf {\Gamma} {\angl{I_0}\new{I} : I_0} \quad \judgeewf {\Gamma, \overline{x} : \overline{I_x}, \kwthis : I_0} {e_0 : I_{e_0} \subtype I'_e}$$
-
-Hence by Lemma~\ref{lemma1}, the substitution preserves typing, thus
-  $$\judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0 : I'_{e_0} \subtype I_{e_0} \subtype I'_e}$$
+By the rules \textsc{(T-Anno)} and  \textsc{(T-New)},
+  $$\judgeewf {\Gamma} {\overline{\angl{I_x}}\overline{v} : \overline{I_x}} \quad \judgeewf {\Gamma} {\angl{I_0}\new{I} : I_0}$$
   
-Hence the conditions of \textsc{(T-Anno)} are satisfied, $\judgeewf {\Gamma} {e' : I'_e}$. It suffices to prove that $I'_e \subtype I_e$. Since $I'_e$ is from $\mbody(m, I, K)$, whereas $I_e$ is from $\mbody(m, J, K)$, by the rule  \textsc{(T-PathInvk)}. By $\textsc{(T-Anno)}$ and the condition that $e$ type-checks, we know that $I \subtype J$. By Lemma~\ref{lemma2_new}, $I'_e = I_e$.
+On the other hand, by Lemma~\ref{lemma:return_expr_typing},
+  $$\judgeewf {\overline{x} : \overline{I_x}, \kwthis: I_0} {e_0 : I'_{e_0}} \quad I'_{e_0} \subtype I_{e_0}$$
+  
+By Lemma~\ref{lemma:weakening},
+  $$\judgeewf {\Gamma, \overline{x} : \overline{I_x}, \kwthis: I_0} {e_0 : I'_{e_0}}$$
+
+Hence by Lemma~\ref{lemma:subst_type_preservation}, the substitution preserves typing, thus
+  $$\judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0 : I'_{e_0}}$$
+  
+Since $I'_{e_0} \subtype I_{e_0}$, the conditions of \textsc{(T-Anno)} are satisfied, hence $\judgeewf {\Gamma} {e' : I_{e_0}}$. Now we only need to prove that $I_{e_0} = I_e$. Since $I_{e_0}$ is from $\mbody(m, I, K)$, whereas $I_e$ is from $\mbody(m, J, K)$, by the rule  \textsc{(T-PathInvk)}. By $\textsc{(T-Anno)}$ and the condition that $e$ type-checks, we know that $I \subtype J$. By Lemma~\ref{lemma:mbody_type_preservation}, $I_{e_0} = I_e$.
+
+\textbf{Case C-Receiver.} Straightforward induction.
+
+\textbf{Case C-PathReceiver.} Straightforward induction.
+
+\textbf{Case C-Args.} Straightforward induction.
+
+\textbf{Case C-PathArgs.} Straightforward induction.
+
+\textbf{Case C-StaticType.} Immediate by \textsc{(T-Anno)}.
+
+\textbf{Case C-FReduce.} Immediate by \textsc{(T-Anno)} and induction.
+
+\textbf{Case C-AnnoReduce.} Immediate by \textsc{(T-Anno)} and transitivity of $\subtype$.
 
 \begin{comment}
 \noindent \textbf{Case Invk.} 
@@ -201,10 +245,10 @@ So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
 \subsubsection{Proof for Theorem~\ref{theorem_progress}}
 \begin{proof}
 	
-Since $e$ is well typed, by \textsc{(T-PathInvk)} and \textsc{(T-Anno)} we know that
+Since $e$ is well-typed, by \textsc{(T-PathInvk)} and \textsc{(T-Anno)} we know that
 $$I \subtype J\textrm{, and }\mbody(m, J, K) \textrm{ is defined}$$
 
-By Lemma~\ref{lemma2_new}, $\mbody(m, I, K)$ is also defined, and the type checker ensures the expected number of arguments.
+By Lemma~\ref{lemma:mbody_type_preservation}, $\mbody(m, I, K)$ is also defined, and the type checker ensures the expected number of arguments.
 
 On the other hand, $I \subtype K$. By the definition of $\mostSpecific$, $$\mostSpecific(m, I, K) \subseteq \mostSpecific(m, I, I)$$
 
