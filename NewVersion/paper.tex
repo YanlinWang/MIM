@@ -118,7 +118,19 @@
 \begin{abstract}
 Multiple inheritance is a valuable feature for Object-Oriented
 Programming. However, it is also tricky to get right, as illustrated by
-the extensive literature on the topic. One of the most promising 
+the extensive literature on the topic. A key issue 
+is the \emph{ambiguity} arising from inheriting multiple parents,
+which can have conflicting methods and fields. 
+Numerous existing work provides solutions for 
+conflicts which arise from \emph{diamond inheritance}: i.e.
+conflicts that arise from implementations sharing a common 
+ancestor. However, most mechanisms are inadequate to deal 
+with \emph{unintentional method conflicts}: conflicts which 
+arise from two unrelated methods that happen to share the same name
+and signature. 
+
+\begin{comment}
+One of the most promising 
 approaches to multiple inheritance is the \emph{trait} model. Traits offer a
 restricted model of multiple inheritance that is easy to reason and 
 have many elegant properties. Traits have good support for method 
@@ -128,9 +140,34 @@ ancestor. However, the mechanisms of traits are inadequate to deal
 with \emph{unintentional method conflicts}: conflicts which 
 arise from two unrelated methods that happen to share the same name
 and signature. 
+\end{comment}
 
-This paper presents a new model \name{} (short for \emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}) as an extension/variation to the trait model that deals with unintentional method conflicts. The method resolution semantics resembles C++, so part of our formalization can be used as a partial C++ method lookup algorithm formalization. We discuss the similarities and differences with C++ and also advantages and disadvantages. In our new model, conflicting methods arising from unrelated methods can coexist in the same component. Moreover, one novel feature we add to our model is hierarchical method overriding: methods can be \emph{independently overridden} along multiple inheritance hierarchy. What ensures unambiguity is the use of information about the class hierarchy. In turn, hierarchical information is also employed in method dispatching, which uses a combination of static and dynamic type information to choose the implementation of a method at run-time. We give illustrative examples of our language and features and formalize \name{} as a minimal Featherweight-Java style calculus.
+This paper presents a new model called \emph{\textbf{F}eatherweight
+  \textbf{H}ierarchical \textbf{J}ava} (\name{}) that deals with
+unintentional method conflicts.
+In our
+new model, conflicting methods arising from unrelated methods can
+coexist in the same class. Furthermore our model supports
+\emph{hierarchical method overriding}: that is, methods can be
+\emph{independently overridden} along the multiple inheritance
+hierarchy. To avoid ambiguity, hierarchical information is 
+employed in method dispatching, which uses a combination of static and
+dynamic type information to choose the implementation of a method at
+run-time. We give illustrative examples of our language and features
+and formalize \name{} as a minimal Featherweight-Java style calculus.
 
+\begin{comment}
+Furthermore we discuss similarities and differences to 
+
+
+What ensures unambiguity is the use of information about
+the class hierarchy.
+
+\name{} is partly inspired by the method resolution semantics
+of C++, but it also incoorporates ideas from the trait model and Java
+8's default methods. We discuss the similarities
+and differences with and also advantages and disadvantages. 
+\end{comment}
 
 \end{abstract}
 

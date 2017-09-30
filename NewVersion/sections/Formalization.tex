@@ -1,6 +1,7 @@
 \section{Formalization}~\label{sec:formalization}
-In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}) , based on
-Featherweight Java~\cite{Igarashi01FJ}. The syntax, typing rules, and small-step semantics are presented below.
+In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), based on
+Featherweight Java~\cite{Igarashi01FJ}. The syntax, typing rules,
+small-step semantics and type soundness proofs are presented.
 
 \vspace{-2ex}
 \subsection{Syntax}
@@ -23,7 +24,12 @@ conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty seq
 In order to achieve multiple inheritance, an interface can have a set of 
 parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
-The method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a method named $m$ with result type $I$, parameters $\overline{x}$ of type $\overline{I_x}$ and the overriding target $J$. The body of the method is the single statement $ \kwreturn \; e;$. We also allow defining abstract methods with $\absmethod{I}{m}{I_x}{x}{J}$, which is similar as normal method but without a method body. Notebly, We have introduced the
+The method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
+method named $m$ with result type $I$, parameters $\overline{x}$ of
+type $\overline{I_x}$ and the overriding target $J$. The body of the
+method is the single statement $ \kwreturn \; e;$. We also allow
+defining abstract methods with $\absmethod{I}{m}{I_x}{x}{J}$, which is
+similar to a normal method but without a method body. Notably, we have introduced the
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''; otherwise
@@ -77,7 +83,15 @@ declarations. Subtyping is both symmetric, reflexive and transitive.
 
 Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
 typing, well-formedness of methods and interfaces. As a convention, an environment
-$\Gamma$ is maintained to store the types of variables, together with the type of \kwthis{}, namely the enclosing type. We abbreviate typing judgements on sequences in the obvious way, writing $\judgeewf \Gamma {\overline{e}:\overline{I}}$ as shorthand for $\judgeewf \Gamma {e_1:I_1}, \judgeewf \Gamma {e_2:I_2}, ..., \judgeewf \Gamma {e_n:I_n}$ and writing $\subt{\overline{I}}{\overline{J}}$ as shorthand for $\subt{I_1}{J_1}, \subt{I_2}{J_2}, ..., \subt{I_n}{J_n}$.
+$\Gamma$ is maintained to store the types of variables, together with
+the ``this'' type, namely
+the enclosing type. The three rules for method invocation, \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-SuperInvk)}
+are very similar, in the sense that they all check the type of the specific method, by using
+an auxiliary function \mtype. \mtype{} is the function for looking up method types, which we will
+illustrate later in Section~\ref{subsec:auxdefs}. After the method
+type is obtained, they all check that the arguments and the receiver
+have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
+path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 There are two typing rules for method invocation: \textsc{(T-Invk)} and \textsc{(T-PathInvk)}. \textsc{(T-Invk)} is the typing judgement for a normal method invocation, which is similar to Featherweight Java. It checks the type of the specific method, by using an auxiliary function \mbody. \mbody is the function for looking up methods, which we will illustrate later in Section~\ref{subsec:auxdefs}. After the method type is obtained, we check that arguments and the receiver have compatible types. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-PathInvk)}, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
 path type. 
@@ -91,14 +105,17 @@ we further use the helper function $\mostSpecific$, again formally defined in Se
 By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is hierarchical overriding, it should not step over original methods, otherwise
 their enclosing types would be returned instead of $J$.
 
-Finally, \textsc{(T-Invk)} defines interface checking. The condition helps to ensure unambiguity and type soundness of the calculus. Firstly, we check that all method $\overline{M}$ defined in $I$ type checks. 
-
-We will
+Finally, \textsc{(T-Intf)} defines interface checking. The
+condition\bruno{Well, there are two conditions. I suggest you explain
+  in a bit more detail the 2 conditions, since this rule seems to be
+  the more complex one. Some examples may help.} helps to ensure unambiguity and type soundness of the calculus. We will
 introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not
 ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime
 in any case. The interface check is responsible for capturing ambiguity during compilation.
 
-\begin{figure}[t]
+\bruno{Explanation for T-Anno is missing}
+
+\begin{figure*}
 \saveSpaceFig
 \begin{mathpar}
 	\framebox{$ I <: J $} \hspace{.5in} \subid \\
@@ -119,7 +136,8 @@ in any case. The interface check is responsible for capturing ambiguity during c
 \caption{Typing Rules of \name{}.}
 \label{fig:typingrules}
 \saveSpaceFig
-\end{figure}
+\caption{Typing and subtyping of \name{}.}
+\end{figure*}
 
 \subsection{Small-step Semantics and Congruence}
 Figure~\ref{fig:smallstep} defines the small-step semantic and
