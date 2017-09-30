@@ -77,13 +77,13 @@ declarations. Subtyping is both symmetric, reflexive and transitive.
 
 Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
 typing, well-formedness of methods and interfaces. As a convention, an environment
-$\Gamma$ is maintained to store the types of variables, together with ``this'' type, namely
-the enclosing type. The three rules for method invocation, \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-SuperInvk)}
-are very similar, in the sense that they all check the type of the specific method, by using
-an auxiliary function \mtype. \mtype{} is the function for looking up method types, which we will
-illustrate later in Section~\ref{subsec:auxdefs}. After the method type is obtained, they all check that arguments and the receiver
-have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
-path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
+$\Gamma$ is maintained to store the types of variables, together with the type of \kwthis{}, namely the enclosing type. We abbreviate typing judgements on sequences in the obvious way, writing $\judgeewf \Gamma {\overline{e}:\overline{I}}$ as shorthand for $\judgeewf \Gamma {e_1:I_1}, \judgeewf \Gamma {e_2:I_2}, ..., \judgeewf \Gamma {e_n:I_n}$ and writing $\subt{\overline{I}}{\overline{J}}$ as shorthand for $\subt{I_1}{J_1}, \subt{I_2}{J_2}, ..., \subt{I_n}{J_n}$.
+
+There are two typing rules for method invocation: \textsc{(T-Invk)} and \textsc{(T-PathInvk)}. \textsc{(T-Invk)} is the typing judgement for a normal method invocation, which is similar to Featherweight Java. It checks the type of the specific method, by using an auxiliary function \mbody. \mbody is the function for looking up methods, which we will illustrate later in Section~\ref{subsec:auxdefs}. After the method type is obtained, we check that arguments and the receiver have compatible types. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-PathInvk)}, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
+path type. 
+% and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
+
+\textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not. If interface $I$ contains (or inherits) any abstract method that has not been implemented, then interface $I$ cannot be instantiated.
 
 The method typing rule \textsc{(T-Method)} is more interesting since the method can either be an original implementation or hierarchical overriding.
 Besides type-checking the return expression,
@@ -91,7 +91,9 @@ we further use the helper function $\mostSpecific$, again formally defined in Se
 By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is hierarchical overriding, it should not step over original methods, otherwise
 their enclosing types would be returned instead of $J$.
 
-Finally, \textsc{(T-Invk)} defines interface checking. The condition helps to ensure unambiguity and type soundness of the calculus. We will
+Finally, \textsc{(T-Invk)} defines interface checking. The condition helps to ensure unambiguity and type soundness of the calculus. Firstly, we check that all method $\overline{M}$ defined in $I$ type checks. 
+
+We will
 introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not
 ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime
 in any case. The interface check is responsible for capturing ambiguity during compilation.
