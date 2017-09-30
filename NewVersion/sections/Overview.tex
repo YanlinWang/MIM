@@ -3,7 +3,7 @@ This section illustrates the features of our model for
 resolving unintentional method conflicts. As mentioned before, such a
 case arises when two inherited methods happen to have the same
 signature, but with different semantics and functionality. This
-situation is troublesome to programmers that use multiple
+situation is troublesome for programmers that use multiple
 inheritance. Below we illustrate with a running example called
 \lstinline|DrawableDeck|, which models a drawable deck of cards. 
 Note that we use a Java-like syntax
@@ -13,11 +13,15 @@ interfaces with default methods~\cite{bono14} and traits. For simplicity, an int
 the following characteristics:
 \begin{itemize}
   \item It allows multiple inheritance.
-  \item Every method represents a behaviour and requires a body for its implementation (like Java 8 default methods). There are no abstract methods.
+  \item Every method represents a behaviour and requires a body for
+    its implementation (like Java 8 default methods). 
   \item It can be directly instantiated by the \lstinline|new| keyword.
 \end{itemize}
-Furthermore for simplicity, our examples and formalization do not deal with state at
-this stage. %%, but that should not block our discussions below.
+Furthermore, similarly to traits or Java 8 with default methods,
+interfaces cannot have state.\bruno{I rephrased this sentence}
+
+%%for simplicity, our examples and formalization do not deal with state at
+%%this stage. %%, but that should not block our discussions below.
 
 \subsection{Problem 1: Unintentional Method Conflicts}
 Suppose that two components \lstinline|Deck| and \lstinline|Drawable| 
@@ -47,6 +51,10 @@ interface Drawable {
   }
 }
 \end{lstlisting}\vspace{3pt}
+\bruno{The code calls getStack(), but that method is not defined! 
+If you want to present a compelling example, please make sure that 
+the code makes sense! I suppose that getStack() would be an abstract method?
+}
 Note that both methods have \lstinline|void| return type (we will not formalize
 \lstinline|void| in our calculus afterwards; here it is only for illustration). 
 In \lstinline|Deck|, \lstinline|draw| tries to get the cards as a stack, pops
@@ -65,11 +73,12 @@ error on \lstinline|DrawableDeck|, since the two \lstinline|draw| methods cause 
 
 Now one may quickly come up with a workaround, which is creating a new \lstinline|draw| method in \lstinline|DrawableDeck| to
 explicitly override the old ones. However, the two conflicting methods have totally different functionalities, merging
-them into one does not make any sense. This non-solution will hide the old methods and break independent extensibility. The
-feature we expect is called ``triangle inheritance'', that is to say, when the conflicting methods serve for different behaviours,
-we can allow them to coexist in the extending interface in a type-safe way.\\
+them into one does not make any sense. This non-solution will hide the
+old methods and break independent extensibility. 
 
-\noindent\textbf{Potential Fixes} There are several workarounds that come to our mind:
+\noindent\textbf{Potential Fixes} There are several other workarounds
+that come to our mind. We briefly discuss those potential fixes and
+workarounds next:
 \begin{itemize}
   \item \textbf{I. Delegation.} As an alternative to multiple inheritance,
   delegation can be used by introducing two fields with
@@ -94,14 +103,21 @@ we can allow them to coexist in the extending interface in a type-safe way.\\
   \item \textbf{IV. Static dispatch.} Some other languages like C++ have
   direct support for the triangle inheritance. While conflicting methods are
   both preserved, the ambiguity of method call is resolved by static dispatch.
-  Qualified names are used to specify the branch to give the right implementation.
+  Qualified names are used to specify the branch to give the right
+  implementation.\bruno{don't forget to readjust text with what we
+    have learned about C++.}
 \end{itemize}
 
-\noindent\textbf{Our solution:} below is our code that shows the triangle
+\noindent\textbf{Our solution:} 
+The feature we expect is called \emph{triangle inheritance}, that is
+to say, when the conflicting methods serve for different behaviours,
+we can allow them to coexist in the extending interface in a type-safe way.
+Below is our code that shows the triangle
 inheritance.
 We can define \lstinline|DrawableDeck| by inheriting \lstinline|Drawable| and \lstinline|Deck| together while
-type safety is ensured. Again it is slightly different from our prototype as we do not model \lstinline|void| or statements;
-the code is just for illustration.
+type safety is ensured. 
+%%Again it is slightly different from our prototype as we do not model \lstinline|void| or statements;
+%%the code is just for illustration.
 \vspace{3pt}\begin{lstlisting}
 interface DrawableDeck extends Drawable, Deck {}
 interface Foo {
@@ -112,12 +128,20 @@ DrawableDeck d = new DrawableDeck();
 new DrawableDeck().Drawable::draw();      // calling draw in Drawable
 new Foo().func(new DrawableDeck());       // calling draw in Deck
 \end{lstlisting}\vspace{3pt}
+\bruno{Please ensure that the syntax we use in the examples, matches 
+up with the syntax in the formalization. In particular make sure that
+the syntax for the various types of method calls are the same.}
+\bruno{You don't actually explain your code! Please explain what the
+  code does, and what are the different types of calls
+  involved. Introduce some terminology here, namely the names for the 
+different types of calls.}
+
+\noindent\textbf{A comparison with C++:} 
 Note that both cases in the above code are valid in C++ for disambiguation. As shown by \lstinline|func|, C++ looks at
 the static type of the receiver for static dispatching. Normally we can define such a method \lstinline|func| for ``implicit''
 casts in \name{}. C++ further allows explicit casts.
-
 In the following text, we will see that C++ is still unsatisfactory, as it introduces another problem on code reuse, which motivates
-our work.
+our work.\bruno{Please revise.}
 
 \subsection{Problem 2: Dynamic Dispatch for Code Reuse}\label{subsec:problem2}
 
