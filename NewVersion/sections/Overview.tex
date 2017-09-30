@@ -144,9 +144,7 @@ In the following text, we will see that C++ is still unsatisfactory, as it intro
 our work.\bruno{Please revise.}
 
 \subsection{Problem 2: Dynamic Dispatch for Code Reuse}\label{subsec:problem2}
-
-\bruno{Emphasizing hierarchical dispatch and triangle inheritance.}\haoyuan{Done}
-On the other hand, we also need dynamic dispatch as it is essential and widely used in Object-Oriented programming.
+Dynamic dispatching is essential and widely used in Object-Oriented programming.
 C++ has the flexibility for choosing either way of dispatch by the \kwvirtual{} keyword.
 Unfortunately, this approach is still unsatisfactory regarding code reuse. For instance, 
 we redefine \lstinline|Deck| to support
@@ -173,7 +171,9 @@ interface LoggingDeck extends Deck {
 }
 \end{lstlisting}\vspace{3pt}
 In that case, \lstinline|shuffleAndDraw| needs to be adapted to the new \lstinline|draw|. But due to static dispatch,
-it still refers to the old \lstinline|draw| in \lstinline|Deck|. Thus programmers have to copy the \lstinline|shuffleAndDraw| code in
+it still refers to the old \lstinline|draw| in
+\lstinline|Deck|\bruno{Is this discussion up-to-date? Please revise
+  the discussion in view of what we know about C++ now.}. Thus programmers have to copy the \lstinline|shuffleAndDraw| code in
 \lstinline|LoggingDeck|. It requires a lot of redundant work if we have to duplicate all such methods. Hence in order for code reuse,
 we cannot just rely on static dispatch. However, as seen before, dynamic dispatch would take us back to problem 1, for instance, when we
 have the UML in Figure~\ref{fig:drawableloggingdeck} and the following code:
