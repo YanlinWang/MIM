@@ -30,7 +30,7 @@ deck.  \lstinline|Drawable| is an interface for graphics that
 can be drawn and also includes a method called \lstinline|draw| for
 visual display. For simple illustration, the default implementation of
 \lstinline|draw| in \lstinline|Drawable| only creates a blank canvas
-on the screen, while the \lstinline|draw| in \lstinline|Deck| simply
+on the screen, while the \lstinline|draw| method in \lstinline|Deck| simply
 prints out a message.
 
 \vspace{3pt}\begin{lstlisting}
@@ -49,18 +49,23 @@ interface Drawable {
 }
 \end{lstlisting}\vspace{3pt}
 Note that the two \lstinline|draw| methods have the same names and parameter types,
-but the return types can be different. In \lstinline|Deck|, \lstinline|println| is a
-library function, loaded by the prelude for example. Since the only operation is messaging,
-the method has \lstinline|void| return type (we could define an interface called \lstinline|Void|
-and return an object of it instead; in many languages it is simply a primitive type). On the other hand, for \lstinline|Drawable|
-the program has to create a blank canvas by \lstinline|JFrame|, again a pre-defined type:
-
+but the return types can be different. In \lstinline|Deck|,
+\lstinline|draw| uses \lstinline|println|, which is a
+library function. 
+The method returns \lstinline|void|. Note that \lstinline|void| is
+unsupported in our formalization, but we could have also defined an interface called \lstinline|Void|
+and return an object of that type instead. For the method \lstinline|draw| in
+\lstinline|Drawable|
+the program has to create a blank canvas by \lstinline|JFrame|, which
+is a pre-defined type.
+\begin{comment}
 \vspace{3pt}\begin{lstlisting}
 interface JFrame {
   void setVisible(boolean b) {...}
   ...
 }
 \end{lstlisting}\vspace{3pt}
+\end{comment}
 Now, a programmer is designing a
 card game with GUI. He may want to draw a deck on the screen, so he defines a drawable
 deck using multiple inheritance:
@@ -68,18 +73,18 @@ deck using multiple inheritance:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableDeck extends Drawable, Deck {...} 
 \end{lstlisting}\vspace{3pt}
-The point of using multiple inheritance is surely for composing the features from various 
+The point of using multiple inheritance is for composing the features from various 
 components and to achieve code reuse, as supported by many mainstream OO
 languages. Nevertheless at this point, languages like Java simply treat the two \lstinline|draw| methods
-as the same, and hence throw a compile error on \lstinline|DrawableDeck| about the conflict, though accidentally.
+as the same, and hence they throw a compile error on \lstinline|DrawableDeck| about the conflict, though accidentally.
 
-Now one may quickly come up with a workaround, which is creating a new \lstinline|draw| method in \lstinline|DrawableDeck| to
-explicitly override the old ones. However, the two conflicting methods have totally different functionalities, merging
+Now one may quickly come up with a workaround, which is to create a new \lstinline|draw| method in \lstinline|DrawableDeck| to
+explicitly override the old ones. However, the two conflicting methods
+have totally different functionalities. Therefore merging
 them into one does not make any sense. This non-solution will hide the
 old methods and break independent extensibility. 
 
-\subsection{Potential Fixes}
-
+\paragraph{{\bf Potential Fixes:}}
 There are several other workarounds
 that come to our mind. We briefly discuss those potential fixes and
 workarounds next:
@@ -118,9 +123,16 @@ workarounds next:
   \end{lstlisting}\vspace{3pt}
 \end{itemize}
 
+\bruno{Why have we eliminated problem 2 and included it in Problem 1?
+Also why are we not showing how to actually solve it with our approach
+now? I what we had previously made more sense. Please finish up this
+section; show our solution, mention that is is quite similar (and
+inspired by C++), but finish it saying that there are other problems
+that C++ does not address.}
+\subsection{Problem 2: Dynamic Dispatching}
 So far it seems that static dispatch is the simplest and most straightforward approach,
 as long as the language model accepts unintentionally conflicting methods. However, dynamic
-dipatching appears to be more common in OO programming in order for code reuse. Following the previous example,
+dispatching appears to be more common in OO programming in order for code reuse. Following the previous example,
 we reimplement \lstinline|Deck| with more features:
 
 \vspace{3pt}\begin{lstlisting}
@@ -143,8 +155,8 @@ interface SafeDeck extends Deck {
   }
 }
 \end{lstlisting}\vspace{3pt}
-With static dispatch, it is tedious but we have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|,
-for the adaption to the new \lstinline|draw|. Yet dynamic dispatching immediately saves us from the duplicate work,
+With static dispatch, we have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|,
+for the adaptation to the new \lstinline|draw|. Yet dynamic dispatching immediately saves us from the duplicate work,
 since the method becomes automatically adaptive. Nevertheless, as seen before, dynamic dispatch would take us back to problem
 1, for instance, when we
 have the UML in Figure~\ref{fig:drawableloggingdeck} and the following code:

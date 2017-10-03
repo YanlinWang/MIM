@@ -1,10 +1,10 @@
 \section{Auxiliary Definitions}\label{subsec:auxdefs}
 In this section, we present the auxiliary definitions used in our formalization in 
 Figure~\ref{fig:auxfunc}. To begin with, we
-introduce the basic functions: $\ext, \overrideSet$ and $\prune$. $\ext(I, J)$
+introduce the basic functions: $\ext, I.m\,\kwoverride\,J$ and $\prune$. $\ext(I, J)$
 simply indicates that interface $I$ directly extends interface $J$. 
 $\overrideSet(I, J)$ returns a set of methods defined in $I$ that have ``$\kwoverride \; J$''
-in their signatures. Notice that $\overrideSet(I, I)$ is a special representative of
+in their signatures. \marco{text need to change since notation is changed.} Notice that $\overrideSet(I, I)$ is a special representative of
 the ``originally-defined'' method set from $I$. The $\prune$ function takes a set of
 types, and filters out those that have subtypes in the same set. Finally in the returned set,
 none of them has a subtyping to one another, since all super types have been removed.
@@ -42,14 +42,14 @@ none of them has a subtyping to one another, since all super types have been rem
         {\mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; \o)}
     
     \inferrule* [left=]
-    { originalIntfs = \; \{K \mid \subt{I}{K}, \; \subt{K}{J} \; \lor \; \subt{J}{K}, \; $and$\; m \in \overrideSet(K, K) \} }
-    {\mostSpecific(m, I, J) = \prune(originalIntfs) }
+    { origins = \; \{K \mid \subt{I}{K}, \; \subt{K}{J} \; \lor \; \subt{J}{K}, \; $and$\; K.m\,\kwoverride\,K \} }
+    {\mostSpecific(m, I, J) = \prune(origins) }
 
     
     \inferrule* [left=]
-        { overrideIntfs = \; \{ K\mid I <: K, \; K <: J\; $and$ \;
-            m \in \overrideSet(K, J)  \} }
-        {\mostSpecificOverride(m, I, J) = \prune(overrideIntfs)}
+        { overrides = \; \{ K\mid I <: K, \; K <: J\; $and$ \;
+            K.m\,\kwoverride\,J  \} }
+        {\mostSpecificOverride(m, I, J) = \prune(overrides)}
     
     \prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\}
     
@@ -61,7 +61,7 @@ none of them has a subtyping to one another, since all super types have been rem
     \inferrule* [left=]
     {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
         \kwoverride \; J \ldots \} }
-    {m \in \overrideSet(I, J)}
+    {I.m\,\kwoverride\,J}
     
       \inferrule* [left=]
     {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
