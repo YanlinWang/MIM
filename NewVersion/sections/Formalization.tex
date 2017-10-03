@@ -10,8 +10,7 @@ inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
 method implementations via default methods. This feature is 
 closely related to \emph{traits}. To demonstrate how
 unintentional method conflicts are untangled in \MIM{}, we only focus on a small subset of the interface model. For example, all the methods declared
-in an interface are default methods, that is to say, they always
-provide default implementations. 
+in an interface are either default methods or abstract methods. Default methods provide default implementations for methods, and abstract methods have no method body, which requires future implementation. 
 %From this point we can view that we
 %are actually modelling a class model that supports multiple
 %inheritance. 
@@ -114,7 +113,7 @@ ambiguous during runtime. Therefore the condition says that if an expression typ
 in any case. The interface check is responsible for capturing ambiguity during compilation.
 
 \bruno{Explanation for T-Anno is missing}
-Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static type annotation. The rule says that $\angl{J}e$ type checks to $J$ if the expression $e$ type checks to $I$ and $I \subtype J$. 
+Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static type annotation. The rule says that an annotated expression $\angl{J}e$ type checks to $J$ if the expression $e$ type checks and the static annotation $J$ is a subtype of $I$ which is the type of $e$.
 
 \begin{figure*}
 \saveSpaceFig
