@@ -171,8 +171,8 @@
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
     {  \overline{M} \text{ OK IN } I \\
-    \forall J >: I, K >:J \text{ and } m, \mbody(m, J, K) \text{ is defined} \Rightarrow \mbody(m, I, K) \text{ is defined} \\ 
-    \forall J >: I \text{ and } m \in \overrideSet(I, I), m \in \overrideSet(J, J)  \Rightarrow \canOverride(m, I, J)
+    \forall K >:J, \marcoT{J >: I} \text{ and } m, \mbody(m, J, K) \text{ is defined} \Rightarrow \mbody(m, I, K) \text{ is defined} \\ 
+    \forall J >: I \text{ and } I.m\,\kwoverride\, I, J.m \,\kwoverride\, J  \Rightarrow \canOverride(m, I, J)
     }
     { \interface{I}{I}{M} \text{ OK }}
 }
@@ -188,8 +188,8 @@
 \newcommand{\sinvk} {
 \inferrule* [left=(S-Invk)]
 {}
-{\left(\angl{J}\new{I}\right).m(\overline{v}) \to
-    \left(\angl{J}\new{I}\right).J?m(\overline{v})}
+{\left(\angl{J}\new{I}\right).m(\marcoT{\overline{e}}) \to
+    \left(\angl{J}\new{I}\right).J?m(\marcoT{\overline{e}})}
 }
 
 \newcommand{\spathinvk} {
