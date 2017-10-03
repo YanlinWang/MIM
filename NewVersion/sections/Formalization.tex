@@ -143,10 +143,10 @@ in any case. The interface check is responsible for capturing ambiguity during c
 Figure~\ref{fig:smallstep} defines the small-step semantic and
 congruence rules, respectively. When evaluating an expression, they
 are invoked recursively and alternately to produce a single value in
-the end. The small-step semantics rules \textsc{(S-Invk)},
-\textsc{(S-PathInvk)} and \textsc{(S-SuperInvk)} behave similarly:
-each corresponds to one kind of method invocation. They all invoke
-\mbody{} for method body lookup. Generally, one can understand
+the end. The small-step semantics rules \textsc{(S-Invk)} and 
+\textsc{(S-PathInvk)} behave similarly: each corresponds to one kind of method invocation. \textsc{(S-PathInvk)} invokes \mbody{} for method body lookup. The parameters $\overline{x}$ are replaced with arguments $\overline{v}$ with static type annotations $\overline{\angl{I_x}}$, where $\overline{\angl{I_x}}$ is the parameter types coming from method lookup result. The rule \textsc{(S-Invk)} simply reduces the problem of normal invocation to path invocation. 
+
+Generally, one can understand
 $\mbody(m, I, J)$ in a way that it finds the most specific body of
 method $m$, when the receiver has dynamic type $I$ and static type
 $J$.  Notice, for example in \textsc{(S-Invk)}, that when
