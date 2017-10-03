@@ -105,15 +105,16 @@ we further use the helper function $\mostSpecific$, again formally defined in Se
 By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is hierarchical overriding, it should not step over original methods, otherwise
 their enclosing types would be returned instead of $J$.
 
-Finally, \textsc{(T-Intf)} defines interface checking. The
+Rule \textsc{(T-Intf)} defines the typing rule for interfaces. The
 condition\bruno{Well, there are two conditions. I suggest you explain
   in a bit more detail the 2 conditions, since this rule seems to be
-  the more complex one. Some examples may help.} helps to ensure unambiguity and type soundness of the calculus. We will
+  the more complex one. Some examples may help.} \yanlin{controversial rule. lets discuss later} helps to ensure unambiguity and type soundness of the calculus. We will
 introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not
 ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime
 in any case. The interface check is responsible for capturing ambiguity during compilation.
 
 \bruno{Explanation for T-Anno is missing}
+Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static type annotation. The rule says that $\angl{J}e$ type checks to $J$ if the expression $e$ type checks to $I$ and $I \subtype J$. 
 
 \begin{figure*}
 \saveSpaceFig
