@@ -1,31 +1,39 @@
-\section{Auxiliary Definitions}\label{subsec:auxdefs}
-In this section, we present the auxiliary definitions used in our formalization in 
-Figure~\ref{fig:auxfunc}. To begin with, we
-introduce the basic functions: $\ext, I.m\,\kwoverride\,J$ and $\prune$. $\ext(I, J)$
-simply indicates that interface $I$ directly extends interface $J$. 
-$\overrideSet(I, J)$ returns a set of methods defined in $I$ that have ``$\kwoverride \; J$''
-in their signatures. \marco{text need to change since notation is changed.} Notice that $\overrideSet(I, I)$ is a special representative of
-the ``originally-defined'' method set from $I$. The $\prune$ function takes a set of
-types, and filters out those that have subtypes in the same set. Finally in the returned set,
-none of them has a subtyping to one another, since all super types have been removed.
+\section{Fundamental Notations}\label{subsec:auxdefs}
+In this section, we present the fundamental notations used in our formalization.
+Some of them are auxiliary functions, others are however important ones as they
+directly implement our algorithm for method resolution.
 
+\subsection{Auxiliary functions}
+To begin with, we introduce the following basic functions. 
 
-% $\begin{array}{l}
-% \InTextDef{15ex}{
-% \mBody(\m,\C_0)
-% }{
-% \override(\methods(\m),
-% \tops(\m,\Cs))
-% }\\
-% \InTextWith{\metaVar{IT}(\C_0) =
-% \ \ann\ \QM{interface}\ \C_0\ \QM{extends}\ \C_1\ldots\C_n}\\
-% \hspace{1.2in}\oC\methods\ \cC \mbox{ and } \C\in\Cs \mbox{ if } \C_i\subtype\C, i\in 1..n
+\begin{flalign*}
+	& \rhd \textit{Definition of } I[m\ \kwoverride\ J]: & \\
+	& \bullet I[m\ \kwoverride\ J] = \method{I_e}{m}{I_x}{x}{J}{e_0} & \\
+	& \indent\indent \textrm{with: }
+	  \kwinterface \; I \; \kwextends \; \overline{I} \; \{ \method{I_e}{m}{I_x}{x}{J}{e_0} \ldots \} & \\
+	& \bullet I[m\ \kwoverride\ J] = \absmethod{I_e}{m}{I_x}{x}{J} & \\
+	& \indent\indent \textrm{with: }
+	\kwinterface \; I \; \kwextends \; \overline{I} \; \{ \absmethod{I_e}{m}{I_x}{x}{J} \ldots \} & \\
+\end{flalign*}
+Here $I[m\ \kwoverride\ J]$ is basically a directly lookup for method $m$ in the body of $I$, where such a method
+overrides $J$. The method can be either concrete or abstract, and the body of definition is returned. Notice that
+by our syntax, $I[m\ \kwoverride\ I]$ is looking for the originally-defined method $m$ in $I$.
 
-% \end{array}$
+\begin{flalign*}
+	& \rhd \textit{Definition of } \prune(set): & \\
+	& \bullet \prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\} &
+\end{flalign*}
+The $\prune$ function takes a set of
+types, and filters out those that have subtypes in the same set. In the returned set,
+none of them has subtyping relation to one another, since all super types have been removed.
 
-% \noindent The definition of $\mBody$ reconstructs the full set of supertypes $\Cs$ and then delegates the work to two other auxiliary functions:
-%  $\tops(m,\Cs)$ and $\override(\method,\methods)$.
-
+\begin{flalign*}
+	& \rhd \textit{Definition of } \canOverride(m, I, J): & \\
+	& \bullet \canOverride(m, I, J) = True & \\
+	& \indent\indent \textrm{with: } I[m\ \kwoverride\ I] = I_e \; m(\overline{I_x} \; \overline{x}) \; \kwoverride \; I \ldots & \\
+	& \hspace{.77in} J[m\ \kwoverride\ J] = I_e \; m(\overline{I_x} \; \overline{y}) \; \kwoverride \; J \ldots &
+\end{flalign*}
+$\canOverride$ just checks that two original $m$ in $I$ and $J$ have the same type.
 
 \begin{figure*}[t]
     \begin{mathpar}
@@ -40,36 +48,9 @@ none of them has a subtyping to one another, since all super types have been rem
             \mostSpecificOverride(m, I_d, I) = \{J\} \\
             \kwinterface \; J \; \kwextends \; \overline{J} \; \{\absmethod{I_e}{m}{I_x}{x}{I}\}}
         {\mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; \o)}
-    
-    \inferrule* [left=]
-    { origins = \; \{K \mid \subt{I}{K}, \; \subt{K}{J} \; \lor \; \subt{J}{K}, \; $and$\; K.m\,\kwoverride\,K \} }
-    {\mostSpecific(m, I, J) = \prune(origins) }
 
     
-    \inferrule* [left=]
-        { overrides = \; \{ K\mid I <: K, \; K <: J\; $and$ \;
-            K.m\,\kwoverride\,J  \} }
-        {\mostSpecificOverride(m, I, J) = \prune(overrides)}
-    
-    \prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\}
-    
-    % \inferrule* [left=]
-    % {   \interface{I}{I}{M}
-    %     \\ J \in \overline{I} }
-    % {\ext(I, J) \marco{Is this ever used?} \yanlin{Previously used, new version not used.}}
-    
-    \inferrule* [left=]
-    {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
-        \kwoverride \; J \ldots \} }
-    {I.m\,\kwoverride\,J}
-    
-      \inferrule* [left=]
-    {   \kwinterface \; I \; \kwextends \; \overline{I} \; \{ I_e \; m(\overline{I_x} \; \overline{x}) \;
-        	\kwoverride \; I \ldots \} \\
-        \kwinterface \; J \; \kwextends \; \overline{J} \; \{ I_e \; m(\overline{I_x} \; \overline{y}) \;
-      	    \kwoverride \; J \ldots \} \\
-    }
-    {\canOverride(m, I, J)}
+   
     \end{mathpar}
     \caption{Auxiliary functions.}\label{fig:auxfunc}
 \end{figure*}
@@ -94,52 +75,51 @@ none of them has a subtyping to one another, since all super types have been rem
 
 \subsection{$\mostSpecific$ and $\mostSpecificOverride$}
 
-$\mostSpecific$ is an auxiliary function that finds the most specific original implementations of a method. Let us consider $\mostSpecific(m, I, J)$, what it returns is a set of interfaces, each including its own $m$ as a most specific implementation. Such a set may contain several elements, but that implies ambiguity; what we expect is actually a singleton set. By the definition of $\mostSpecific$ shown in Figure~\ref{fig:auxfunc}, an interface belongs to the return set if and only if:
-\begin{itemize}
-    \item It has an original definition of $m$;
-    \item It is a supertype of $I$;
-    \item It is along path $J$, meaning that it is either a supertype or a subtype of $J$ (including $J$ itself);
-    \item It does not have a subtype in the same set because we have used $prune$ to filter out all super types.
-\end{itemize}
-We could have put $set1$ and $set2$ together, but the current
-definition is clearer.
+$\mostSpecific$ and $\mostSpecificOverride$ are two core functions for the method lookup algorithm. Generally,
+$\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined, they should be above $I$ and
+along path $J$. ``Along path $J$'' means one should be either a subtype or a super type of $J$. Finally with $\prune$
+the overridden interfaces will be filtered out.
 
-The $\mostSpecific$ function only focuses on original method implementations, all the hierarchical overriding methods are omitted during that time. On the other hand, another auxiliary function $\mostSpecificOverride(m, I, J)$ has the assumption that $J$ defines an original $m$, and this function tries to find the most specific implementations that hierarchically overrides such an $m$. Just as $\mostSpecific$, $\mostSpecificOverride$ also returns the set of interfaces after pruning. An interface belongs to the return set if and only if:
+\begin{flalign*}
+	& \rhd \textit{Definition of } \mostSpecific(m, I, J): & \\
+	& \bullet \mostSpecific(m, I, J) = \prune(origins) & \\
+	& \indent\indent \textrm{with: } origins = \{K \mid \subt{I}{K}, \textrm{ and } \subt{K}{J} \; \lor \; \subt{J}{K}, &\\
+	& \hspace{1.62in} \textrm{ and } K[m\ \kwoverride\ K] \textrm{ is defined} \} &
+\end{flalign*}
+By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only if:
 \begin{itemize}
-    \item It is between $I$ and $J$;
-    \item It hierarchically overrides $J.m$;
-    \item It does not have a subtype in the same set.
+	\item It originally defines $m$;
+	\item It is a super type of $I$;
+	\item It is either a super type or a subtype of $J$ (including $J$ itself);
+	\item Any subtype of it does not belong to the same result set because of $\prune$.
 \end{itemize}
-The algorithm for finding the most specific hierarchical overriding method is quite similar to that for finding the most specific original method. A hierarchical overriding is not allowed to work on another hierarchical overriding, and one can hide another if their interfaces have subtyping relations. If they do not hide each other, the result implies ambiguity.
 
+The $\mostSpecific$ function only focuses on original method implementations, all the hierarchical overriding methods are omitted during that time. On the other hand, $\mostSpecificOverride(m, I, J)$ has the assumption that $J$ defines an original $m$, and this function tries to find the interfaces with most specific implementations that hierarchically overrides such an $m$. Formally,
+
+\begin{flalign*}
+	& \rhd \textit{Definition of } \mostSpecificOverride(m, I, J): & \\
+	& \bullet \mostSpecificOverride(m, I, J) = \prune(overrides) & \\
+	& \indent\indent \textrm{with: } overrides = \{K \mid \subt{I}{K}, \; \subt{K}{J} \textrm{ and } K[m\ \kwoverride\ J] \textrm{ is defined} &
+\end{flalign*}
+By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only if:
+\begin{itemize}
+	\item It is between $I$ and $J$;
+	\item It hierarchically overrides $J.m$;
+	\item Any subtype of it does not belong to the same set.
+\end{itemize}
 
 \subsection{$\canInstantiate$}
-We use the auxilary function $\canInstantiate(I)$ to check whether an interface $I$ can be instantiated or not.
-The algorithm is decribed below:
+$\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the keyword $\kwnew$.
+Below is the algorithm:
 
-$$\forall m, \forall J \in \mostSpecific(m, I, I), $$
-\begin{enumerate}
-\item For any $m$, suppose $\mostSpecific(m, I, I) = \overline{J}$, where $\overline{J}$ is a list of interfaces.
-\item If $\forall J_i \in \overline{J}, if \mostSpecificOverride(m, I, J_i) = \{ K \} $ and $m$ in $K$ is not abstract, 
-then $\canInstantiate(I) = true$, else $\canInstantiate(I) = false$.
-\end{enumerate}
-
-\begin{comment}
-\subsection{$\mbodyStatic$}
-The auxilary function $\mbodyStatic$ serves for method loopup for static method invocation. 
-The brief description of the algorithm follows:
-\begin{mathpar}
-    \inferrule* [left=]
-        {  %\mostSpecific(m, I, I) = \{J\} \\
-            \kwinterface \; J \; \kwextends \; \overline{J} \; \{\method{I_e}{m}{I_x}{x}{J'}{e_0}\ldots\}}
-        {\mbodyStatic(m, J, J') = (J, \overline{I_x} \; \overline{x}, I_e \; e_0)}
-
-    \inferrule* [left=]
-        {  %\mostSpecific(m, I, I) = \{J\} \\
-            \kwinterface \; J \; \kwextends \; \overline{J} \; \{\absmethod{I_e}{m}{I_x}{x}{J'}\ldots\}}
-        {\mbodyStatic(m, J, J') = (J, \overline{I_x} \; \overline{x}, I_e \; \o)}
-\end{mathpar}    
-\end{comment}
+\begin{flalign*}
+	& \rhd \textit{Definition of } \canInstantiate(I): & \\
+	& \bullet \canInstantiate(I) = True & \\
+	& \indent\indent \textrm{with: } \forall J \in \mostSpecific(m, I, I), \mostSpecificOverride(m, I, J) = \{K\}, & \\
+	& \hspace{.77in} \textrm{ and } K[m\ \kwoverride\ J] = \method{I_e}{m}{I_x}{x}{J}{e_0} &
+\end{flalign*}
+$\mostSpecific(m, I, I)$ represents the set of branches $I$ inherits on method $m$. $I$ can be instantiated
+if and only if for every branch, the most specific implementation is unambiguous and non-abstract.
 
 \subsection{$\mbody$ and $\mtype$}
 
