@@ -1,7 +1,7 @@
 \section{Formalization}~\label{sec:formalization}
 In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), based on
 Featherweight Java~\cite{Igarashi01FJ}. The syntax, typing rules,
-small-step semantics and type soundness proofs are presented.
+small-step semantics and theorems for type soundness are presented.
 
 \vspace{-2ex}
 \subsection{Syntax}
@@ -10,12 +10,13 @@ inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
 method implementations via default methods. This feature is 
 closely related to \emph{traits}. To demonstrate how
 unintentional method conflicts are untangled in \MIM{}, we only focus on a small subset of the interface model. For example, all the methods declared
-in an interface are either default methods or abstract methods. Default methods provide default implementations for methods, and abstract methods have no method body, which requires future implementation. 
+in an interface are either default methods or abstract methods. Default methods provide default implementations for methods. Abstract methods do not
+have method body, and in fact we are not introducing a different kind of methods, but they are just treated as normal methods that return empty. Abstract methods can be overridden with future implementations.
+
 %From this point we can view that we
 %are actually modelling a class model that supports multiple
 %inheritance. 
-Object creation is directly supported via $\new I$. 
-Fields and primitive types are not modelled in \MIM{}.
+Object creation is represented by $\new I$. If any unimplemented abstract methods are defined in interface $I$ (or inherited from parents), then object creation fails. Fields and primitive types are not modelled in \MIM{}.
 
 The metavariables $I, J, K$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
 conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in the obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
@@ -34,7 +35,7 @@ method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''; otherwise
 it is hierarchical overriding.
 For simplicity, overloading is not modelled for methods, which
-implies we can uniquely identify a method by its name.
+implies we can uniquely identify a method by its name.\yanlin{the terminology of original methods should have been proposed in Overview.}
 
 Expressions can be standard constructs such as variables, method
 invocation, or object creation. \name{} allows two types of method invocations, one is the normal method invocation $e.m(\overline{e})$ that we are familiar with, another is the novel type of method invocation: path-invocations like ``$e.I\pathIvk m(\overline{e})$'', meaning that the dynamically bound
@@ -83,14 +84,15 @@ declarations. Subtyping is both symmetric, reflexive and transitive.
 Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
 typing, well-formedness of methods and interfaces. As a convention, an environment
 $\Gamma$ is maintained to store the types of variables, together with
-the ``this'' type, namely
-the enclosing type. The three rules for method invocation, \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-SuperInvk)}
-are very similar, in the sense that they all check the type of the specific method, by using
-an auxiliary function \mtype. \mtype{} is the function for looking up method types, which we will
-illustrate later in Section~\ref{subsec:auxdefs}. After the method
-type is obtained, they all check that the arguments and the receiver
-have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
-path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
+the \kwthis type, namely
+the enclosing type. 
+% The three rules for method invocation, \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-SuperInvk)}
+% are very similar, in the sense that they all check the type of the specific method, by using
+% an auxiliary function \mtype. \mtype{} is the function for looking up method types, which we will
+% illustrate later in Section~\ref{subsec:auxdefs}. After the method
+% type is obtained, they all check that the arguments and the receiver
+% have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
+% path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 There are two typing rules for method invocation: \textsc{(T-Invk)} and \textsc{(T-PathInvk)}. \textsc{(T-Invk)} is the typing judgement for a normal method invocation, which is similar to Featherweight Java. It checks the type of the specific method, by using an auxiliary function \mbody. \mbody is the function for looking up methods, which we will illustrate later in Section~\ref{subsec:auxdefs}. After the method type is obtained, we check that arguments and the receiver have compatible types. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-PathInvk)}, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
 path type. 
@@ -133,10 +135,9 @@ Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static
 	\tintf \\
 	\tanno
 \end{mathpar}
-\caption{Typing Rules of \name{}.}
-\label{fig:typingrules}
 \saveSpaceFig
 \caption{Typing and subtyping of \name{}.}
+\label{fig:typingrules}
 \end{figure*}
 
 \subsection{Small-step Semantics and Congruence}
@@ -152,13 +153,12 @@ method $m$, when the receiver has dynamic type $I$ and static type
 $J$.  Notice, for example in \textsc{(S-Invk)}, that when
 ``$\new{I}$'' replaces ``\lstinline|this|'', its static type should be
 the interface to which $m$ is dispatched. Therefore we also keep the
-interface type in the definition of \mbody. This point is consistent
-with the last paragraph in Section~\ref{subsec:problem2}.
+interface type in the definition of \mbody. 
 
 On the other hand, there is a relationship between path invocation and
 the regular method invocation, and it can be observed from the
 similarity between their semantic rules in
-Figure~\ref{fig:smallstep}. For any \lstinline|e.I::m()|, the result
+Figure~\ref{fig:smallstep}. For any \lstinline|e.I?m()|, the result
 of evaluation remains unchanged if we set the static type of
 \lstinline|e| to be $I$. This can be done by an implicit cast, that
 is, we can define a function with one parameter type $I$, then
@@ -197,13 +197,13 @@ in languages like Java.
 
 
 \subsection{Properties}
-Previously the definitions of our model are given, now we should proceed to prove the type soundness of 
+Previously the definitions of our model are given, now we proceed to prove the type soundness of 
 the model, which relates typing to computation. The type soundness states that, if an expression is 
 well-typed, then after many reduction steps it must reduce to a value, with its annotation to be a subtype of the original expression type.
 Following the Featherweight Java paper~\cite{Igarashi01FJ}, the type-soundness theorem 
 (Theorem~\ref{theorem_soundness}) is proved by using the standard technique of subject reduction (Theorem~\ref{theorem_subject})
-and progress (Theorem~\ref{theorem_progress})~\cite{Wright1994}. In Theorem~\ref{theorem_progress} ``$\#(\overline{x})$'' denotes the number of
-elements.
+and progress (Theorem~\ref{theorem_progress})~\cite{Wright1994}. In Theorem~\ref{theorem_progress} ``$\#(\overline{x})$'' denotes the length of
+$\overline{x}$.
 
 \begin{theorem}[Subject Reduction]~\label{theorem_subject}
 $\textit{If } \ \judgeewf \Gamma {e : I} \; \textit{ and } \ e \rightarrow e',\ 
