@@ -2,7 +2,17 @@
 In this section, we discuss the design space and some reflections of the work. 
 \paragraph{Abstract Methods.}
 Why we include 
-\paragraph{Static Invocation.}
-Why we include
+\paragraph{Path Invocation}
+
+\paragraph{Static/Super Invocation}
+Extensibly adding rules to the current formalization.
+- can dispatch to any method (both original method and updating method).
+- static dispatch algorithm.
+
+\paragraph{Diamond interface check}
+
+\paragraph{Hierarchical Overriding Restriction.}
+In \MIM{}, hierarchical overriding can only override an interface that defines the original method. But in reality, sometimes this condition is too restrict and can be relaxed to allowing overriding a super interface. .. Pros & cons.
+
 \paragraph{Method Resolution Rules.}
 Other resolution possibilities and comparison.
