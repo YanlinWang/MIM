@@ -93,8 +93,7 @@ the enclosing type.
 % have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
 % path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
-There are two typing rules for method invocation: \textsc{(T-Invk)} and \textsc{(T-PathInvk)}. \textsc{(T-Invk)} is the typing judgement for a normal method invocation, which is similar to Featherweight Java. It checks the type of the specific method, by using an auxiliary function \mbody. \mbody is the function for looking up methods, which we will illustrate later in Section~\ref{subsec:auxdefs}. After the method type is obtained, we check that arguments and the receiver have compatible types. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-PathInvk)}, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
-path type. 
+There are two typing rules for method invocation: \textsc{(T-Invk)} and \textsc{(T-PathInvk)}. \textsc{(T-Invk)} is the typing judgement for a normal method invocation. First it ensures that the method receiver $e_0$ type checks to a type $I_0$. Then it checks the type of the specific method, by using an auxiliary function $\mbody(m, I_0, I_0)$, which is the function for looking up methods that we will illustrate in more detail in Section~\ref{subsec:auxdefs}. The form of \mbody is different to FJ, which has two parameters. The first $I_0$ represents the dynamic type and the second, the static type. If the result of \mbody is not \Undefined, it means the method exists and the corresponding method parameters and return types are given. After the method type is obtained, we check that all arguments $\overline{e}$ type check to $\overline{I}$ which are subtypes of $\overline{J}$. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 \textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not. If interface $I$ contains (or inherits) any abstract method that has not been implemented, then interface $I$ cannot be instantiated.
@@ -105,13 +104,10 @@ we further use the helper function $\mostSpecific$, again formally defined in Se
 By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is hierarchical overriding, it should not step over original methods, otherwise
 their enclosing types would be returned instead of $J$.
 
-Rule \textsc{(T-Intf)} defines the typing rule for interfaces. The
-condition\bruno{Well, there are two conditions. I suggest you explain
+\bruno{Well, there are two conditions. I suggest you explain
   in a bit more detail the 2 conditions, since this rule seems to be
-  the more complex one. Some examples may help.} \yanlin{controversial rule. lets discuss later} helps to ensure unambiguity and type soundness of the calculus. We will
-introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not
-ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime
-in any case. The interface check is responsible for capturing ambiguity during compilation.
+  the more complex one. Some examples may help.} \yanlin{controversial rule. lets discuss later} 
+Rule \textsc{(T-Intf)} defines the typing rule for interfaces. Interface $I$ type checks only if the following conditions are satisfied: 1) all methods $\overline{M}$ that are directly defined in $I$ type check; 2) method lookup $\mbody(m, I, J)$ successes as long as the method $m$ is defined in any interface $J$ which is an ancestor of $I$; 3)if an original method $m$ defined in interfaces $I$ overrides another original method defined in an ancestor of $I$, then the method types are compatible. These conditions ensure unambiguity and type soundness of the calculus. We will introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime in any case. The interface check is responsible for capturing ambiguity during compilation.
 
 \bruno{Explanation for T-Anno is missing}
 Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static type annotation. The rule says that an annotated expression $\angl{J}e$ type checks to $J$ if the expression $e$ type checks and the static annotation $J$ is a subtype of $I$ which is the type of $e$.
