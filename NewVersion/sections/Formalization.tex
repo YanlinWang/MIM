@@ -201,17 +201,16 @@ and progress (Theorem~\ref{theorem_progress})~\cite{Wright1994}. In Theorem~\ref
 $\overline{x}$.
 
 \begin{theorem}[Subject Reduction]~\label{theorem_subject}
-$\textit{If } \ \judgeewf \Gamma {e : I} \; \textit{ and } \ e \rightarrow e',\ 
-\textit{then } \judgeewf \Gamma {e' : I'} \ \textit{ for some } \ I' <: I.$
+If $\judgeewf \Gamma {e : I}$ and $e \rightarrow e'$, 
+then $\judgeewf \Gamma {e' : I}$.
 \end{theorem}
 \begin{proof}
 See Appendix~\ref{appendix_proof}.
 \end{proof}
 
 \begin{theorem}[Progress]~\label{theorem_progress}
-$\textit{Suppose } e \textit{ is a well-typed expression, if } e \textit{ includes} $
-
-\noindent $\left(\angl{J}\emph{\kwnew}\;I()\right).K?m(\overline{v}) \textit{ as a subexpression, then } \emph{\mbody}(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0) $ $\textit{and } \num{\overline{x}} = \num{\overline{e}} \textit{ for some } \overline{I_x}, \overline{x}, I_e \textit{ and } e_0.$
+Suppose $e$ is a well-typed expression, if $e$ includes 
+$\left((J)\emph{\kwnew}\;I()\right).m(\overline{v})$ as a sub-expression, then $\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0)$ and $\num{\overline{x}} = \num{\overline{v}}$ for some $I_0$, $\overline{I_x}$, $\overline{x}$, $I_e$ and $e_0$.
 \end{theorem}
 \begin{proof}
 See Appendix~\ref{appendix_proof}.
@@ -219,7 +218,7 @@ See Appendix~\ref{appendix_proof}.
 
 \begin{theorem}[Type Soundness]~\label{theorem_soundness}
 If $\judgeewf \o {e : I}$ and $e \to^* e'$ with $e'$ a normal form, then $e'$ is 
-a value $v$ with $\judgeewf \o {v:J}$ and $J \subtype I$.
+a value $v$ with $\judgeewf \o {v:I}$.
 \end{theorem}
 \begin{proof}
 Immediate from Theorem~\ref{theorem_subject} and Theroem~\ref{theorem_progress}.
