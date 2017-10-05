@@ -61,10 +61,9 @@ A program consists of a list of interface declarations, plus a single expression
 									   \absmethod{I}{m}{I_x}{x}{J} \\
 \text{Expressions}  & e  & \Coloneqq & x \mid
 e.m(\overline{e}) \mid
-\new{I} \mid
-e.I?m(e) \; \mid \; \angl{I}e \\
+\new{I} \mid \; (I)e \\
 \text{Context}      & \Gamma & \Coloneqq & \overline{x}:\overline{I} \\
-\text{Values}       & v & \Coloneqq & \angl{I} \new{J} \\
+\text{Values}       & v & \Coloneqq & (I) \new{J} \\
 %%\\
 %%\text{Interface names} & I, J, K & & \\
 %%\text{Method names} & m & & \\
@@ -126,7 +125,7 @@ Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static
 	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
 	\tvar \\
 	\tinvk \\
-	\tpathinvk \\
+	% \tpathinvk \\
 	% \tsuperinvk \\
 	% \tstaticinvk  \\
 	\tnew \\
@@ -169,14 +168,14 @@ in languages like Java.
 \begin{figure*}[t]
 \saveSpaceFig
 \begin{mathpar}
-	\sinvk \\
+	% \sinvk \\
 	\spathinvk \\
 	% \ssuperinvk \\
 	% \sstaticinvk \\
 	\creceiver \hspace{.5in}
-	\cpathreceiver \\
-	%\cargs \\
-	\cpathargs \\
+	% \cpathreceiver \\
+	\cargs \\
+	% \cpathargs \\
 	% \csuperargs \\
 	% \cstaticargs \\
 	\cstatictype \\

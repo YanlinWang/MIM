@@ -171,7 +171,7 @@
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
     {  \overline{M} \text{ OK IN } I \\
-    \forall K >:J, \marcoT{J >: I} \text{ and } m, \mbody(m, J, K) \text{ is defined} \Rightarrow \mbody(m, I, K) \text{ is defined} \\ 
+    \forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined} \\ 
     \forall J >: I \text{ and } I.m\,\kwoverride\, I, J.m \,\kwoverride\, J  \Rightarrow \canOverride(m, I, J)
     }
     { \interface{I}{I}{M} \text{ OK }}
@@ -181,7 +181,7 @@
 \inferrule* [left=(T-Anno)]
     {  \judgeewf \Gamma e:I  \\
        I \subtype J  }
-    { \judgeewf \Gamma {\angl{J}e : J} }
+    { \judgeewf \Gamma {(J)e : J} }
 }
 
 
@@ -193,14 +193,14 @@
 }
 
 \newcommand{\spathinvk} {
-\inferrule* [left=(S-PathInvk)]
-{\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0) 
+\inferrule* [left=(S-Invk)]
+{\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0) 
 %\\ e_0 \neq \o
 }
-{\left(\angl{J}\new{I}\right).K?m(\overline{v}) \to
-    \angl{I_e}[
-  \overline{\angl{I_x}} \overline{v}
-  /\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
+{\left((J)\new{I}\right).m(\overline{v}) \to
+    (I_e)[
+  \overline{(I_x)v}
+  /\overline{x}, (I_0)\new{I}/\kwthis]e_0}
 }
 
 \newcommand{\sstaticinvk} {
@@ -296,18 +296,18 @@ e_0.I\staticIvk m(\ldots,e',\ldots)}
 \newcommand{\cstatictype} {
 \inferrule* [left=(C-StaticType)]
 {}
-{\new{I} \to \; \angl{I}\new{I}}
+{\new{I} \to \; (I)\new{I}}
 }
 
 \newcommand{\cfreduce} {
 \inferrule* [left=(C-FReduce)]
 {e \to e' \\ e \neq \new{J}}
-{\angl{I}e \to \; \angl{I}e'}
+{(I)e \to \; (I)e'}
 }
 
 \newcommand{\cannoreduce} {
 \inferrule* [left=(C-AnnoReduce)]
 {}
-{\angl{I}(\angl{J} \new K) \to \angl{I} \new K}
+{(I)((J)\new K) \to (I) \new K}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% syntax.tex end %%%%%%%%%%%%%%%%%%%%%%%%
