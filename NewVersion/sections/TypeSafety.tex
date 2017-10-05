@@ -21,14 +21,15 @@ Straightforward induction.
 
 
 \begin{lemma}[Method Type Preservation]~\label{lemma:mbody_type_preservation}
-If $\mbody(m, I_0, J_0) = (K, \overline{I_x}\ \_, I_e\ \_)$, then for any $I'_0 \subtype I_0$, $\mbody(m, I'_0, J_0) = (K', \overline{I_x}\ \_, I_e\ \_)$.
+If $\mbody(m, J, J) = (K, \overline{I_x}\ \_, I_e\ \_)$, then for any $I \subtype J$, $\mbody(m, I, J) = (K', \overline{I_x}\ \_, I_e\ \_)$.
 \end{lemma}
 \begin{proof}
 	
-Since $\mbody(m, I_0, J_0)$ is defined, by \textsc{(T-Intf)} we derive that $\mbody(m, I'_0, J_0)$ is also defined. Suppose that $$\mostSpecific(m, I_0, J_0) = \{I\}$$ $$\mostSpecificOverride(m, I_0, I) = \{K\}$$
-$$\mostSpecific(m, I'_0, J_0) = \{I'\}$$ $$\mostSpecificOverride(m, I'_0, I') = \{K'\}$$
+%\begin{comment}	
+Since $\mbody(m, J, J)$ is defined, by \textsc{(T-Intf)} we derive that $\mbody(m, I, J)$ is also defined. Suppose that $$\mostSpecific(m, J, J) = \{I_0\}$$ $$\mostSpecificOverride(m, J, I_0) = \{K\}$$
+$$\mostSpecific(m, I, J) = \{I'_0\}$$ $$\mostSpecificOverride(m, I, I'_0) = \{K'\}$$
 
-Below we use $I[m\uparrow J]$ to denote the type of method $m$ defined in $I$ that overrides $J$. We have to prove that $K'[m\uparrow I'] = K[m\uparrow I]$.
+Below we use $I[m\uparrow J]$ to denote the type of method $m$ defined in $I$ that overrides $J$. We have to prove that $K'[m\uparrow I'_0] = K[m\uparrow I_0]$.
 Two facts:
 \begin{itemize}
 	\item A. By $\textsc{(T-Intf)}$, $\canOverride$ ensures that an override between any two original methods preserves the method type. Formally, $$I_1 \subtype I_2 \ \ \Rightarrow\ \ I_1[m\uparrow I_1] = I_2[m\uparrow I_2]$$
@@ -36,10 +37,11 @@ Two facts:
 	  $$I_1 \subtype I_2\ \ \Rightarrow\ \ I_1[m\uparrow I_2] = I_2[m\uparrow I_2]$$
 \end{itemize}
 
-Since $K \subtype I, K' \subtype I'$, by Fact B, $$K[m\uparrow I] = I[m\uparrow I] \quad K'[m\uparrow I'] = I'[m\uparrow I']$$
+By definition of $\mostSpecificOverride$, $K \subtype I_0, K' \subtype I'_0$. By Fact B, $$K[m\uparrow I_0] = I_0[m\uparrow I_0] \quad K'[m\uparrow I'_0] = I'_0[m\uparrow I'_0]$$
 
-Hence it suffices to prove that $I'[m\uparrow I'] = I[m\uparrow I]$. Since $I'_0 \subtype I_0$, by the definition of $\mostSpecific$ and $\prune$, $I'$ and $I$
-appear in the same set that is pruned, hence $I' \subtype I$. By Fact A, the proof is done.
+Hence it suffices to prove that $I'_0[m\uparrow I'_0] = I_0[m\uparrow I_0]$. Actually when calculating $\mostSpecific(m, J, J)$, by the definition of $\mostSpecific$ we know that $I_0 \subtype J$ and $I_0[m \; \kwoverride \; I_0]$ is defined. So when calculating $\mostSpecific(m, I, J)$ with $I \subtype J$, $I_0$ should also appear in the set before pruned, since the conditions are again satisfied. But after pruning, only $I'_0$ is obtained, by definition of $\prune$ it implies $I'_0 \subtype I_0$. By Fact A, the proof is done.
+%\end{comment}
+
 \end{proof}
 
 
@@ -101,6 +103,7 @@ By induction hypothesis,
 	  
 Again by \textsc{(T-Invk)}, $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
 
+\begin{comment}
 \textbf{Case PathInvk.} $e = e_0.J_0?m(\overline{e})$. By \textsc{(T-PathInvk)}, suppose
 	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad I_0 \subtype J_0$$
 	$$\mbody(m, I_0, J_0) = (\_, \overline{J}\ \_, I\ \_)$$
@@ -112,6 +115,7 @@ $$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0} \quad
 \judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e}}$$ 
 
 Again by \textsc{(T-PathInvk)}, $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
+\end{comment}
 
 \textbf{Case New.} Straightforward.
 
@@ -128,6 +132,7 @@ Again by \textsc{(T-PathInvk)}, $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]
 \subsubsection{Proof for Theorem~\ref{theorem_subject}}
 \begin{proof} ~\\
 \indent \textbf{Case S-Invk.} Let
+\begin{comment}
    $$e = (\angl{J}\new{I}).m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
    $$e' = (\angl{J}\new{I}).J?m(\overline{v})$$
    
@@ -138,17 +143,17 @@ By \textsc{(T-Invk)} on $e$,
   $$\mbody(m, J, J) = (\_, \overline{I_x}\ \_, I_e\ \_) \quad \judgeewf {\Gamma} {\overline{v} : \overline{I_v}} \quad \overline{I_v}  \subtype \overline{I_x}$$
   
 At this moment, \textsc{(T-PathInvk)} is immediately applicable by the above conditions, including that $e'$ also invokes $\mbody(m, J, J)$. Hence $\judgeewf {\Gamma} {e' : I_e}$.
-
 \textbf{Case S-PathInvk.} Let
-  $$e = (\angl{J}\new{I}).K?m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
-  $$e' = \angl{I_{e_0}}[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0$$
-  $$\mbody(m, I, K) = (I_0, \overline{I_x} \; \overline{x}, I_{e_0} \; e_0)$$
+\end{comment}
+  $$e = ((J)\new{I}).m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
+  $$e' = (I_{e_0})[\overline{(I_x)v}/\overline{x}, (I_0)\new{I}/\kwthis]e_0$$
+  $$\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_{e_0} \; e_0)$$
 
-Since $\mbody(m, I, K)$ is defined, the definition of $\mbody$ ensures that $I \subtype I_0$. And since $e$ is well-typed, by \textsc{(T-PathInvk)},
+Since $\mbody(m, I, J)$ is defined, the definition of $\mbody$ ensures that $I \subtype J$. And since $e$ is well-typed, by \textsc{(T-Invk)},
   $$\judgeewf {\Gamma} {\overline{v} : \overline{I_v}} \quad \overline{I_v} \subtype \overline{I_x}$$
 
 By the rules \textsc{(T-Anno)} and  \textsc{(T-New)},
-  $$\judgeewf {\Gamma} {\overline{\angl{I_x}}\overline{v} : \overline{I_x}} \quad \judgeewf {\Gamma} {\angl{I_0}\new{I} : I_0}$$
+  $$\judgeewf {\Gamma} {\overline{(I_x)v} : \overline{I_x}} \quad \judgeewf {\Gamma} {(I_0)\new{I} : I_0}$$
   
 On the other hand, by Lemma~\ref{lemma:return_expr_typing},
   $$\judgeewf {\overline{x} : \overline{I_x}, \kwthis: I_0} {e_0 : I'_{e_0}} \quad I'_{e_0} \subtype I_{e_0}$$
@@ -157,17 +162,17 @@ By Lemma~\ref{lemma:weakening},
   $$\judgeewf {\Gamma, \overline{x} : \overline{I_x}, \kwthis: I_0} {e_0 : I'_{e_0}}$$
 
 Hence by Lemma~\ref{lemma:subst_type_preservation}, the substitution preserves typing, thus
-  $$\judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{v}/\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0 : I'_{e_0}}$$
+  $$\judgeewf {\Gamma} {[\overline{(I_x)v}/\overline{x}, (I_0)\new{I}/\kwthis]e_0 : I'_{e_0}}$$
   
-Since $I'_{e_0} \subtype I_{e_0}$, the conditions of \textsc{(T-Anno)} are satisfied, hence $\judgeewf {\Gamma} {e' : I_{e_0}}$. Now we only need to prove that $I_{e_0} = I_e$. Since $I_{e_0}$ is from $\mbody(m, I, K)$, whereas $I_e$ is from $\mbody(m, J, K)$, by the rule  \textsc{(T-PathInvk)}. By $\textsc{(T-Anno)}$ and the condition that $e$ type-checks, we know that $I \subtype J$. By Lemma~\ref{lemma:mbody_type_preservation}, $I_{e_0} = I_e$.
+Since $I'_{e_0} \subtype I_{e_0}$, the conditions of \textsc{(T-Anno)} are satisfied, hence $\judgeewf {\Gamma} {e' : I_{e_0}}$. Now we only need to prove that $I_{e_0} = I_e$. Since $I_{e_0}$ is from $\mbody(m, I, J)$, whereas $I_e$ is from $\mbody(m, J, J)$, by the rule \textsc{(T-Invk)} on $e$. Since $I \subtype J$, by Lemma~\ref{lemma:mbody_type_preservation}, $I_{e_0} = I_e$.
 
 \textbf{Case C-Receiver.} Straightforward induction.
 
-\textbf{Case C-PathReceiver.} Straightforward induction.
+%\textbf{Case C-PathReceiver.} Straightforward induction.
 
 \textbf{Case C-Args.} Straightforward induction.
 
-\textbf{Case C-PathArgs.} Straightforward induction.
+%\textbf{Case C-PathArgs.} Straightforward induction.
 
 \textbf{Case C-StaticType.} Immediate by \textsc{(T-Anno)}.
 
@@ -245,13 +250,13 @@ So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
 \subsubsection{Proof for Theorem~\ref{theorem_progress}}
 \begin{proof}
 	
-Since $e$ is well-typed, by \textsc{(T-PathInvk)} and \textsc{(T-Anno)} we know that
-$$I \subtype J\textrm{, and }\mbody(m, J, K) \textrm{ is defined}$$
+Since $e$ is well-typed, by \textsc{(T-Invk)} and \textsc{(T-Anno)} we know that
+$$I \subtype J\textrm{, and }\mbody(m, J, J) \textrm{ is defined}$$
 
-By Lemma~\ref{lemma:mbody_type_preservation}, $\mbody(m, I, K)$ is also defined, and the type checker ensures the expected number of arguments.
+By \textsc{(T-Intf)}, $\mbody(m, I, J)$ is also defined, and the type checker ensures the expected number of arguments.
 
-On the other hand, $I \subtype K$. By the definition of $\mostSpecific$, $$\mostSpecific(m, I, K) \subseteq \mostSpecific(m, I, I)$$
+On the other hand, since $I \subtype J$, by the definition of $\mostSpecific$, $$\mostSpecific(m, I, J) \subseteq \mostSpecific(m, I, I)$$
 
-By \textsc{(T-New)}, $\canOverride(I)$ should be true. By the definition of $\canOverride$, any $J\in\mostSpecific(m, I, I)$ satisfies that
-$\mostSpecificOverride(m, I, J)$ contains only one interface, in which the $m$ that overrides $J$ is a concrete method. Therefore $\mbody(m, I, K)$ also provides a concrete method, which finishes the proof.
+By \textsc{(T-New)}, $\canOverride(I) = True$. By the definition of $\canOverride$, any $J_0\in\mostSpecific(m, I, I)$ satisfies that
+$\mostSpecificOverride(m, I, J_0)$ contains only one interface, in which the $m$ that overrides $J_0$ is a concrete method. Therefore $\mbody(m, I, J)$ also provides a concrete method, which finishes the proof.
 \end{proof}
