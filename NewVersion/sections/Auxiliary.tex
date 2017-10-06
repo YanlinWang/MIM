@@ -15,8 +15,8 @@ To begin with, we introduce the following basic functions.
 	& \indent\indent \textrm{with: }
 	\kwinterface \; I \; \kwextends \; \overline{I} \; \{ \absmethod{I_e}{m}{I_x}{x}{J} \ldots \} & \\
 \end{flalign*}
-Here $I[m\ \kwoverride\ J]$ is basically a directly lookup for method $m$ in the body of $I$, where such a method
-overrides $J$. The method can be either concrete or abstract, and the body of definition is returned. Notice that
+Here $I[m\ \kwoverride\ J]$ is basically a direct lookup for method $m$ in the body of $I$, where such a method
+overrides $J$ (like static dispatch). The method can be either concrete or abstract, and the body of definition is returned. Notice that
 by our syntax, $I[m\ \kwoverride\ I]$ is looking for the originally-defined method $m$ in $I$.
 
 \begin{flalign*}
