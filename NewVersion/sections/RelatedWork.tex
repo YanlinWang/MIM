@@ -9,7 +9,7 @@ programming, although it is difficult to model and can
 cause various problems (e.g. the diamond problem~\cite{Sak89dis,Singh1995}).  
 There are many existing languages/models that support multiple 
 inheritance~\cite{ellis1990annotated,scala-overview,bracha90mixin,scharli03traits,malayeri2009cz,csharpdoc,Moon1986,Flatt1998,Ancona2003}. 
-The Mixin model~\cite{bracha90mixin} allows naming components 
+The Mixin models~\cite{bracha90mixin,Flatt1998,van1996encapsulation,Ancona2003,Hendler86} allow naming components 
 that can be applied to various classes as reusable functionality units. However, the linearization (total ordering) of mixin 
 inheritance cannot provide a satisfactory resolution in some cases and restricts the flexibility of mixin composition. 
 Scala traits~\cite{scala-overview} are in fact linearized mixins and hence have the same problem as mixins.
@@ -24,10 +24,6 @@ keyword) inside interfaces and there are also proposals such as FeatherTrait Jav
 for extending Java with traits. There are extensions~\cite{reppy2006foundation,Reppy:2007:MT:2394758.2394784} to 
 the original trait model with various advanced features such as \emph{renaming}. As discussed in Section~\ref{sec:overview},
 the renaming feature helps to solve the unintentional method conflicts problem, however, it breaks structural subtyping.
-\bruno{Should talk
-  about work on traits that support renaming.}\bruno{I remember Yanlin
-  had a presentation with alot of related work on multiple
-  inheritance. Many of those seem to be missing here}\yanlin{Done}
 
 \begin{comment}
 There are also proposals for extending Java with traits. For example, 
@@ -57,7 +53,7 @@ by setting a linearised composition. This is the common drawback of
 the above-mentioned models versus our model.
 
 \subsection{Resolving Unintentional Method Conflicts}
-There are a few languages that partly realize the problem of
+There are a few languages that may have realized the problem of
 unintentional conflicts and provide some support for it.
 
 \begin{comment} %C++ related work with code explaination
@@ -109,13 +105,39 @@ model.
 
 \noindent {\bf C++ model.}
 C++ supports a very flexible inheritance model and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
-It allows unintentional conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. 
+It allows the existance of unintentional conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. 
 With virtual methods, dynamic dispatch is used and 
-method lookup algorithm will find the most specific method definition.
-Although C++ support this flexibility, dynamic dispatching on
-unintentional conflicting methods is problematic.
-Furthermore, C++ does not support hierarchical overriding compared to our
-model.
+method lookup algorithm will find the most specific method definition.\yanlin{to revise: be consistant with introduction}
+Although C++ support this flexibility, it does not support hierarchical overriding compared to our
+model. However, there is one workaround we found online that mimicks hierarchical overriding, we call it the "MiddleMan" approach, as shown in Figure~\ref{fig:middleman}. In this example, class \texttt{A} and \texttt{B} are two classes that both defines a method \texttt{m} unintentionally. 
+
+Class \texttt{MiddleMan}, as its name suggests, acts as a middle man between its class \texttt{C} and its parents \texttt{A, B}. \texttt{MiddleMan} defines a virtual method \texttt{m} that overrides a parent method \texttt{m} and delegate the implementation to another method \texttt{m\_impl} that takes \kwthis as parameter. C++ supports method overloading, so that multiple \texttt{m\_impl} methods with different parameter types can co-exist. When definning class \texttt{C}, we specify the parents to be \texttt{MiddleMan<A>, MiddleMan<B>} instead of \texttt{A, B}. This way, programmers may define new versions of \texttt{A.m} and \texttt{B.m} in class \texttt{C} by providing the corresponding \texttt{m\_impl} methods. Then in the client code, the method call \texttt{((A*)c)->m()} will print out string \texttt{"MA2"}, as expected. Although this workaround can help us defining partial method overrides to a certain extent, the drawbacks are obvious. Firsly, the approach is complex and requires the pre-knowledge of the programmer to this approach. Moreover, no direct syntax support makes the "MiddleMan" code cumbersome to write. Finally, the approach is ad-hoc, meaning that the class \texttt{MiddleMan} shown in Figure~\ref{fig:middleman} is not general enough to be used in other cases, more middle-mans are needed if partial method overrides happens in other classes.
+
+\begin{figure*}
+\begin{lstlisting}
+class A { public: virtual void m() {cout << "MA" << endl;}};
+class B { public: virtual void m() {cout << "MB" << endl;}};
+template<class C>
+class MiddleMan : public C {
+    void m() override final { m_impl(this); }
+  protected:
+    virtual void m_impl(MiddleMan*) { return this->C::m(); }
+};
+class C : public MiddleMan<A>, public MiddleMan<B> { 
+private:
+    void m_impl (MiddleMan<A>*) override {cout << "MA2" << endl;}
+    void m_impl (MiddleMan<B>*) override {cout << "MB2" << endl;}
+};
+int main()
+{
+    C* c = new C();
+    ((A*)c)->m();         //print "MA2"
+    return 0;
+}
+\end{lstlisting}
+\caption{The "MiddleMan" approach.}
+\label{fig:middleman}
+\end{figure*}
 
 \noindent  {\bf \csharp{} Explicit method implementation.}
 Explicit method implementation is a special feature supported by
@@ -123,7 +145,7 @@ Explicit method implementation is a special feature supported by
 class that implements an interface can explicitly implement a member
 of that interface. When a member is explicitly implemented, it can
 only be accessed through an instance of the interface. Explicit
-interface implementation allows the programmer to inherit two
+interface implementation allows an interface to inherit multiple 
 interfaces that share the same member names and give each interface
 member a separate implementation.
 
@@ -136,7 +158,7 @@ same signature. However, there are two critical differences to \MIM{}:
 (1) default implementations are not allowed in \csharp{} interfaces; 
 (2) there is only one level of hierarchical overriding to refine conflicting methods individually.
 
-\subsection{Hierarchical Dispatch}
+\subsection{Hierarchical Dispatch in \self{}}
 As we have discussed before, although the mix of static and dynamic dispatch is 
 particularly useful under certain circumstances, it has received little research attention. 
 In the prototype-based language \self{}~\cite{Chambers1991}, inheritance is a basic feature.
