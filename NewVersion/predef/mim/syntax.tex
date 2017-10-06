@@ -113,11 +113,10 @@
 
 \newcommand{\tstaticinvk} {
 \inferrule* [left=(T-StaticInvk)]
-    {\judgeewf \Gamma {e_0:I_0}
-   \\ I_0 \subtype J_0
-    \\  \mbodyStatic(m, J_0, J_1) = (K, \overline{J} \; \overline{x}, I \; \_)
-    \\ \judgeewf \Gamma \overline{e}:\overline{I}
-    \\ \overline{I} \subtype \overline{J}
+    {J_0[m \; \kwoverride \; J_1] = \method{I}{m}{J}{x}{J_1}{e} \\ 
+    \judgeewf \Gamma {e_0:I_0} \\ I_0 \subtype J_0 \\
+    \judgeewf \Gamma \overline{e}:\overline{I} \\
+    \overline{I} \subtype \overline{J}
     }
     {\judgeewf \Gamma {e_0.\staAnno{J_0}{J_1}m(\overline{e})}:I}
 }
@@ -205,13 +204,10 @@
 
 \newcommand{\sstaticinvk} {
 \inferrule* [left=(S-StaticInvk)]
-{\mbodyStatic(m, K, K') = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) 
-%\\ e_0 \neq \o
-}
-{\left(\angl{J}\new{I}\right).\staAnno{K}{K'}m(\overline{v}) \to
-    \angl{I'_e}[
-  \overline{\angl{I_x}} \overline{v}
-  /\overline{x}, \angl{I_0}\new{I}/\kwthis]e_0}
+{J_0[m \; \kwoverride \; J_1] = \method{I_e}{m}{I_x}{x}{J_1}{e_0}}
+{\left((J)\new{I}\right).\staAnno{J_0}{J_1}m(\overline{v}) \to
+    (I_e)[\overline{(I_x)v}
+  /\overline{x}, (J_0)\new{I}/\kwthis]e_0}
 }
 
 % \newcommand{\ssuperinvk} {

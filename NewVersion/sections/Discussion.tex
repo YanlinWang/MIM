@@ -1,18 +1,53 @@
 \section{Discussion}
-In this section, we discuss the design space and some reflections of the work. 
-\paragraph{Abstract Methods.}
-Why we include 
+In this section, we will discuss the design space and some reflections of the work. There are some relationships we made
+between our language model and traits, Java interfaces as well as other languages. And there are certainly some other ways
+around to improve our model for better code reuse.
+
+\subsection{Abstract Methods}
+
+Abstract methods are one of the key features in most general OO languages. For example, Java interfaces were designed
+to include only method declarations, and those abstract methods can be implemented in a class body, although in the formal
+Featherweight Java model, abstract methods are not involved because of its orthogonality to the core calculus. In traits the
+similar idea is to use keywords like ``\textbf{require}'' for abstract method declarations. Abstract methods provide a way to
+delay the implementations to future subtypes. Using overriding, they also help to ``exclude'' existing implementations.
+
+In our formalized mini-calculus, however, abstract methods are not a completely orthogonal feature. The $\canInstantiate$ function
+has to check whether an interface can be instantiated, by looking at all the inherited branches and seeing if each most specific method
+is abstract or not.
+
+Our formalization has already made abstract methods in a simple way. In other languages they may perform more complicated behaviours.
+For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. We omit
+that case for two reasons. First, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
+the rules and the proof a lot. Second, our design choice tends to give more sense on those interesting cases, just as we reject the diamond inheritance. The triangle inheritance should distinguish and treat differently on the two methods instead of fusing them, for they represent different operations, even if they are abstract.
+
+\subsection{Orthogonal \& Non-Orthogonal Extensions}
+
+Our model is designed as a minimal calculus for focusing only on resolving unintentional conflicts. Therefore, we have omitted a number of
+common orthogonal features including primitive types, assignments, method overloading, covariant method return types, static dispatch, and so on.
+Those features can be modularly added to the model without breaking type soundness \haoyuan{correct?}. For example, we present the additional syntax, typing and semantic rules of static invocation below as an extension:
+
+\begin{mathpar}
+	\begin{array}{llrl}
+		\text{Expressions}  & e  & \Coloneqq & \ldots \; \mid \; e.J_0@J_1::m(\overline{e})
+	\end{array} \\
+	\tstaticinvk \\
+	\sstaticinvk
+\end{mathpar}
+A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ in $J_0$ that hierarchically overrides $J_1$, thus $J_0[m\ \kwoverride\ J_1]$ is invoked. As shown in \textsc{(S-StaticInvk)}, static dispatch needs a receiver to involve in the substitution for ``$\kwthis$'' reference, so as to provide the latest implementations. In fact, static dispatch is common in OO programming, as it provides a shortcut to the reuse of old implementation easily, and super calls can also rely on this feature. For convenience we just make it simple above, whereas in languages like C++ or Java, the static or super invocations are more flexible hence complicated; they can climb the class hierarchy. 
+
+Fields as a particular non-orthogonal feature.
+
+\subsection{More}
+
+\paragraph{Diamond interface check, loosen the model}
+
+\paragraph{Hierarchical Overriding Restriction, loosen the model.}
+In \MIM{}, hierarchical overriding can only override an interface that defines the original method. But in reality, sometimes this condition is too restrict and can be relaxed to allowing overriding a super interface... And an override could be able to go over original methods. Pros \& cons.
+
+
 \paragraph{Path Invocation}
 
-\paragraph{Static/Super Invocation}
-Extensibly adding rules to the current formalization.
-- can dispatch to any method (both original method and updating method).
-- static dispatch algorithm.
+\paragraph{(no example) Method Resolution Rules.}
 
-\paragraph{Diamond interface check}
-
-\paragraph{Hierarchical Overriding Restriction.}
-In \MIM{}, hierarchical overriding can only override an interface that defines the original method. But in reality, sometimes this condition is too restrict and can be relaxed to allowing overriding a super interface. .. Pros & cons.
-
-\paragraph{Method Resolution Rules.}
+\paragraph{(no example) better code reuse (more kinds of method invocation)}
 Other resolution possibilities and comparison.
