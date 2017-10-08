@@ -4,9 +4,8 @@ for code reuse. However many OOP languages are restricted to single
 inheritance, which is less expressive and flexible than multiple
 inheritance. Nevertheless, different flavours of multiple inheritance
 have been adopted in some popular OOP languages. C++ has had 
-multiple inheritance from the start. Scala adapts the ideas from traits~\cite{scharli03traits}
-and mixins~\cite{bracha90mixin}\bruno{please add more references to
-  other work on traits and mixins here} to offer a disciplined form of multiple inheritance. Java 8 
+multiple inheritance from the start. Scala adapts the ideas from traits~\cite{scharli03traits,Ducasse:2006:TMF:1119479.1119483,Liquori08ftj}
+and mixins~\cite{bracha90mixin,Flatt1998,van1996encapsulation,Ancona2003,Hendler86} to offer a disciplined form of multiple inheritance. Java 8 
 offers a simple variant of traits, disguised of interfaces with default methods~\cite{goetz12fdefenders}.
 
 A reason why programming languages have resisted to multiple
@@ -64,14 +63,15 @@ features separately during inheritance, so as not to break
 Closest to our work are mechanisms available in C++ and C\# that allow for two
 unintentionally conflicting methods to coexist in a class. Among them, 
 C++ is a representative that accepts the triangle inheritance and
-resolves the ambiguity by \emph{static dispatching}. However, C++ has
-limited support for virtual methods with unintentional conflicts, and
-it will often throw errors when composing them. This is again
-unsatisfactory because virtual methods are pervasive in OOP and used 
-for code reuse and extensibility. A problem with the C++ approach is
-that programmers can only use either static or dynamic dispatching separately, but dealing
-with unintentional method conflicts seems to require a combination of
-both. 
+resolves the ambiguity by \emph{static dispatching} or cast. But the drawback is that these conflicting methods cannot be further updated. 
+% However, C++ has
+% limited support for virtual methods with unintentional conflicts, and
+% it will often throw errors when composing them. This is again
+% unsatisfactory because virtual methods are pervasive in OOP and used 
+% for code reuse and extensibility. A problem with the C++ approach is
+% that programmers can only use either static or dynamic dispatching separately, but dealing
+% with unintentional method conflicts seems to require a combination of
+% both. 
 Some other workarounds or approaches include delegation and
 renaming/exclusion in the trait model. However renaming/exclusion 
 can break the subtyping relation between a subclass and its parent.
@@ -126,6 +126,7 @@ In summary, our contributions are:
               supplementary material attached to the submission.}:} a
           simple implementation of \MIM{} implemented in Scala.
           \bruno{Are the examples in the paper implemented in the interpreter?}
+          \yanlin{new formalization has not been implemented yet.}
 \end{itemize}
 
  
