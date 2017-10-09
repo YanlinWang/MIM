@@ -22,7 +22,7 @@ that case for two reasons. First, our formalization just treats abstract methods
 the rules and the proof a lot. Second, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance. The triangle inheritance should distinguish and treat differently on the two methods instead of fusing them, since they represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
 methods, and implicitly assumming diamond inheritance.
 
-\subsection{Orthogonal \& Non-Orthogonal Extensions}
+\subsection{Orthogonal \& Non-Orthogonal Extensions}\label{sec:orthoext}
 
 Our model is designed as a minimal calculus for focusing only on resolving unintentional conflicts. Therefore, we have omitted a number of
 common orthogonal features including primitive types, assignments, method overloading, covariant method return types, static dispatch, and so on.
