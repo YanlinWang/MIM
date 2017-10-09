@@ -1,10 +1,15 @@
-\section{Fundamental Notations}\label{subsec:auxdefs}
-In this section, we present the fundamental notations used in our formalization.
+\section{Fundamental Notions}\label{subsec:auxdefs}
+In this section, we present the fundamental notions used in our formalization.
 Some of them are auxiliary functions, others are however important ones as they
 directly implement our algorithm for method resolution.
+\bruno{I felt like there's not enough explanation/context in this
+  section. It is just dumping definitions without connecting them and
+  their purpose properly.}
 
 \subsection{Auxiliary functions}
 To begin with, we introduce the following basic functions. 
+\bruno{explain: where are these definitions used and for what purpose?
+  You need similar explanations everywhere you introduce new definitions.}
 
 \begin{flalign*}
 	& \rhd \textit{Definition of } I[m\ \kwoverride\ J]: & \\
@@ -35,6 +40,10 @@ none of them has subtyping relation to one another, since all super types have b
 \end{flalign*}
 $\canOverride$ just checks that two original $m$ in $I$ and $J$ have the same type.
 
+\bruno{do not use the names of the definitions as titles of
+  Sections. Please give a title that states the purpose. 
+For this section in particular it may be something like ``Finding the most
+specific method override''}
 \subsection{$\mostSpecific$ and $\mostSpecificOverride$}
 
 $\mostSpecific$ and $\mostSpecificOverride$ are two core functions for the method lookup algorithm. Generally,
@@ -72,7 +81,7 @@ By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only 
 
 \subsection{$\canInstantiate$}
 $\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the keyword $\kwnew$.
-Below is the algorithm:
+Below is the algorithm:\bruno{used for what and where?}
 
 \begin{flalign*}
 	& \rhd \textit{Definition of } \canInstantiate(I): & \\
@@ -105,7 +114,7 @@ To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for 
 
 \subsection{Examples}
 
-\haoyuan{Need more examples?}
+\haoyuan{Need more examples?}\bruno{ask Marco.}
 \begin{figure*}[t]
 	\centering
 	\vspace{-1ex}

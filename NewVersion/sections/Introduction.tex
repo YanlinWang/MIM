@@ -65,7 +65,7 @@ unintentionally conflicting methods to coexist in a class.
 C++ accepts the triangle inheritance and
 resolves the ambiguity by \emph{static dispatching} or casts. But the
 drawback is that these conflicting methods cannot be further overriden. 
-\bruno{how about C\#?}
+\bruno{how about C\#? Say something about C\# here.}
 % However, C++ has
 % limited support for virtual methods with unintentional conflicts, and
 % it will often throw errors when composing them. This is again
@@ -103,8 +103,10 @@ receiver during runtime. When there are multiple branches that cause
 unintentional conflicts, the static type can specify one branch among
 them for unambiguity, and the dynamic type helps to find the most
 specific implementation. In that case, both unambiguity and
-extensibility are preserved. 
-\textit{Hierarchical overriding} allows method overriding to be applied
+extensibility are preserved. The main novelty over existing work is 
+the formalization of the essence of a hierarchical dispatching
+algorithm, which (as far as we know) has not been formalized before. 
+Furthermore, \textit{hierarchical overriding} allows method overriding to be applied
 only to one branch of the class hierarchy. Hierarchical overriding 
 adds expressive power that is not available in languages such as 
 C++ or C\#. To present both ideas, we introduce a

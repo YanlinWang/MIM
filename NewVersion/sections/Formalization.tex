@@ -2,6 +2,8 @@
 In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), based on
 Featherweight Java~\cite{Igarashi01FJ}. The syntax, typing rules,
 small-step semantics and theorems for type soundness are presented.
+\bruno{In general, please try to use latex paragraphs to add more
+  structure and emphasize contents.}
 
 \vspace{-2ex}
 \subsection{Syntax}
@@ -35,7 +37,8 @@ method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''; otherwise
 it is hierarchical overriding.
 For simplicity, overloading is not modelled for methods, which
-implies we can uniquely identify a method by its name.\yanlin{the terminology of original methods should have been proposed in Overview.}
+implies that we can uniquely identify a method by its name.\yanlin{the terminology of original methods should have been proposed in Overview.}
+\bruno{Then please do so.}
 
 Expressions can be standard constructs such as variables, method
 invocation, or object creation. \name{} allows two types of method invocations, one is the normal method invocation $e.m(\overline{e})$ that we are familiar with, another is the novel type of method invocation: path-invocations like ``$e.I\pathIvk m(\overline{e})$'', meaning that the dynamically bound
@@ -76,10 +79,12 @@ e.m(\overline{e}) \mid
 \end{figure*}
 
 \subsection{Subtyping and Typing Rules}
+\paragraph{Subtyping}
 The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
 In short, subtyping relations are built from the inheritance in interface
 declarations. Subtyping is both symmetric, reflexive and transitive.
 
+\paragraph{Type-checking}
 Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
 typing, well-formedness of methods and interfaces. As a convention, an environment
 $\Gamma$ is maintained to store the types of variables, together with
@@ -93,7 +98,17 @@ the enclosing type.
 % have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
 % path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
-There are two typing rules for method invocation: \textsc{(T-Invk)} and \textsc{(T-PathInvk)}. \textsc{(T-Invk)} is the typing judgement for a normal method invocation. First it ensures that the method receiver $e_0$ type checks to a type $I_0$. Then it checks the type of the specific method, by using an auxiliary function $\mbody(m, I_0, I_0)$, which is the function for looking up methods that we will illustrate in more detail in Section~\ref{subsec:auxdefs}. The form of \mbody is different to FJ, which has two parameters. The first $I_0$ represents the dynamic type and the second, the static type. If the result of \mbody is not \Undefined, it means the method exists and the corresponding method parameters and return types are given. After the method type is obtained, we check that all arguments $\overline{e}$ type check to $\overline{I}$ which are subtypes of $\overline{J}$. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
+There are two typing rules for method invocation: \textsc{(T-Invk)}
+and \textsc{(T-PathInvk)}. \textsc{(T-Invk)} is the typing judgement
+for a normal method invocation. First it ensures that the method
+receiver $e_0$ type checks to a type $I_0$. Then it checks the type of
+the specific method, by using an auxiliary function $\mbody(m, I_0,
+I_0)$, which is the function for looking up methods that we will
+illustrate in more detail in Section~\ref{subsec:auxdefs}. The form of
+\mbody is different to FJ\bruno{Use xspace to fix the spacing problem
+  of macros like mbody}, which has two parameters. The first $I_0$
+represents the dynamic type and the second, the static type. If the
+result of \mbody is not \Undefined, it means that the method exists and the corresponding method parameters and return types are given. After the method type is obtained, we check that all arguments $\overline{e}$ type check to $\overline{I}$ which are subtypes of $\overline{J}$. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 \textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not. If interface $I$ contains (or inherits) any abstract method that has not been implemented, then interface $I$ cannot be instantiated.
@@ -140,7 +155,7 @@ Figure~\ref{fig:smallstep} defines the small-step semantic and
 congruence rules, respectively. When evaluating an expression, they
 are invoked recursively and alternately to produce a single value in
 the end. The small-step semantics rules \textsc{(S-Invk)} and 
-\textsc{(S-PathInvk)} behave similarly: each corresponds to one kind of method invocation. \textsc{(S-PathInvk)} invokes \mbody{} for method body lookup. The parameters $\overline{x}$ are replaced with arguments $\overline{v}$ with static type annotations $\overline{\angl{I_x}}$, where $\overline{\angl{I_x}}$ is the parameter types coming from method lookup result. The rule \textsc{(S-Invk)} simply reduces the problem of normal invocation to path invocation. 
+\textsc{(S-PathInvk)} behave similarly: each corresponds to one kind of method invocation. \textsc{(S-PathInvk)} invokes \mbody{} for method body lookup. The parameters $\overline{x}$ are replaced with arguments $\overline{v}$ with static type annotations $\overline{\angl{I_x}}$, where $\overline{\angl{I_x}}$ are the parameter types coming from method lookup result. The rule \textsc{(S-Invk)} simply reduces the problem of normal invocation to path invocation. 
 
 Generally, one can understand
 $\mbody(m, I, J)$ in a way that it finds the most specific body of
@@ -192,8 +207,8 @@ in languages like Java.
 
 
 \subsection{Properties}
-Previously the definitions of our model are given, now we proceed to prove the type soundness of 
-the model, which relates typing to computation. The type soundness states that, if an expression is 
+Now we proceed to prove the type soundness of 
+the model, which relates typing to computation. Type soundness states that, if an expression is 
 well-typed, then after many reduction steps it must reduce to a value, with its annotation to be a subtype of the original expression type.
 Following the Featherweight Java paper~\cite{Igarashi01FJ}, the type-soundness theorem 
 (Theorem~\ref{theorem_soundness}) is proved by using the standard technique of subject reduction (Theorem~\ref{theorem_subject})
@@ -223,3 +238,5 @@ a value $v$ with $\judgeewf \o {v:I}$.
 \begin{proof}
 Immediate from Theorem~\ref{theorem_subject} and Theroem~\ref{theorem_progress}.
 \end{proof}
+\bruno{Were we not supposed to have some note/comment as to why the
+  type soundness theorem is stricter that FJ?}

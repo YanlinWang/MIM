@@ -19,6 +19,9 @@ the following characteristics:
 Furthermore, similarly to traits or Java 8 with default methods,
 interfaces cannot have state.
 
+%In the remainder of this section we show three problems that arize 
+%from unintentional method conflicts. The first two problems 
+
 %%for simplicity, our examples and formalization do not deal with state at
 %%this stage. %%, but that should not block our discussions below.
 
@@ -67,7 +70,7 @@ interface JFrame {
 \end{lstlisting}\vspace{3pt}
 \end{comment}
 Now, a programmer is designing a
-card game with GUI. He may want to draw a deck on the screen, so he defines a drawable
+card game with a GUI. He may want to draw a deck on the screen, so he defines a drawable
 deck using multiple inheritance:
 
 \vspace{3pt}\begin{lstlisting}
