@@ -60,10 +60,12 @@ is clearly unsatisfactory. Therefore we need a better solution to keep both
 features separately during inheritance, so as not to break
 \emph{independent extensibility}~\cite{zenger05independentlyextensible}.
 
-Closest to our work are mechanisms available in C++ and C\# that allow for two
-unintentionally conflicting methods to coexist in a class. Among them, 
-C++ is a representative that accepts the triangle inheritance and
-resolves the ambiguity by \emph{static dispatching} or cast. But the drawback is that these conflicting methods cannot be further updated. 
+C++ and C\# do allow for two
+unintentionally conflicting methods to coexist in a class. 
+C++ accepts the triangle inheritance and
+resolves the ambiguity by \emph{static dispatching} or casts. But the
+drawback is that these conflicting methods cannot be further overriden. 
+\bruno{how about C\#?}
 % However, C++ has
 % limited support for virtual methods with unintentional conflicts, and
 % it will often throw errors when composing them. This is again
@@ -90,7 +92,10 @@ of the parent class.
 %sacrifice extensibility, hence in contrast with static dispatch and
 %dynamic dispatch, 
 
-This paper proposes \textit{hierarchical dispatching}: a novel approach
+This paper proposes two mechanisms to deal with unintentional method
+conflicts: \textit{hierarchical dispatching} and \emph{hierarchical
+  overriding}. Hierarchical dispatching is inspired by the mechanisms in C++ and
+provides an approach
 to method dispatching, which combines static and dynamic
 information. Using hierarchical dispatching, the method binder will look
 at both the \emph{static type} and the \emph{dynamic type} of the
@@ -98,15 +103,14 @@ receiver during runtime. When there are multiple branches that cause
 unintentional conflicts, the static type can specify one branch among
 them for unambiguity, and the dynamic type helps to find the most
 specific implementation. In that case, both unambiguity and
-extensibility are preserved. To present this idea, we introduce a
+extensibility are preserved. 
+\textit{Hierarchical overriding} allows method overriding to be applied
+only to one branch of the class hierarchy. Hierarchical overriding 
+adds expressive power that is not available in languages such as 
+C++ or C\#. To present both ideas, we introduce a
 formalized model \MIM{} in Section~\ref{sec:formalization} based on
 Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
-proofs for type soundness. In the model we also propose
-\textit{hierarchical overriding}, where method overriding can be applied
-only to one branch of the class hierarchy. 
-\name{} is partly inspired by the method resolution semantics
-of C++, but it also incoorporates ideas from the trait model and Java
-8's default methods.
+proofs for type soundness. 
 
 %%Our model can be viewed as
 %%a generalization of the simplified trait model by providing additional support to
