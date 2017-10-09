@@ -1,24 +1,26 @@
 \section{Discussion}
-In this section, we will discuss the design space and some reflections of the work. There are some relationships we made
-between our language model and traits, Java interfaces as well as other languages. And there are certainly some other ways
-around to improve our model for better code reuse.
+In this section, we will discuss the design space and reflect about some of the design decisions of our work. We relate 
+our language to traits, Java interfaces as well as other languages. Furthermore we discuss
+ways to improve our  work.\bruno{references please!!!}
 
 \subsection{Abstract Methods}
 
 Abstract methods are one of the key features in most general OO languages. For example, Java interfaces were designed
-to include only method declarations, and those abstract methods can be implemented in a class body, although in the formal
-Featherweight Java model, abstract methods are not involved because of its orthogonality to the core calculus. In traits the
+to include only method declarations, and those abstract methods can be implemented in a class body. 
+The formal Featherweight Java model does not include abstract methods because of its orthogonality to the core calculus. In traits the
 similar idea is to use keywords like ``\textbf{require}'' for abstract method declarations. Abstract methods provide a way to
 delay the implementations to future subtypes. Using overriding, they also help to ``exclude'' existing implementations.
 
-In our formalized mini-calculus, however, abstract methods are not a completely orthogonal feature. The $\canInstantiate$ function
+In our formalized calculus, however, abstract methods are not a completely orthogonal feature. The $\canInstantiate$ function
 has to check whether an interface can be instantiated, by looking at all the inherited branches and seeing if each most specific method
 is abstract or not.
 
-Our formalization has already made abstract methods in a simple way. In other languages they may perform more complicated behaviours.
+Our formalization has a simple form of abstract methods, which behave similarly to conventional methods with respect to conflicts.
+Other languages support more complicated behaviour.
 For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. We omit
 that case for two reasons. First, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
-the rules and the proof a lot. Second, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance. The triangle inheritance should distinguish and treat differently on the two methods instead of fusing them, for they represent different operations, even if they are abstract.
+the rules and the proof a lot. Second, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance. The triangle inheritance should distinguish and treat differently on the two methods instead of fusing them, since they represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
+methods, and implicitly assumming diamond inheritance.
 
 \subsection{Orthogonal \& Non-Orthogonal Extensions}
 
