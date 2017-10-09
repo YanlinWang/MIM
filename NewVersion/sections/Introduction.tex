@@ -61,11 +61,11 @@ features separately during inheritance, so as not to break
 \emph{independent extensibility}~\cite{zenger05independentlyextensible}.
 
 C++ and C\# do allow for two
-unintentionally conflicting methods to coexist in a class. 
+unintentionally conflicting methods to coexist in a class. C\# allows this by interface multiple inheritance and explicit method implementation, but there are people argue that in C\# you cannot do "multiple inheritance" \emph{from} interfaces, you can only \emph{implement} multiple interfaces. We will have more detailed discussion on this in Section~\ref{sec:relatedwork}.
 C++ accepts the triangle inheritance and
-resolves the ambiguity by \emph{static dispatching} or casts. But the
+resolves the ambiguity by specifying the expected path by \emph{upcasts}. But the
 drawback is that these conflicting methods cannot be further overriden. 
-\bruno{how about C\#? Say something about C\# here.}
+\bruno{how about C\#? Say something about C\# here.}\yanlin{added C\#}
 % However, C++ has
 % limited support for virtual methods with unintentional conflicts, and
 % it will often throw errors when composing them. This is again
