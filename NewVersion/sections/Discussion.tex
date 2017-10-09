@@ -48,8 +48,7 @@ interface C extends A { void m() {...} }
 interface D extends B, C {}
 \end{lstlisting}\vspace{3pt}
 In the example, both $B.m$ and $C.m$ override $A.m$, so we think they should represent the same operation. In that case, we believe that D inherits
-both conflicting methods without an explicit override, and it is in fact an intention conflict. Our calculus rejects these intentional conflicts by rule \textsc{(T-Intf)}, where $D$ is considered to be ill-formed. Nonetheless, as a general-purpose language, C++ accepts the definition of $D$, but forbids a cast from $D$ to $A$ because of ambiguity. For the conciseness of the proof, our language is more conservative on interfaces.
-But we could also loosen the model and perform ambiguity check on casts and other expressions.
+both conflicting methods without an explicit override, and it is in fact an intention conflict. Our calculus rejects these intentional conflicts by rule \textsc{(T-Intf)}, where $D$ is considered to be ill-formed. Nonetheless, as a general-purpose language, C++ accepts the definition of $D$, but forbids a cast from $D$ to $A$ because of ambiguity. For the conciseness of the proof, our language is more conservative on interfaces, but open on up-casts. We could also loosen the model and perform ambiguity check on casts and other expressions. We need to handle more cases than C++, for instance, in the above program assume that $B.m$ and $C.m$ are hierarchical overrides on $A$, it is still a diamond.
 
 Another case is about the restriction on hierarchical overrides. In our language model there are two types of methods (though they share the same syntax): original methods and hierarchical overrides. We require that a hierarchical override should only override an original method. Yet from the idea of encapsulation and modularity on programs, we could also allow an override to work on another override, which forms a series of overrides.
 

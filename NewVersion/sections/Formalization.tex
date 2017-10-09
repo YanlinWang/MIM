@@ -11,7 +11,7 @@ method implementations via default methods. This feature is
 closely related to \emph{traits}. To demonstrate how
 unintentional method conflicts are untangled in \MIM{}, we only focus on a small subset of the interface model. For example, all the methods declared
 in an interface are either default methods or abstract methods. Default methods provide default implementations for methods. Abstract methods do not
-have method body, and in fact we are not introducing a different kind of methods, but they are just treated as normal methods that return empty. Abstract methods can be overridden with future implementations.
+have method body, and in fact they can be considered as normal methods that return nothing. Abstract methods can be overridden with future implementations.
 
 %From this point we can view that we
 %are actually modelling a class model that supports multiple
@@ -38,15 +38,14 @@ For simplicity, overloading is not modelled for methods, which
 implies we can uniquely identify a method by its name.\yanlin{the terminology of original methods should have been proposed in Overview.}
 
 Expressions can be standard constructs such as variables, method
-invocation, or object creation. \name{} allows two types of method invocations, one is the normal method invocation $e.m(\overline{e})$ that we are familiar with, another is the novel type of method invocation: path-invocations like ``$e.I\pathIvk m(\overline{e})$'', meaning that the dynamically bound
-implementation for method $m$ should be along the path $I$. 
-% Another interesting expression are super-invocations, which enable a method to access an old implementation from the specified super type. Hence a super-invocation can only be used inside an interface definition.
-Finally, an expression can also be annotated with its static type. But \emph{annotated expressions are only intended for the semantic rules},
-hence they are not supposed to appear in the source program. A value
-``$\angl{I}\new{J}$''
+invocation, or object creation, together with casts.
+Again, to be concise, the casts are merely safe up-casts. Those cast-expressions
+are in fact annotated expressions, where the annotation indicates its static type.
+The coexistence of static and dynamic types is the key to hierarchical dispatch.
+A value
+``$(I)\new{J}$''
 is the final result of multiple reduction steps evaluating an
-expression. Such value represents an object instance
-of $J$ with an annotated static type $I$.
+expression.
 
 For simplicity, \name{} does not formalize statements like assignments and so on because they are orthogonal features.
 A program consists of a list of interface declarations, plus a single expression.
@@ -83,8 +82,7 @@ declarations. Subtyping is both symmetric, reflexive and transitive.
 Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
 typing, well-formedness of methods and interfaces. As a convention, an environment
 $\Gamma$ is maintained to store the types of variables, together with
-the \kwthis type, namely
-the enclosing type. 
+the self-reference $\kwthis$.
 % The three rules for method invocation, \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-SuperInvk)}
 % are very similar, in the sense that they all check the type of the specific method, by using
 % an auxiliary function \mtype. \mtype{} is the function for looking up method types, which we will
