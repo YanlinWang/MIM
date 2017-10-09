@@ -61,11 +61,16 @@ features separately during inheritance, so as not to break
 \emph{independent extensibility}~\cite{zenger05independentlyextensible}.
 
 C++ and C\# do allow for two
-unintentionally conflicting methods to coexist in a class. C\# allows this by interface multiple inheritance and explicit method implementation, but there are people argue that in C\# you cannot do "multiple inheritance" \emph{from} interfaces, you can only \emph{implement} multiple interfaces. We will have more detailed discussion on this in Section~\ref{sec:relatedwork}.
-C++ accepts the triangle inheritance and
-resolves the ambiguity by specifying the expected path by \emph{upcasts}. But the
-drawback is that these conflicting methods cannot be further overriden. 
-\bruno{how about C\#? Say something about C\# here.}\yanlin{added C\#}
+unintentionally conflicting methods to coexist in a class. C\# allows
+this by interface multiple inheritance and explicit method
+implementations. But since C\# is a single inheritance language, 
+it is only possible to \emph{implement} multiple interfaces (but not
+multiple classes). %We will have more detailed discussion on this in Section~\ref{sec:relatedwork}.
+C++ accepts triangle inheritance and
+resolves the ambiguity by specifying the expected path by
+\emph{upcasts}. However
+neither the C\# or C++ approaches allow
+such conflicting methods to be further overriden. 
 % However, C++ has
 % limited support for virtual methods with unintentional conflicts, and
 % it will often throw errors when composing them. This is again
@@ -120,8 +125,9 @@ proofs for type soundness.
 
 In summary, our contributions are:
 \begin{itemize}
-	\item \textbf{Hierarchical dispatch algorithm:} an algorithm that integrates both the static type and dynamic type for method dispatch, and hence
-	ensures unambiguity as well as extensibility.
+	\item \textbf{Formalization of a hierarchical dispatching algorithm} that integrates both the static type and dynamic type for method dispatch, and hence
+	ensures unambiguity as well as extensibility in the presence
+        of unintentional method conflicts.
 	\item \textbf{Hierarchical overriding:} a novel notion that allows
           methods to override on individual branches of the class hierarchy.
 	\item \textbf{\name:} a formalized model based on

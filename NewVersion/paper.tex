@@ -145,16 +145,17 @@ and signature.
 
 This paper presents a new model called \emph{\textbf{F}eatherweight
   \textbf{H}ierarchical \textbf{J}ava} (\name{}) that deals with
-unintentional method conflicts.
-In our
-new model, conflicting methods arising from unrelated methods can
-coexist in the same class. Furthermore our model supports
-\emph{hierarchical method overriding}: that is, methods can be
-\emph{independently overridden} along the multiple inheritance
-hierarchy. To avoid ambiguity, hierarchical information is 
-employed in method dispatching, which uses a combination of static and
-dynamic type information to choose the implementation of a method at
-run-time. We give illustrative examples of our language and features
+unintentional method conflicts.  In our new model, which is partly
+inspired by C++, conflicting methods arising from unrelated methods
+can coexist in the same class, and \emph{hierarchical dispatching}
+supports unambigous lookups in the presence of such conflicting
+methods.  To avoid ambiguity, hierarchical information is employed in
+method dispatching, which uses a combination of static and dynamic
+type information to choose the implementation of a method at run-time.
+Furthermore, unlike all existing inheritance models, our model
+supports \emph{hierarchical method overriding}: that is, methods can
+be \emph{independently overridden} along the multiple inheritance
+hierarchy. We give illustrative examples of our language and features
 and formalize \name{} as a minimal Featherweight-Java style calculus.
 
 \begin{comment}
