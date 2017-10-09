@@ -222,33 +222,47 @@ Note that the \lstinline|draw()| in \lstinline|shuffleAndDraw()| is short for \l
 
 \noindent\textbf{Comparison with C++:} as an industrial language, C++ is more practical and flexible to use with lots of features, for example, it handles fields and virtual inheritance, and it allows explicit casts. But the compilation is more or less complicated, and sometimes unclear to programmers, which affects its type safety and people's understanding. The compilation seems to look into the expressions and the real (runtime) types for ambiguity check in method dispatching, and sometimes the errors are thrown by the linker. In contrast, inspired by C++ we formalize the concept of hierarchical dispatch in our model, with type-checking rules and semantics. The compilation only cares about the type of the receiver in method invocation, but the rules ensure type soundness so that the evaluation never throws errors on a program that type-checks. C++ does not hold type soundness for unintentional method conflicts, it actually accepts the diamond inheritance, and only complains on bad invocations. Whereas our model forbids the diamond case, which derives a strong type-safe system, and there are more theoretical aspects in Section~\ref{sec:formalization}. \haoyuan{not sure if this paragraph makes sense or is correct. Needs refs.}
 
-\subsection{Problem 3: Overriding on Individual Branches}\label{subsec:partialoverrides}
 
+\subsection{Problem 3: Overriding on Individual Branches}\label{subsec:partialoverrides}
 We have seen that hierarchical dispatch can dynamically find the latest implementation of a method from one path (or branch). But when
 several branches are merged by triangle inheritance, there is usually demand for updating them separately. For example, someone plans to
-reuse the other features of \lstinline|DrawableLoggingDeck|, but updates the \lstinline|draw| from \lstinline|Drawable| by setting the canvas
-invisible. Unfortunately in traditional models, the merged branches cannot be separately overridden any longer, since overriding
-will hide all branches and break coexistence. Modifying existing code is again unsatisfactory as it affects modularity.\\
+reuse the other features of \lstinline|DrawableSafeDeck|, but updates the \lstinline|draw| from \lstinline|Drawable| by drawing a rectangle representing deck. Unfortunately in traditional models, the merged branches cannot be separately overridden any longer, since overriding
+will hide all branches and break coexistence. Modifying existing code is again unsatisfactory as it affects modularity. The nature way to work around the problem is to define a new component \lstinline|Drawable2| and change the class hierarchy:
+\begin{lstlisting}
+interface Drawable2 extends Drawable {
+  void draw() {
+    JFrame frame = new JFrame("Canvas");
+    frame.setSize(600, 600);
+    frame.getContentPane().setBackground(Color.red);
+    frame.getContentPane().add(new Square(10,10,100,100));
+    ....
+  }
+}
+interface DrawableSafeDeck extends Drawable2, SafeDeck {}
+\end{lstlisting} 
+The drawabck of the workaround is obvious: it breaks the existing hierarchy and changes the old code.
 
 \noindent\textbf{Our solution:} an additional feature of our model is \textit{hierarchical overriding}. It allows conflicting methods
 to be overridden on individual branches, and hence offers independent extensibility. The above example can be easily realized by:
 \vspace{3pt}\begin{lstlisting}
-interface DrawableLoggingDeck2 extends DrawableLoggingDeck {
+interface DrawableSafeDeck extends Drawable, SafeDeck {
   void draw() override Drawable {
     JFrame frame = new JFrame("Canvas");
-    frame.setVisible(false);
+    frame.setSize(600, 600);
+    frame.getContentPane().setBackground(Color.red);
+    frame.getContentPane().add(new Square(10,10,100,100));
     ...
   }
 }
-// main program
-DrawableLoggingDeck2 d = new DrawableLoggingDeck2();
-d.Drawable::draw()      // calling draw in DrawableLoggingDeck2
+// main program, calling draw in DrawableSafeDeck
+((Drawable)new DrawableSafeDeck()).draw(); 
 \end{lstlisting}\vspace{3pt}
+
 \textbf{Terminology} The \lstinline|draw| methods we saw before this example are called ``original methods'' in this paper, because they are originally defined in its interface.
-In contrast, \lstinline|DrawableLoggingDeck2| defines a ``hierarchical overriding'' method. The difference is that traditional overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
+In contrast, \lstinline|DrawableSafeDeck2| defines a ``hierarchical overriding'' method. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
 
-In our model, triangle inheritance allows several original methods (branches) to coexist, and hierarchical dispatch first finds the most specific original method (branch), then it finds the most specific hierarchical overriding on that branch. A quick counter-example is when there are two hierarchical overriding methods on \lstinline|Drawable| in \lstinline|DrawableLoggingDeck2|, it leads to ambiguity. The compiler is supposed to forbid that during compile time.
+In our model, triangle inheritance allows several original methods (branches) to coexist, and hierarchical dispatch first finds the most specific original method (branch), then it finds the most specific hierarchical overriding on that branch. A quick counter-example is when there are two hierarchical overriding methods on \lstinline|Drawable| in \lstinline|DrawableSafeDeck2|, it leads to ambiguity. The compiler is supposed to forbid that during compile time.
 
-Two rules for hierarchical overriding: it can only refine \textbf{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableLoggingDeck2|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|LoggingDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
+Two rules for hierarchical overriding: it can only refine \textbf{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck2|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
 
 Similar to many OO languages, the model also allows \textit{super method invocation} in a method body. The invocation \lstinline|super.T::m()| will ignore all the subtypes of \lstinline|T|, and only look at \lstinline|T| together with its super interfaces. It should behave the same as \lstinline|new T().m()| in principle.
