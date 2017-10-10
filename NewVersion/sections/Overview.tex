@@ -1,13 +1,18 @@
 \section{A Running Example: Drawable Deck}~\label{sec:overview}
-This section illustrates the problem of unintentional method conflicts for motivation,
+This section illustrates the problem of unintentional method conflicts,
 together with the features of our model on addressing this issue, by
 a simple running example. In the following text we will introduce three
-problems one by one, and lead the discussion on possible workarounds and our solutions.
-Here it is worth clarifying that problem 1 and 2 are the entrance to the general problem,
-and languages like C++ can give nice solutions to both, hence we are not basically proposing
-some novel algorithm on conflict resolution, but inspired to formalize a minimal calculus
-on this feature with type soundness. However, for problem 3 there is no satisfactory approach
-in existing languages, thus we propose our new feature for direct support.
+problems one by one, and have a discussion on possible workarounds and
+our solutions.
+Problems 1 and 2 are related to hierarchical dispatching, and in 
+C++ it is possible to have similar solutions solutions to both
+problems. Hence it is important to emphasize that, with respect to
+hierarchical dispatching, our contribution is not a novel
+mechanism. Instead, 
+inspired by the C++ solution, our contribution is the formalization a minimal calculus
+of this feature together with a proof type soundness. However, for the final problem, there is no satisfactory approach
+in existing languages, thus we propose a new feature (hierarchical
+overriding) with the corresponding formalization of that feature.
 
 In the rest of the paper, we use a Java-like syntax for programs. All types are defined with the keyword
 ``\lstinline|interface|''; the concept is closely related to Java 8
@@ -51,12 +56,14 @@ interface Drawable {
   }
 }
 \end{lstlisting}\vspace{3pt}
-Note that in \lstinline|Deck|,
+In \lstinline|Deck|,
 \lstinline|draw| uses \lstinline|println|, which is a
 library function. 
-The method returns \lstinline|void|. Note that \lstinline|void| is
-unsupported in our formalization, but we could have also defined an interface called \lstinline|Void|
-and return an object of that type instead. For the method \lstinline|draw| in
+The method returns \lstinline|void|. Note that, similarly to
+Featherweight Java~\cite{}\bruno{reference}, \lstinline|void| is
+unsupported in our formalization. We could have also defined an interface called \lstinline|Void|
+and return an object of that type instead, but for simplicity of
+presentation we use \lstinline|void|. For the method \lstinline|draw| in
 \lstinline|Drawable|
 the program has to create a blank canvas by \lstinline|JFrame|, which
 is a pre-defined type.
@@ -83,17 +90,16 @@ as the same, and hence the compiler throws an error
 on \lstinline|DrawableDeck| about the conflict.
 
 This case is the so-called \textit{unintentional method conflicts}. It arises when two inherited methods happen have
-the same name and parameter types, but they are totally designed for different functionalities with different semantics.
+the same name and parameter types, but they are designed for different functionalities with different semantics.
 Now one may quickly come up with a workaround, which is to manually merge them, by
 creating a new \lstinline|draw| method in \lstinline|DrawableDeck| to
 override the old ones. However, merging two methods with totally different functionalities does not make any sense.
 This non-solution will hide the
 old methods and break independent extensibility.
 
-\paragraph{Problem:} How to resolve unintentional method conflicts and invoke the conflicting methods separately without
-ambiguity.
-
-\paragraph{Potential Fixes:} There are several other workarounds
+\paragraph{Problem and Possible Workarounds:} The essential problem is
+how to resolve unintentional method conflicts and invoke the
+conflicting methods separately without ambiguity. To this problem, there are several other workarounds
 that come to our mind. We briefly discuss those potential fixes and
 workarounds next:
 \begin{itemize}
@@ -115,7 +121,7 @@ workarounds next:
   programming languages do not support them. In a traditional OO system,
   they can break the subtyping relationship. Moreover, in
   contrast with exclusion, renaming can indeed preserve both conflicting
-  behaviours, however, it is cumbersome in practice, as introducing new
+  behaviours. However, it is cumbersome in practice, as introducing new
   names can affect other code blocks.
 \end{itemize}
 
@@ -126,10 +132,12 @@ workarounds next:
 %inspired by C++), but finish it saying that there are other problems
 %that C++ does not address.}
 
-\paragraph{Our solution:} It is important to preserve both conflicting methods
-during inheritance instead of explicitly merging them. That is to say, the compiler
-needs to accept \lstinline|DrawableDeck|. And then the disambiguation is done by
-up-casts, so as to specify the branch we would like to call.
+\paragraph{Our solution:} To solve this problem it is important to preserve both conflicting methods
+during inheritance instead of merging them into a single method. That is to say, the compiler
+needs to accept \lstinline|DrawableDeck|. To disambiguite method calls
+we can use \emph{up-casts}, so as to specify the ``branch'' in the
+inheritance hierarchy that should be called. The following code
+illustrates the use of up-casts for disambiguation:
 
 \vspace{3pt}\begin{lstlisting}
 interface Deck { void draw() {...} }
@@ -144,7 +152,7 @@ that we expect to invoke the \lstinline|draw| from branch \lstinline|Deck|.
 
 We call this case the triangle inheritance, where two unintentionally conflicting methods
 are accepted by multiple inheritance. Note that C++ supports this feature and also addresses the
-ambiguity by up-casts. The code for the above example is similar. 
+ambiguity by up-casts. The code for the above example in C++ is similar. 
 
 
 \subsection{Problem 2: Dynamic Dispatching}
