@@ -110,13 +110,12 @@ model, C++ does not support hierarchical overriding.
 
 
 \noindent {\bf C++ model.}
-C++ supports a very flexible inheritance model and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
-It allows the existence of unintentional conflicts and uses static
-dispatch to resolve them, as discussed in Section~\ref{sec:overview}. 
+C++ supports a very flexible inheritance model (normal inheritance and virtual inheritance). 
+It allows the existence of unintentional conflicts and users may specify a hierarchical path via cast for disambiguation, as discussed in Section~\ref{sec:overview}. 
 \bruno{if we are dropping the static dispatching discussion this text
   may be outdated.}
 With virtual methods, dynamic dispatch is used and 
-method lookup algorithm will find the most specific method definition.\yanlin{to revise: be consistant with introduction}
+method lookup algorithm will find the most specific method definition.
 A contribution of our work is to provide a minimal formal model of
 hierarchical dispatching, whereas C++ can be viewed as a real-world
 implementation. As far as we know there is no any formal model that
@@ -126,8 +125,8 @@ to that discussion here too.}
 
 Although C++ supports hierarchical dispatching, it does not support
 hierarchical overriding.  However, there is a possible
-workaround\footnote{put the url here} that mimicks hierarchical
-overriding.  We call it the "MiddleMan" approach, as shown in
+workaround\footnote{https://stackoverflow.com/questions/44632250/can-i-do-mimic-things-likes-this-partial-override-in-c} that mimicks hierarchical
+overriding.  We call it the \emph{MiddleMan} approach, as shown in
 Figure~\ref{fig:middleman}. In this example, classes \texttt{A} and
 \texttt{B} are two classes that both define a method with the same
 name \texttt{m}
@@ -157,7 +156,7 @@ int main()
     return 0;
 }
 \end{lstlisting}
-\caption{The "MiddleMan" approach.}
+\caption{The \emph{MiddleMan} approach.}
 \label{fig:middleman}
 \end{figure*}
 
@@ -197,17 +196,14 @@ Similarly to our model, this sender path tiebreaker rule resolves ambiguities be
 it is used in a prototype-based language setting and it does not support method hierarchical overriding as \MIM{} does.
 
 \subsection{Formalization Based on Featherweight Java}
-Featherweight Java (FJ)~\cite{Igarashi01FJ} is a minimal core calculus of Java language, 
+Featherweight Java (FJ)~\cite{Igarashi01FJ} is a minimal core calculus of the Java language, 
 proposed by Igarashi et. al. There are many models built on Featherweight Java, 
 including FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, 
 Featherweight Scala~\cite{Cremet2006}, and so on.
 FJ provides the standard model of formalizing a Java-like object-oriented languages and 
-is easily extensible. In terms of formalization, the key novelty of our model is the use of 
-static types as annotations along with various terms. As far as we
-know, this technique has not appeared in the literature before. The static type annotation is of vital 
-importance in our hierarchical dispatch algorithm, and it allows for a
+is easily extensible. In terms of formalization, the key novelty of our model is making use of various types (such as parameter types, method return types, etc) as upcasts along with various terms. As far as we know, this technique has not appeared in the literature before. This notion is of vital importance in our hierarchical dispatch algorithm, and it allows for a
 more precise subject-reduction theorem as discussed in
-Section~\ref{}\bruno{put reference and make sure that we discuss this topic}.
+Section~\ref{sec:formalization}.\bruno{put reference and make sure that we discuss this topic}
 
 
 
