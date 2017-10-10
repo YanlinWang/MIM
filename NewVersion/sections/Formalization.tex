@@ -1,11 +1,9 @@
 \section{Formalization}~\label{sec:formalization}
-In this section, we present the formal model \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), based on
+In this section, we present the formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following similar style of 
 Featherweight Java~\cite{Igarashi01FJ}. The syntax, typing rules,
 small-step semantics and theorems for type soundness are presented.
-\bruno{In general, please try to use latex paragraphs to add more
-  structure and emphasize contents.}
 
-\vspace{-2ex}
+% \vspace{-2ex}
 \subsection{Syntax}
 The abstract syntax of \MIM{} interface declarations, method declarations, and expressions is given at Figure~\ref{fig:syntax}. The multiple
 inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
@@ -15,17 +13,15 @@ unintentional method conflicts are untangled in \MIM{}, we only focus on a small
 in an interface are either default methods or abstract methods. Default methods provide default implementations for methods. Abstract methods do not
 have method body, and in fact they can be considered as normal methods that return nothing. Abstract methods can be overridden with future implementations.
 
-%From this point we can view that we
-%are actually modelling a class model that supports multiple
-%inheritance. 
-Object creation is represented by $\new I$. If any unimplemented abstract methods are defined in interface $I$ (or inherited from parents), then object creation fails. Fields and primitive types are not modelled in \MIM{}.
-
-The metavariables $I, J, K$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
+\paragraph{Notations}
+The metavariables $I, J$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
 conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in the obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
 
+\paragraph{Interfaces}
 In order to achieve multiple inheritance, an interface can have a set of 
 parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
+\paragraph{Methods}
 The method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
 method named $m$ with result type $I$, parameters $\overline{x}$ of
 type $\overline{I_x}$ and the overriding target $J$. The body of the
@@ -37,11 +33,12 @@ method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as ``originally defined''; otherwise
 it is hierarchical overriding.
 For simplicity, overloading is not modelled for methods, which
-implies that we can uniquely identify a method by its name.\yanlin{the terminology of original methods should have been proposed in Overview.}
-\bruno{Then please do so.}
+implies that we can uniquely identify a method by its name.
 
+\paragraph{Expressions \& Values}
 Expressions can be standard constructs such as variables, method
-invocation, or object creation, together with casts.
+invocation, or object creation, together with casts. 
+Object creation is represented by $\new I$. If any unimplemented abstract methods are defined in interface $I$ (or inherited from parents), then object creation fails. Fields and primitive types are not modelled in \MIM{}. 
 Again, to be concise, the casts are merely safe up-casts. Those cast-expressions
 are in fact annotated expressions, where the annotation indicates its static type.
 The coexistence of static and dynamic types is the key to hierarchical dispatch.
@@ -103,8 +100,7 @@ receiver $e_0$ type checks to a type $I_0$. Then it checks the type of
 the specific method, by using an auxiliary function $\mbody(m, I_0,
 I_0)$, which is the function for looking up methods that we will
 illustrate in more detail in Section~\ref{subsec:auxdefs}. The form of
-\mbody{} is different to FJ\bruno{Use xspace to fix the spacing problem
-  of macros like mbody}, which has two parameters. The first $I_0$
+\mbody{} is different to FJ, which has two parameters. The first $I_0$
 represents the dynamic type and the second, the static type. If the
 result of \mbody is not \Undefined, it means that the method exists and the corresponding method parameters and return types are given. After the method type is obtained, we check that all arguments $\overline{e}$ type check to $\overline{I}$ which are subtypes of $\overline{J}$. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
@@ -122,7 +118,6 @@ their enclosing types would be returned instead of $J$.
   the more complex one. Some examples may help.} \yanlin{added} 
 Rule \textsc{(T-Intf)} defines the typing rule for interfaces. Interface $I$ type checks only if the following conditions are satisfied: 1) all methods $\overline{M}$ that are directly defined in $I$ type check; 2) method lookup $\mbody(m, I, J)$ successes as long as the method $m$ is originally defined in any interface $J$ which is an ancestor of $I$; 3)if an original method $m$ defined in interfaces $I$ overrides another original method defined in an ancestor of $I$, then the method types are compatible. These conditions ensure unambiguity and type soundness of the calculus. We will introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime in any case. The interface check is responsible for capturing ambiguity during compilation.
 
-\bruno{Explanation for T-Anno is missing.}\yanlin{Added.}
 Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static type annotation. The rule says that an annotated expression $\angl{J}e$ type checks to $J$ if the expression $e$ type checks and the static annotation $J$ is a subtype of $I$ which is the type of $e$.
 
 \begin{figure*}
