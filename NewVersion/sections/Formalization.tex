@@ -1,6 +1,6 @@
 \section{Formalization}~\label{sec:formalization}
 In this section, we present the formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following similar style of 
-Featherweight Java~\cite{Igarashi01FJ}. The syntax, typing rules,
+Featherweight Java~\cite{Igarashi01FJ}. \MIM{} is a minimal core calculus that formalizes the core concept of hierarchical dispatch and overriding. The syntax, typing rules,
 small-step semantics and theorems for type soundness are presented.
 
 % \vspace{-2ex}
@@ -22,16 +22,15 @@ In order to achieve multiple inheritance, an interface can have a set of
 parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
 \paragraph{Methods}
-The method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
+We allow the definition of two kinds of methods, ``original method'' and ``overriding method'', which share the same syntax. The method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
 method named $m$ with result type $I$, parameters $\overline{x}$ of
 type $\overline{I_x}$ and the overriding target $J$. The body of the
-method is the single statement $ \kwreturn \; e;$. We also allow
-defining abstract methods with $\absmethod{I}{m}{I_x}{x}{J}$, which is
-similar to a normal method but without a method body. Notably, we have introduced the
+method is the single statement $ \kwreturn \; e;$. Notably, we have introduced the
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
-interface, then such a method is seen as ``originally defined''; otherwise
-it is hierarchical overriding.
+interface, then such a method is seen as ``originally defined'' and called ``original method''; otherwise it is an ``overriding method''. We also allow
+defining abstract methods with $\absmethod{I}{m}{I_x}{x}{J}$, which is
+similar to a normal method but without a method body. 
 For simplicity, overloading is not modelled for methods, which
 implies that we can uniquely identify a method by its name.
 
@@ -93,16 +92,15 @@ the self-reference $\kwthis$.
 % have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
 % path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
-There are two typing rules for method invocation: \textsc{(T-Invk)}
-and \textsc{(T-PathInvk)}. \textsc{(T-Invk)} is the typing judgement
-for a normal method invocation. First it ensures that the method
+\textsc{(T-Invk)} is the typing rule for method invocation.
+ First it ensures that the method
 receiver $e_0$ type checks to a type $I_0$. Then it checks the type of
 the specific method, by using an auxiliary function $\mbody(m, I_0,
 I_0)$, which is the function for looking up methods that we will
 illustrate in more detail in Section~\ref{subsec:auxdefs}. The form of
 \mbody{} is different to FJ, which has two parameters. The first $I_0$
-represents the dynamic type and the second, the static type. If the
-result of \mbody is not \Undefined, it means that the method exists and the corresponding method parameters and return types are given. After the method type is obtained, we check that all arguments $\overline{e}$ type check to $\overline{I}$ which are subtypes of $\overline{J}$. \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
+represents the dynamic type and the second, the path type. The path type is the upcast type of $e_0$ (if any), else the path type is the same as its dynamic type. If the result of \mbody{} is not \Undefined, it means that the method exists and the corresponding method parameters and return types are given. After the method type is obtained, we check that all arguments $\overline{e}$ type check to $\overline{I}$ which are subtypes of $\overline{J}$. 
+% \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 \textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not. If interface $I$ contains (or inherits) any abstract method that has not been implemented, then interface $I$ cannot be instantiated.
