@@ -5,12 +5,12 @@ a simple running example. In the following text we will introduce three
 problems one by one, and have a discussion on possible workarounds and
 our solutions.
 Problems 1 and 2 are related to hierarchical dispatching, and in 
-C++ it is possible to have similar solutions to both
+C++ it is possible to have similar solutions as ours to both
 problems. Hence it is important to emphasize that, with respect to
 hierarchical dispatching, our contribution is not a novel
 mechanism. Instead, 
-inspired by the C++ solution, our contribution is the formalization a minimal calculus
-of this feature together with a proof type soundness. However, for the final problem, there is no satisfactory approach
+inspired by the C++ solution, our contribution is formalizing a minimal calculus
+of this feature together with a proof of type soundness. However, for the final problem, there is no satisfactory approach
 in existing languages, thus we propose a new feature (hierarchical
 overriding) with the corresponding formalization of that feature.
 
@@ -60,7 +60,7 @@ In \lstinline|Deck|,
 \lstinline|draw| uses \lstinline|println|, which is a
 library function. 
 The method returns \lstinline|void|. Note that, similarly to
-Featherweight Java~\cite{}\bruno{reference}, \lstinline|void| is
+Featherweight Java~\cite{Igarashi01FJ}, \lstinline|void| is
 unsupported in our formalization. We could have also defined an interface called \lstinline|Void|
 and return an object of that type instead, but for simplicity of
 presentation we use \lstinline|void|. For the method \lstinline|draw| in
@@ -89,7 +89,7 @@ languages. Nevertheless at this point, languages like Java simply treat the two 
 as the same, and hence the compiler throws an error
 on \lstinline|DrawableDeck| about the conflict.
 
-This case is the so-called \textit{unintentional method conflicts}. It arises when two inherited methods happen have
+This case is the so-called \textit{unintentional method conflicts}. It arises when two inherited methods happen to have
 the same name and parameter types, but they are designed for different functionalities with different semantics.
 Now one may quickly come up with a workaround, which is to manually merge them, by
 creating a new \lstinline|draw| method in \lstinline|DrawableDeck| to
@@ -135,7 +135,7 @@ workarounds next:
 \paragraph{\MIM{}'s solution:} To solve this problem it is important to preserve both conflicting methods
 during inheritance instead of merging them into a single
 method. Therefore \MIM{} accepts the definition of \lstinline|DrawableDeck|. To disambiguite method calls
-we can use \emph{up-casts} in \MIM{}'s, so as to specify the ``branch'' in the
+we can use \emph{up-casts} in \MIM{}, so as to specify the ``branch'' in the
 inheritance hierarchy that should be called. The following code
 illustrates the use of up-casts for disambiguation:
 
@@ -188,9 +188,9 @@ interface SafeDeck extends Deck {
 }
 \end{lstlisting}\vspace{3pt}
 With static dispatching, we may have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|,
-so as to be adaptive to the new \lstinline|draw|. Yet dynamic dispatching immediately saves us from the duplicate work,
+so as to be adaptive to the new \lstinline|draw|. Yet dynamic dispatching immediately saves us from the duplicated work,
 since the method becomes automatically adaptive. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity,
-for instance, when we have the class hierarchy structure in Figure~\ref{fig:drawablesafedeck} and the following code:
+for instance, when we have the class hierarchy structure shown in Figure~\ref{fig:drawablesafedeck}(left) and the following code:
 
 % \begin{figure*}[t]
 % 	\saveSpaceFig
@@ -246,9 +246,7 @@ ared used to select the right method implementation.
 During the runtime, the method call \lstinline|e.m()|
 makes use of both the static type and the dynamic type of the receiver, so it is seemingly a
 combination of static and dynamic dispatch. Intuitively, the static type specifies one branch
-to avoid ambiguity, and the dynamic type finds the most specific implementation on that branch. The formal algorithm
-will be introduced later.\bruno{avoid using words like ``later'' or
-  ``before''. Instead use references to the actual Sections.}
+to avoid ambiguity, and the dynamic type finds the most specific implementation on that branch. The formal algorithm will be introduced in Section~\ref{sec:formalization} and Section~\ref{sec:auxdefs}.
 
 Using hierarchical dispatching the following code is accepted:
 \vspace{3pt}\begin{lstlisting}
@@ -309,7 +307,7 @@ in a class. Ideally we would like to support overriding for those
 methods too, in exactly the same way that overriding is available for 
 other (non-conflicting) methods. However we need to be able to
 override the individual conflicting methods, rather than overriding all
-conflicting methods into a single merged method.  We illustrate the
+conflicting methods into a single merged one. We illustrate the
 problem and the need for a more refined overrding mechanism with 
 an example.
 
@@ -320,8 +318,7 @@ Suppose that the programmer defines \lstinline|DrawableSafeDeck|, but he needs t
 
 \paragraph{Potential solutions/workarounds in existing languages:} Unfortunately in all languages we known
 (including C++), the existing approaches are unsatisfactory.
-One direction is to simply avoid this issue, by putting overriding before inheritance. For example, we define a new component
-that extends \lstinline|Drawable|, simply draw the deck as a rectangle, and modifies the hierarchy:
+One direction is to simply avoid this issue, by putting overriding before inheritance. For example, as shown in Figure~\ref{fig:drawablesafedeck}(right), we define a new component \lstinline|DrawableRect| that extends \lstinline|Drawable|, which simply draws the deck as a rectangle, and modifies the hierarchy:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableRect extends Drawable {
   void draw() {
@@ -365,8 +362,8 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {
 
 // main program
 ((Drawable)new DrawableSafeDeck()).draw(); // calls the latest draw
-\end{lstlisting}\vspace{3pt}\bruno{make override a keyword in
-  lstlisting.}
+\end{lstlisting}\vspace{3pt}
+
 Here the idea is that \emph{only} \lstinline{Drawable.draw} is
 overriden. This is accomplished by specifying, in the method
 definition, that only the method override only overrides the method 
@@ -379,7 +376,7 @@ last two sentences are a bit unclear. I think it is related to ``interaction''.}
 previous subsections\bruno{by now I saw many methods. Please be more precise.} are called \textit{original methods} in this paper, because they are originally defined in its interface.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
 
-\paragraph{Overview of hierarchical dispatching algorithm:} In our
+\paragraph{A peek of hierarchical dispatching algorithm:} In our
 model, triangle inheritance allows several original methods (branches)
 to coexist, and hierarchical dispatch first finds the most specific
 original method (branch), then it finds the most specific hierarchical
