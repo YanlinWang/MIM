@@ -5,7 +5,7 @@ a simple running example. In the following text we will introduce three
 problems one by one, and have a discussion on possible workarounds and
 our solutions.
 Problems 1 and 2 are related to hierarchical dispatching, and in 
-C++ it is possible to have similar solutions solutions to both
+C++ it is possible to have similar solutions to both
 problems. Hence it is important to emphasize that, with respect to
 hierarchical dispatching, our contribution is not a novel
 mechanism. Instead, 
@@ -132,10 +132,10 @@ workarounds next:
 %inspired by C++), but finish it saying that there are other problems
 %that C++ does not address.}
 
-\paragraph{Our solution:} To solve this problem it is important to preserve both conflicting methods
-during inheritance instead of merging them into a single method. That is to say, the compiler
-needs to accept \lstinline|DrawableDeck|. To disambiguite method calls
-we can use \emph{up-casts}, so as to specify the ``branch'' in the
+\paragraph{\MIM{}'s solution:} To solve this problem it is important to preserve both conflicting methods
+during inheritance instead of merging them into a single
+method. Therefore \MIM{} accepts the definition of \lstinline|DrawableDeck|. To disambiguite method calls
+we can use \emph{up-casts} in \MIM{}'s, so as to specify the ``branch'' in the
 inheritance hierarchy that should be called. The following code
 illustrates the use of up-casts for disambiguation:
 
@@ -145,18 +145,24 @@ interface Drawable { JFrame draw() {...} }
 interface DrawableDeck extends Drawable, Deck {}
 
 // main program
-((Deck) new DrawableDeck()).draw() // calls Deck.draw
+((Deck) new DrawableDeck()).draw()  // calls Deck.draw
+// (new DrawableDeck()).draw()        // this call is ambiguous and rejected
 \end{lstlisting}\vspace{3pt}
 In our language, the main program is merely an expression. The above cast indicates
-that we expect to invoke the \lstinline|draw| from branch \lstinline|Deck|.
+that we expect to invoke the \lstinline|draw| from branch
+\lstinline|Deck|. Similarly we could have used an upcast to \lstinline|Drawable|
+to call the \lstinline|draw| method from \lstinline|Drawable|.
+Without the cast the call would be ambiguous, and
+\MIM{}'s type system would reject that call. 
 
-We call this case the triangle inheritance, where two unintentionally conflicting methods
+This example illustrates the basic form of triangle inheritance, where two unintentionally conflicting methods
 are accepted by multiple inheritance. Note that C++ supports this feature and also addresses the
 ambiguity by up-casts. The code for the above example in C++ is similar. 
 
 
 \subsection{Problem 2: Dynamic Dispatching}
-It seems that the solution to problem 1 is straightforward and easy to achieve, but things can
+Using explicit upcasts for disambiguation helps when making calls to
+classes with conflicting methods, but things
 become more complicated with dynamic dispatching. Dynamic
 dispatching is very common in OO programming in order for code reuse. Let us expand the previous
 example a bit, by redefining those interfaces with more features:
@@ -168,7 +174,7 @@ interface Deck {
   void shuffleAndDraw() { this.shuffle(); this.draw(); }
 }
 \end{lstlisting}\vspace{3pt}
-Here \lstinline|shuffleAndDraw| invokes \lstinline|draw| from its own enclosing type. Ideally,
+Here \lstinline|shuffleAndDraw| \emph{invokes \lstinline|draw| from its own enclosing type}. Ideally,
 we want that invocation to be dynamically dispatched. This is important, because a programmer may define a subtype
 of \lstinline|Deck| and override the method:
 
@@ -184,7 +190,7 @@ interface SafeDeck extends Deck {
 With static dispatching, we may have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|,
 so as to be adaptive to the new \lstinline|draw|. Yet dynamic dispatching immediately saves us from the duplicate work,
 since the method becomes automatically adaptive. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity,
-for instance, when we have the UML in Figure~\ref{fig:drawablesafedeck} and the following code:
+for instance, when we have the class hierarchy structure in Figure~\ref{fig:drawablesafedeck} and the following code:
 
 \begin{figure*}[t]
 	\saveSpaceFig
@@ -201,27 +207,35 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {}
 new DrawableSafeDeck().shuffleAndDraw()
 \end{lstlisting}\vspace{3pt}
 When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck|
-is surely dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver
+is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver
 is replaced by the object \lstinline|new DrawableSafeDeck()|.
 
 From the perspective of \lstinline|DrawableSafeDeck|, the \lstinline|draw| method seems ambiguous. But ideally we would
-like \lstinline|shuffleAndDraw| to invoke \lstinline|SafeDeck.draw| because they belong to the same branch. It
-seems that we choose dynamic dispatch but also make use of static type information, since the type of this-reference (\lstinline|Deck|) specifies the branch. Note that in C++, if we put the \lstinline[language=c++]|virtual| keyword in front of every \lstinline|draw| method, that means
-we enforce the dynamic dispatch, and it does the disambiguation correctly.
-Unfortunately, the C++ language, or rather the feature on triangle inheritance, has not been well formalized.
+like \lstinline|shuffleAndDraw| to invoke \lstinline|SafeDeck.draw|
+because they belong to the same class hierarchy branch. It
+seems that we choose dynamic dispatch but also make use of static type
+information, since the type of this-reference (\lstinline|Deck|)
+specifies the branch to use unambiguously.
 
-\paragraph{Problem:} How to ensure that the correct method is invoked, by disambiguating conflicting methods in a dynamically dispatched setting, and how to achieve such a formalized language model. \\
+%%\paragraph{Problem:} \\
 
-\paragraph{Our solution:} Inspired by C++, we have formalized this feature into a minimal core calculus,
-studied and proved the type soundness. It is concise and can readily be imported to other systems. 
-And in the formalization, we propose \textit{hierarchical dispatch} in our model
-as the default method lookup algorithm. During the runtime, the method call \lstinline|e.m()|
+\paragraph{\MIM's solution:} 
+The essential problem is how to ensure that the correct method is
+invoked. To solve this problem \MIM{} uses a variant of method
+disptaching that we call \textit{hierarchical dispatch}. In
+hierarchical dispatch both the static and dynamic type information 
+ared used to select the right method implementation.
+%Inspired by C++, we have formalized this feature into a minimal core calculus,
+%studied and proved the type soundness. It is concise and can readily be imported to other systems. 
+%And in the formalization, we propose \textit{hierarchical dispatch} in our model
+%as the default method lookup algorithm. 
+During the runtime, the method call \lstinline|e.m()|
 makes use of both the static type and the dynamic type of the receiver, so it is seemingly a
 combination of static and dynamic dispatch. Intuitively, the static type specifies one branch
-to avoid ambiguity, and the dynamic type finds the latest implementation on that branch. The formal algorithm
+to avoid ambiguity, and the dynamic type finds the most specific implementation on that branch. The formal algorithm
 will be introduced later.
 
-Back to the example, our code below just suffices to meet the expectation:
+Using hierarchical dispatching the following code is accepted:
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() {...}
@@ -242,13 +256,27 @@ the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static
 \lstinline|Deck|'' not only implies what \lstinline|Deck| inherits, but also the domain of its subtypes until the
 dynamic type. Finally \lstinline|SafeDeck.draw| is correctly returned.
 
-In our language model, there are two types of casts: implicit casts and explicit upcasts. The implicit casts appear
-when passing arguments and returning expressions, they are also upcasts. Hence all casts are safe, and the difference
-from C++ is that C++ checks ambiguity on casts, whereas our model is open to those safe casts. Unfortunately,
+%Note that in C++, if we put the \lstinline[language=c++]|virtual| keyword in front of every \lstinline|draw| method, that means
+%we enforce the dynamic dispatch, and it does the disambiguation correctly.
+%Unfortunately, the C++ language, or rather the feature on triangle inheritance, has not been well formalized.
+
+\paragraph{Implicit and Explicit Upcasts}
+In our language model, there are two types of casts: \emph{implicit casts} and \emph{explicit upcasts}. The implicit casts appear
+when passing arguments and returning expressions, they are also
+upcasts. Hence all casts are safe. C++ implementations also support a
+similar solution. However a notable difference between \MIM{} and C++
+is that C++ checks ambiguity on casts, whereas our model is open to those safe casts. Unfortunately,
 it introduces ambiguity in what we call ``the diamond inheritance'': when two methods override a same base method
 but then accepted by multiple inheritance. The definition of such interfaces has to be rejected,
 but this is natural as they are just two versions of the same operation, hence it is no longer an ``unintentional'' conflict.
-Our proof demonstrates that it is a sufficient condition for type soundness.
+Our proof demonstrates that it is a sufficient condition for type
+soundness.
+\bruno{I think the difference between C++ and our model is an important discussion, but very confusingly
+  written. I believe that some more detail is needed. Do we have an
+  extended discussion later?}
+
+
+
 
 \subsection{Problem 3: Overriding on Individual Branches}\label{subsec:partialoverrides}
 
