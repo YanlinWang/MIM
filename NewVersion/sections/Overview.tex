@@ -280,12 +280,31 @@ soundness.
 
 \subsection{Problem 3: Overriding on Individual Branches}\label{subsec:partialoverrides}
 
-This is not the end of the story, because after the programmer defines \lstinline|DrawableSafeDeck|, he needs to override
-\lstinline|Drawable.draw|, and give the implementation of drawing, so that the deck can indeed be visualized on the canvas.
+Method overriding is common in Object-Oriented Programming. 
+With diamond inheritance where conflicting methods are intended to have 
+the same semantics, method overriding is not a problem. If conflicting
+methods arize from multiple parents, we can override all those methods 
+in a single unified (or merged) method in the subclass. Therefore
+further overriding is simple, because there is only one method that
+can be overriden. 
 
-\paragraph{Problem:} how to update the conflicting methods separately, after the triangle inheritance.
+With unintentional method conflicts, however, the situation is more
+complicated because different, separate, conflicting methods can exist
+in a class. Ideally we would like to support overriding for those
+methods too, in exactly the same way that overriding is available for 
+other (non-conflicting) methods. However we need to be able to
+override the individual conflicting methods, rather than overriding all
+conflicting methods into a single merged method.  We illustrate the
+problem and the need for a more refined overrding mechanism with 
+an example.
 
-\paragraph{Potential fixes:} Unfortunately as far as we are concerned, the existing approaches are unsatisfactory.
+Suppose that the programmer defines \lstinline|DrawableSafeDeck|, but he needs to override
+\lstinline|Drawable.draw| and give a new implementation of drawing, so that the deck can indeed be visualized on the canvas.
+
+%\paragraph{Problem:} how to update the conflicting methods separately, after the triangle inheritance.
+
+\paragraph{Potential solutions/workarounds in existing languages:} Unfortunately in all languages we known
+(including C++), the existing approaches are unsatisfactory.
 One direction is to simply avoid this issue, by putting overriding before inheritance. For example, we define a new component
 that extends \lstinline|Drawable|, simply draw the deck as a rectangle, and modifies the hierarchy:
 \vspace{3pt}\begin{lstlisting}
@@ -304,14 +323,19 @@ interface DrawableSafeDeck extends DrawableRect, SafeDeck {}
 This workaround seems to work, but there are severe issues:
 \begin{itemize}
 	\item It changes the hierarchy and existing code, hence breaks the modularity.
-	\item The demand for separate overriding after the triangle inheritance comes especially when there is interaction. In the above code we assume
+	\item The demand for separate overriding after the triangle
+          inheritance comes especially when there is
+          interaction\bruno{what interaction?}. In the above code we assume
 	that the overriding is unrelated to \lstinline|Deck|. But when the drawing relies on some information of the \lstinline|Deck|
 	object, we have to either introduce field methods for delegation, or change the signature of \lstinline|draw| to take a parameter.
 	Either way introduces unnecessary complexity and affects extensibility.
 \end{itemize}
-Another workaround in C++ adopts templates, but there are still issues and we put the discussion in Section~\ref{subsec:middleman}.
 
-\paragraph{Our solution:} An additional feature of our model is \textit{hierarchical overriding}. It allows conflicting methods
+There are more involved workarounds in C++ using templates and complex
+patterns, but such patterns are complex to use and there are still issues. A more detailed discussion of
+such an approach is presented in Section~\ref{subsec:middleman}.
+
+\paragraph{\MIM{}'s solution:} An additional feature of our model is \textit{hierarchical overriding}. It allows conflicting methods
 to be overridden on individual branches, and hence offers independent extensibility. The above example can be easily realized by:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableSafeDeck extends Drawable, SafeDeck {
@@ -326,14 +350,29 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {
 
 // main program
 ((Drawable)new DrawableSafeDeck()).draw(); // calls the latest draw
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}\vspace{3pt}\bruno{make override a keyword in
+  lstlisting.}
+Here the idea is that \emph{only} \lstinline{Drawable.draw} is
+overriden. This is accomplished by specifying, in the method
+definition, that only the method override only overrides the method 
+from \lstinline|Drawable|.  
 The direct support for individual overriding also works when there is interaction. In our formalization, this feature is necessary
-and also involves in the algorithm of hierarchical dispatch.
+and also involves in the algorithm of hierarchical dispatch.\bruno{the
+last two sentences are a bit unclear. I think it is related to ``interaction''.}
 
-\paragraph{Terminology:} The \lstinline|draw| methods we saw in previous subsections are called \textit{original methods} in this paper, because they are originally defined in its interface.
+\paragraph{Terminology:} The \lstinline|draw| methods we saw in
+previous subsections\bruno{by now I saw many methods. Please be more precise.} are called \textit{original methods} in this paper, because they are originally defined in its interface.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
 
-\paragraph{Overview of hierarchical dispatching algorithm:} In our model, triangle inheritance allows several original methods (branches) to coexist, and hierarchical dispatch first finds the most specific original method (branch), then it finds the most specific hierarchical overriding on that branch. A quick counter-example is when there are two hierarchical overriding methods on \lstinline|Drawable| in \lstinline|DrawableSafeDeck|, it leads to ambiguity. The compiler is supposed to forbid the case.
+\paragraph{Overview of hierarchical dispatching algorithm:} In our
+model, triangle inheritance allows several original methods (branches)
+to coexist, and hierarchical dispatch first finds the most specific
+original method (branch), then it finds the most specific hierarchical
+overriding on that branch. A quick counter-example is when there are
+two hierarchical overriding methods on \lstinline|Drawable| in
+\lstinline|DrawableSafeDeck|, it leads to ambiguity. The compiler is
+supposed to forbid the case.\bruno{please show code illustrating this,
+and improve explanation.}
 
 A special rule for hierarchical overriding is: it can only refine \textbf{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
 
