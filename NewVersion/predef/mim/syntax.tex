@@ -171,7 +171,7 @@
 \inferrule* [left=(T-Intf)]
     {  \overline{M} \text{ OK IN } I \\
     \forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined} \\ 
-    \forall J >: I \text{ and } I.m\,\kwoverride\, I, J.m \,\kwoverride\, J  \Rightarrow \canOverride(m, I, J)
+    \forall J >: I \text{ and } m, I[m \; \kwoverride \; I] \text{ and } J[m \; \kwoverride \; J] \text{ defined}  \Rightarrow \canOverride(m, I, J)
     }
     { \interface{I}{I}{M} \text{ OK }}
 }

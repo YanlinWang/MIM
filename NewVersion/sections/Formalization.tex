@@ -22,24 +22,25 @@ In order to achieve multiple inheritance, an interface can have a set of
 parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
 \paragraph{Methods}
-We allow the definition of two kinds of methods, ``original method'' and ``overriding method'', which share the same syntax. The method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
+Original methods and hierarchically overriding methods share the same syntax in our model for simplicity.
+The concrete method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
 method named $m$ with result type $I$, parameters $\overline{x}$ of
 type $\overline{I_x}$ and the overriding target $J$. The body of the
-method is the single statement $ \kwreturn \; e;$. Notably, we have introduced the
+method simply includes the returned expression $e$. Notably, we have introduced the
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
-interface, then such a method is seen as ``originally defined'' and called ``original method''; otherwise it is an ``overriding method''. We also allow
-defining abstract methods with $\absmethod{I}{m}{I_x}{x}{J}$, which is
-similar to a normal method but without a method body. 
+interface, then such a method is seen as originally defined; otherwise it is an overriding method. The definition
+of abstract methods is done with $\absmethod{I}{m}{I_x}{x}{J}$, which is
+similar to a concrete method but without the method body. 
 For simplicity, overloading is not modelled for methods, which
 implies that we can uniquely identify a method by its name.
 
 \paragraph{Expressions \& Values}
 Expressions can be standard constructs such as variables, method
-invocation, or object creation, together with casts. 
-Object creation is represented by $\new I$. If any unimplemented abstract methods are defined in interface $I$ (or inherited from parents), then object creation fails. Fields and primitive types are not modelled in \MIM{}. 
-Again, to be concise, the casts are merely safe up-casts. Those cast-expressions
-are in fact annotated expressions, where the annotation indicates its static type.
+invocation, or object creation, together with cast expressions. 
+Object creation is represented by $\new I$. Fields and primitive types are not modelled in \MIM{}. 
+The casts are merely safe up-casts, and in fact, they can be viewed as
+annotated expressions, where the annotation indicates its static type.
 The coexistence of static and dynamic types is the key to hierarchical dispatch.
 A value
 ``$(I)\new{J}$''
@@ -93,30 +94,38 @@ the self-reference $\kwthis$.
 % path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 \textsc{(T-Invk)} is the typing rule for method invocation.
- First it ensures that the method
-receiver $e_0$ type checks to a type $I_0$. Then it checks the type of
-the specific method, by using an auxiliary function $\mbody(m, I_0,
-I_0)$, which is the function for looking up methods that we will
-illustrate in more detail in Section~\ref{subsec:auxdefs}. The form of
-\mbody{} is different to FJ, which has two parameters. The first $I_0$
-represents the dynamic type and the second, the path type. The path type is the upcast type of $e_0$ (if any), else the path type is the same as its dynamic type. If the result of \mbody{} is not \Undefined, it means that the method exists and the corresponding method parameters and return types are given. After the method type is obtained, we check that all arguments $\overline{e}$ type check to $\overline{I}$ which are subtypes of $\overline{J}$. 
+Naturally, the receiver and the arguments are required to be type-checked.
+$\mbody$ is our key function for method lookup, based on the
+hierarchical dispatching algorithm. The formal definition will be introduced in
+Section~\ref{subsec:auxdefs}. To overview,
+the hierarchical invocation $\mbody(m, I, J)$ means ``finding most specific $m$
+above $I$ and along path $J$'', and usually $I$ denotes the dynamic type while $J$
+denotes the static type. In \textsc{(T-Invk)}, as the compilation should not be aware
+of the dynamic type, it only requires that invoking $m$ is valid for the static type of the
+receiver. The result of $\mbody$ contains the interface that provides the most specific implementation,
+the parameters and the return type. Note that we accept implicit upcasts on the arguments.
 % \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
-\textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not. If interface $I$ contains (or inherits) any abstract method that has not been implemented, then interface $I$ cannot be instantiated.
+\textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not, formalized in Section~\ref{subsec:auxdefs}. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
 
-The method typing rule \textsc{(T-Method)} is more interesting since the method can either be an original implementation or hierarchical overriding.
-Besides type-checking the return expression,
-we further use the helper function $\mostSpecific$, again formally defined in Section~\ref{subsec:auxdefs}.
-By the equation ``$\mostSpecific(m, I, J) = \{J\}$'' we define the legality of method overrides as mentioned in Section~\ref{subsec:partialoverrides}, namely if it is hierarchical overriding, it should not step over original methods, otherwise
-their enclosing types would be returned instead of $J$.
+\textsc{(T-Method)} is more interesting since a method can either be an original method or a hierarchical overriding, though
+they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a fundamental function from Section~\ref{subsec:auxdefs},
+used to find ``the most specific interfaces that are above $I$ and along path $J$, and originally defines $m$''. By ``most specific interfaces'',
+it implies that the inherited super types are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates the characteristics of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original $m$ in between.
+Then $\mbody(m, J, J)$ provides the type of the original method, so hierarchical overriding has to preserve the type. Finally the return expression
+needs to be type-checked, and there is also an implicit cast to the declared return type. For the definition of an original method, $I = J$ and the rule is straightforward. \textsc{(T-AbsMethod)} is a similar rule but works on abstract method declarations.
 
-\bruno{Well, there are two conditions. I suggest you explain
-  in a bit more detail the 2 conditions, since this rule seems to be
-  the more complex one. Some examples may help.} \yanlin{added} 
-Rule \textsc{(T-Intf)} defines the typing rule for interfaces. Interface $I$ type checks only if the following conditions are satisfied: 1) all methods $\overline{M}$ that are directly defined in $I$ type check; 2) method lookup $\mbody(m, I, J)$ successes as long as the method $m$ is originally defined in any interface $J$ which is an ancestor of $I$; 3)if an original method $m$ defined in interfaces $I$ overrides another original method defined in an ancestor of $I$, then the method types are compatible. These conditions ensure unambiguity and type soundness of the calculus. We will introduce \mbody{} and some counter-examples later. But intuitively, if $\mbody(m,I,J)$ is defined, that means $\new{I}.J::m()$ is not ambiguous during runtime. Therefore the condition says that if an expression type checks, it should not introduce ambiguity during runtime in any case. The interface check is responsible for capturing ambiguity during compilation.
+\textsc{(T-Intf)} defines the typing rule on interfaces. The first condition is obvious, namely its methods need to be well checked. The third
+condition checks whether the overriding between original methods preserves typing. In the condition we again use some helper functions from Section~\ref{subsec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any super type $J$ and any method $m$.
+
+The second condition of \textsc{(T-Intf)} is more complex, and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
+\MIM{} rejects on the definition of interfaces when they form a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
+is defined but $\mbody(m, I, J)$ is undefined for some $J$ and $m$. It ...
 
 Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static type annotation. The rule says that an annotated expression $\angl{J}e$ type checks to $J$ if the expression $e$ type checks and the static annotation $J$ is a subtype of $I$ which is the type of $e$.
+
+\paragraph{Examples for mbody: TODO}
 
 \begin{figure*}
 \saveSpaceFig
