@@ -192,13 +192,27 @@ so as to be adaptive to the new \lstinline|draw|. Yet dynamic dispatching immedi
 since the method becomes automatically adaptive. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity,
 for instance, when we have the class hierarchy structure in Figure~\ref{fig:drawablesafedeck} and the following code:
 
+% \begin{figure*}[t]
+% 	\saveSpaceFig
+% 	\centering
+% 	\includegraphics[height=2cm]{pics/DrawableSafeDeck.pdf}
+% 	\caption{UML graph for \lstinline|DrawableSafeDeck|.}\label{fig:drawablesafedeck}
+% 	\saveSpaceFig
+% \end{figure*}
+
 \begin{figure*}[t]
-	\saveSpaceFig
-	\centering
-	\includegraphics[height=2cm]{pics/DrawableSafeDeck.pdf}
-	\caption{UML graph for \lstinline|DrawableSafeDeck|.}\label{fig:drawablesafedeck}
-	\saveSpaceFig
+  % \nocaptionrule
+  \centering
+  \begin{minipage}[t]{0.4\textwidth}
+  \includegraphics[height=4cm]{pics/DrawableSafeDeck1.pdf}
+  \end{minipage}
+  \hspace*{2pt}
+  \begin{minipage}[t]{0.5\textwidth}
+  \includegraphics[height=4cm]{pics/DrawableSafeDeck0.pdf}
+  \end{minipage}
+  \caption{UML graphs for \lstinline|DrawableSafeDeck|.}\label{fig:drawablesafedeck}
 \end{figure*}
+\yanlin{todo: change text and add a ref in Introduction}
 
 \vspace{3pt}\begin{lstlisting}
 interface DrawableSafeDeck extends Drawable, SafeDeck {}
