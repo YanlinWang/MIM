@@ -74,7 +74,7 @@ e.m(\overline{e}) \mid
 \saveSpaceFig
 \end{figure*}
 
-\subsection{Subtyping and Typing Rules}
+\subsection{Subtyping and Typing Rules}\label{subsec:typingrules}
 \paragraph{Subtyping}
 The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
 In short, subtyping relations are built from the inheritance in interface
@@ -97,7 +97,7 @@ the self-reference $\kwthis$.
 Naturally, the receiver and the arguments are required to be well-typed.
 $\mbody$ is our key function for method lookup, based on the
 hierarchical dispatching algorithm. The formal definition will be introduced in
-Section~\ref{subsec:auxdefs}. To overview,
+Section~\ref{sec:auxdefs}. To overview,
 the hierarchical invocation $\mbody(m, I, J)$ means ``finding most specific $m$
 above $I$ and along path $J$'', and usually $I$ denotes the dynamic type while $J$
 denotes the static type. In \textsc{(T-Invk)}, as the compilation should not be aware
@@ -109,17 +109,17 @@ Note that we accept implicit upcasts on the arguments.
 % \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
-\textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not, formalized in Section~\ref{subsec:auxdefs}. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
+\textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not, formalized in Section~\ref{sec:auxdefs}. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
 
 \textsc{(T-Method)} is more interesting since a method can either be an original method or a hierarchical overriding, though
-they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a fundamental function from Section~\ref{subsec:auxdefs},
+they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a fundamental function from Section~\ref{sec:auxdefs},
 used to find ``the most specific interfaces that are above $I$ and along path $J$, and originally defines $m$''. By ``most specific interfaces'',
 it implies that the inherited super types are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates the characteristics of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original $m$ in between.
 Then $\mbody(m, J, J)$ provides the type of the original method, so hierarchical overriding has to preserve the type. Finally the return expression
 needs to be type-checked, and there is also an implicit cast to the declared return type. For the definition of an original method, $I$ equals $J$ and the rule is straightforward. \textsc{(T-AbsMethod)} is a similar rule but works on abstract method declarations.
 
 \textsc{(T-Intf)} defines the typing rule on interfaces. The first condition is obvious, namely its methods need to be well checked. The third
-condition checks whether the overriding between original methods preserves typing. In the condition we again use some helper functions from Section~\ref{subsec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any super type $J$ and any method $m$.
+condition checks whether the overriding between original methods preserves typing. In the condition we again use some helper functions from Section~\ref{sec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any super type $J$ and any method $m$.
 
 The second condition of \textsc{(T-Intf)} is more complex, and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
 \MIM{} rejects on the definition of interfaces when they reach a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
@@ -129,9 +129,28 @@ that case meets our expectation.
 
 Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
 
-\paragraph{Examples for mbody: TODO}
+\paragraph{Counter-Example} Counter-examples can promote understanding on the typing rules. Here we refer to case (e)
+in Figure~\ref{fig:examplesmbody}. To be specific, the entire program in \MIM{} is as follows:
 
-\begin{figure*}
+\vspace{3pt}\begin{lstlisting}
+interface T                 {}
+interface T1 extends T      {}
+interface T2 extends T      {}
+interface A                 { T m() override A { return new T(); } }
+interface B extends A       { T m() override A { return new T1(); } }
+interface C extends A       { T m() override A { return new T2(); } }
+interface D extends B, C {}
+
+((A) new D()).m()
+\end{lstlisting}\vspace{3pt}
+This program does not compile on $D$, because of the second condition in \textsc{(T-Intf)}, where $I$ equals $D$ and $J$ equals $A$.
+By the algorithm, $\mbody(m, A, A)$ will refer to $A.m$, but $\mbody(m, D, A)$ is undefined, since both $B.m$ and $C.m$ are most specific
+to D along path $A$, which forms a diamond. The expression \lstinline|((A) new D()).m()| is one example of triggering ambiguity, but \MIM{}
+simply rejects the definition of $D$. To resolve the issue, the programmer need to have an overriding method in $D$, to explicitly merge
+the conflicting ones.
+
+
+\begin{figure*}[t]
 \saveSpaceFig
 
 \begin{mathpar}
@@ -175,6 +194,31 @@ there is again an annotation from the return type.
 \paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
 on receivers, arguments and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
 object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
+
+\begin{comment}
+\paragraph{Example} In contrast with the counter-example in Section~\ref{subsec:typingrules}, it is better to understand semantics by
+well-compiled examples. Here we abstract a variant of the \lstinline|DrawableDeck| example:
+
+\vspace{3pt}\begin{lstlisting}
+interface Void       {}
+interface JFrame     {}
+interface Deck       { Void draw() override Deck { return new Void(); } }
+interface Drawable { JFrame draw() override Drawable; }
+interface DrawableDeck extends Drawable, Deck {
+  JFrame draw() override Drawable {
+    return new JFrame();
+  }
+}
+
+((Drawable) new DrawableDeck()).draw()
+\end{lstlisting}\vspace{3pt}
+We put \lstinline|Drawable.draw| as an abstract method instead, but hierarchically override it in \lstinline|DrawableDeck|.
+By typing rules, the code is well-compiled. And during runtime,
+\begin{align*}
+	& ((Drawable) new DrawableDeck()).draw() \\
+\rightarrow & (JFrame) new JFrame()
+\end{align*}
+\end{comment}
 
 \begin{figure*}[t]
 \saveSpaceFig
