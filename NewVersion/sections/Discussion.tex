@@ -1,14 +1,16 @@
 \section{Discussion}\label{sec:discussion}
 In this section, we will discuss the design space and reflect about some of the design decisions of our work. We relate 
 our language to traits, Java interfaces as well as other languages. Furthermore we discuss
-ways to improve our  work.\bruno{references please!!!}
+ways to improve our  work.\bruno{references please!!!} \haoyuan{Done}
 
 \subsection{Abstract Methods}
 
 Abstract methods are one of the key features in most general OO languages. For example, Java interfaces were designed
 to include only method declarations, and those abstract methods can be implemented in a class body. 
-The formal Featherweight Java model does not include abstract methods because of its orthogonality to the core calculus. In traits the
-similar idea is to use keywords like ``\textbf{require}'' for abstract method declarations. Abstract methods provide a way to
+The formal Featherweight Java model~\cite{Igarashi01FJ} does not include abstract methods because of its orthogonality
+to the core calculus. In traits the
+similar idea is to use keywords like ``\textbf{require}'' for abstract method declarations~\cite{scharli03traits}.
+Abstract methods provide a way to
 delay the implementations to future subtypes. Using overriding, they also help to ``exclude'' existing implementations.
 
 In our formalized calculus, however, abstract methods are not a completely orthogonal feature. The $\canInstantiate$ function
@@ -37,7 +39,7 @@ Those features can be modularly added to the model without breaking type soundne
 \end{mathpar}
 A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ in $J_0$ that hierarchically overrides $J_1$, thus $J_0[m\ \kwoverride\ J_1]$ is invoked. As shown in \textsc{(S-StaticInvk)}, static dispatch needs a receiver to involve in the substitution for ``$\kwthis$'' reference, so as to provide the latest implementations. In fact, static dispatch is common in OO programming, as it provides a shortcut to the reuse of old implementation easily, and super calls can also rely on this feature. For convenience we just make it simple above, whereas in languages like C++ or Java, the static or super invocations are more flexible hence complicated; they can climb the class hierarchy. 
 
-One typical non-orthogonal extension to our model could be to have fields. Having fields in OO multiple inheritance is a non-trivial issue. There has been a lot of work on it, such as C++ that uses virtual inheritance. The trait model simply disallows state to avoid that issue. In our language, however, we can perhaps borrow the idea of \textit{interface-based programming} [], which actually models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. To directly support fields it requires more discussions and experiments, we leave them as our future work.
+One typical non-orthogonal extension to our model could be to have fields. Having fields in OO multiple inheritance is a non-trivial issue. There has been a lot of work on it, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. The trait model simply disallows state to avoid that issue. In our language, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which actually models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. To directly support fields it requires more discussions and experiments, we leave them as our future work.
 
 \subsection{Loosening the Model}
 
