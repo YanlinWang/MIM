@@ -94,7 +94,7 @@ the self-reference $\kwthis$.
 % path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 \textsc{(T-Invk)} is the typing rule for method invocation.
-Naturally, the receiver and the arguments are required to be type-checked.
+Naturally, the receiver and the arguments are required to be well-typed.
 $\mbody$ is our key function for method lookup, based on the
 hierarchical dispatching algorithm. The formal definition will be introduced in
 Section~\ref{subsec:auxdefs}. To overview,
@@ -103,7 +103,9 @@ above $I$ and along path $J$'', and usually $I$ denotes the dynamic type while $
 denotes the static type. In \textsc{(T-Invk)}, as the compilation should not be aware
 of the dynamic type, it only requires that invoking $m$ is valid for the static type of the
 receiver. The result of $\mbody$ contains the interface that provides the most specific implementation,
-the parameters and the return type. Note that we accept implicit upcasts on the arguments.
+the parameters and the return type. We use underscore for the return expression, to imply that an empty return expression
+from an abstract method is also acceptable.
+Note that we accept implicit upcasts on the arguments.
 % \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
@@ -114,21 +116,24 @@ they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a
 used to find ``the most specific interfaces that are above $I$ and along path $J$, and originally defines $m$''. By ``most specific interfaces'',
 it implies that the inherited super types are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates the characteristics of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original $m$ in between.
 Then $\mbody(m, J, J)$ provides the type of the original method, so hierarchical overriding has to preserve the type. Finally the return expression
-needs to be type-checked, and there is also an implicit cast to the declared return type. For the definition of an original method, $I = J$ and the rule is straightforward. \textsc{(T-AbsMethod)} is a similar rule but works on abstract method declarations.
+needs to be type-checked, and there is also an implicit cast to the declared return type. For the definition of an original method, $I$ equals $J$ and the rule is straightforward. \textsc{(T-AbsMethod)} is a similar rule but works on abstract method declarations.
 
 \textsc{(T-Intf)} defines the typing rule on interfaces. The first condition is obvious, namely its methods need to be well checked. The third
 condition checks whether the overriding between original methods preserves typing. In the condition we again use some helper functions from Section~\ref{subsec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any super type $J$ and any method $m$.
 
 The second condition of \textsc{(T-Intf)} is more complex, and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
-\MIM{} rejects on the definition of interfaces when they form a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
-is defined but $\mbody(m, I, J)$ is undefined for some $J$ and $m$. It ...
+\MIM{} rejects on the definition of interfaces when they reach a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
+is defined but $\mbody(m, I, J)$ is undefined for some $J$ and $m$. It indicates that $m$ is available and unambiguous from the perspective of $J$,
+but is ambiguous to $I$ on branch $J$. That means there are multiple overriding paths of $m$ from $J$ to $I$, which form a diamond. Hence rejecting
+that case meets our expectation.
 
-Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static type annotation. The rule says that an annotated expression $\angl{J}e$ type checks to $J$ if the expression $e$ type checks and the static annotation $J$ is a subtype of $I$ which is the type of $e$.
+Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
 
 \paragraph{Examples for mbody: TODO}
 
 \begin{figure*}
 \saveSpaceFig
+
 \begin{mathpar}
 	\framebox{$ I <: J $} \hspace{.5in} \subid \\
 	\subtrans \hspace{.5in} \subextends \\
@@ -152,29 +157,24 @@ Finally, rule \textsc{(T-Anno)} is the typing rule for an expression with static
 
 \subsection{Small-step Semantics and Congruence}
 Figure~\ref{fig:smallstep} defines the small-step semantic and
-congruence rules, respectively. When evaluating an expression, they
-are invoked recursively and alternately to produce a single value in
-the end. The small-step semantics rules \textsc{(S-Invk)} and 
-\textsc{(S-PathInvk)} behave similarly: each corresponds to one kind of method invocation. \textsc{(S-PathInvk)} invokes \mbody{} for method body lookup. The parameters $\overline{x}$ are replaced with arguments $\overline{v}$ with static type annotations $\overline{\angl{I_x}}$, where $\overline{\angl{I_x}}$ are the parameter types coming from method lookup result. The rule \textsc{(S-Invk)} simply reduces the problem of normal invocation to path invocation. 
+congruence rules of \MIM{}. When evaluating an expression, they
+are invoked recursively and alternately, and produce a single value in
+the end. \haoyuan{we need to be consistent on paragraph upper/lower case.}
 
-Generally, one can understand
-$\mbody(m, I, J)$ in a way that it finds the most specific body of
-method $m$, when the receiver has dynamic type $I$ and static type
-$J$.  Notice, for example in \textsc{(S-Invk)}, that when
-``$\new{I}$'' replaces ``\lstinline|this|'', its static type should be
-the interface to which $m$ is dispatched. Therefore we also keep the
-interface type in the definition of \mbody. 
+\paragraph{Semantic Rule} \textsc{(S-Invk)} is the only computation rule we need for method invocation.
+As a small-step rule and by congruence, it assumes that the receiver and the arguments are already values.
+Specifically, the receiver $(J)\new{I}$ indicates the dynamic type $I$
+together with the static type $J$. Therefore $\mbody(m, I, J)$ carries out hierarchical dispatch, acquires
+the types, the return expression $e_0$ and the interface $I_0$ which provides the most specific method.
+Here we use $e_0$ to imply that the return expression is forced to be non-empty because it requires a concrete implementation. Now the
+rule reduces method invocation to $e_0$ with substitution.
+Parameters are substituted with arguments, and \lstinline|this| reference is substituted with the receiver,
+and in the meanwhile implicit casts are applied, so that static types are recorded via annotations. Finally
+there is again an annotation from the return type.
 
-On the other hand, there is a relationship between path invocation and
-the regular method invocation, and it can be observed from the
-similarity between their semantic rules in
-Figure~\ref{fig:smallstep}. For any \lstinline|e.I?m()|, the result
-of evaluation remains unchanged if we set the static type of
-\lstinline|e| to be $I$. This can be done by an implicit cast, that
-is, we can define a function with one parameter type $I$, then
-\lstinline|e| is passed to that function and directly returned. This
-is equivalent to writing explicit casts like \lstinline|((I) e).m()|
-in languages like Java.
+\paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
+on receivers, arguments and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
+object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
 
 \begin{figure*}[t]
 \saveSpaceFig
@@ -207,13 +207,11 @@ in languages like Java.
 
 
 \subsection{Properties}
-Now we proceed to prove the type soundness of 
-the model, which relates typing to computation. Type soundness states that, if an expression is 
-well-typed, then after many reduction steps it must reduce to a value, with its annotation to be a subtype of the original expression type.
-Following the Featherweight Java paper~\cite{Igarashi01FJ}, the type-soundness theorem 
-(Theorem~\ref{theorem_soundness}) is proved by using the standard technique of subject reduction (Theorem~\ref{theorem_subject})
-and progress (Theorem~\ref{theorem_progress})~\cite{Wright1994}. In Theorem~\ref{theorem_progress} ``$\#(\overline{x})$'' denotes the length of
-$\overline{x}$.
+
+We present the type soundness of the model by a few theorems below, following the standard technique of
+subject reduction and progress proposed by~\cite{Wright1994}. The proof, together with some lemmas, are
+in Appendix. The type soundness states that if an expression is well-typed, then after many reduction
+steps it must reduce to a value, and its annotation is the same as the static type of the original expression.
 
 \begin{theorem}[Subject Reduction]~\label{theorem_subject}
 If $\judgeewf \Gamma {e : I}$ and $e \rightarrow e'$, 
@@ -238,5 +236,11 @@ a value $v$ with $\judgeewf \o {v:I}$.
 \begin{proof}
 Immediate from Theorem~\ref{theorem_subject} and Theroem~\ref{theorem_progress}.
 \end{proof}
-\bruno{Were we not supposed to have some note/comment as to why the
-  type soundness theorem is stricter that FJ?}
+Note that in Theorem~\ref{theorem_progress}, ``$\#(\overline{x})$'' denotes the length of
+$\overline{x}$.
+
+Our theorems are stricter than those of Featherweight Java~\cite{Igarashi01FJ}. Specifically, in both term substitution (a lemma in Appendix)
+and subject reduction, the type may go down in FJ, but in \MIM{} it is unchanged. The difference is due to
+subtyping; the parameter or \lstinline|this| reference requires some type $I$, but a value with a more specific type,
+which is subtype of $I$, can be passed. However, as \MIM{} keeps track of the static types, the annotations in the
+substitution actually ensures the type to be unchanged.
