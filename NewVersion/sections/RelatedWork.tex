@@ -9,7 +9,7 @@ programming, although it is difficult to model and can
 cause various problems (e.g. the diamond problem~\cite{Sak89dis,Singh1995}).  
 There are many existing languages/models that support multiple 
 inheritance~\cite{ellis1990annotated,scala-overview,bracha90mixin,scharli03traits,malayeri2009cz,csharpdoc,Moon1986,Flatt1998,Ancona2003}. 
-The Mixin models~\cite{bracha90mixin,Flatt1998,van1996encapsulation,Ancona2003,Hendler86} allow naming components 
+The mixin models~\cite{bracha90mixin,Flatt1998,van1996encapsulation,Ancona2003,Hendler86} allow naming components 
 that can be applied to various classes as reusable functionality units. However, the linearization (total ordering) of mixin 
 inheritance cannot provide a satisfactory resolution in some cases and restricts the flexibility of mixin composition. 
 Scala traits~\cite{scala-overview} are in fact linearized mixins and hence have the same problem as mixins.
@@ -49,13 +49,16 @@ However untangling inheritance also untangles the class structure. In
 CZ, not only the number of classes but also the class hierarchy
 complexity increases.
 
-The above-mentioned models/languages support multiple inheritance, and
-they handle method conflicts in the same way, by simply disallowing
+The above-mentioned models/languages support multiple inheritance, 
+focusing on diamond inheritance.
+They handle method conflicts in the same way, by simply disallowing
 two methods with the same signature from two different units to
 coexist. In contrast, our work provides mechanisms that allows 
 methods with the same signatures, but different parents to coexist 
 in a class. Disambiguation is possible in many cases by using both 
 static and dynamic type information during method dispatching.
+In the cases where real ambiguity exists, \MIM{}'s type system can
+reject interface definitions and/or method calls statically.
 
 \subsection{Resolving Unintentional Method Conflicts}\label{subsec:middleman}
 A few language implementations have realized the problem of
@@ -111,9 +114,7 @@ model, C++ does not support hierarchical overriding.
 
 \noindent {\bf C++ model.}
 C++ supports a very flexible inheritance model (normal inheritance and virtual inheritance). 
-It allows the existence of unintentional conflicts and users may specify a hierarchical path via cast for disambiguation, as discussed in Section~\ref{sec:overview}. 
-\bruno{if we are dropping the static dispatching discussion this text
-  may be outdated.}
+It allows the existence of unintentional conflicts and users may specify a hierarchical path via casts for disambiguation, as discussed in Section~\ref{sec:overview}. 
 With virtual methods, dynamic dispatch is used and 
 method lookup algorithm will find the most specific method definition.
 A contribution of our work is to provide a minimal formal model of
