@@ -2,14 +2,16 @@
 In this section, we present the fundamental algorithms and auxiliary definitions used in our formalization.
 Some of them are auxiliary functions, others are however important ones as they
 directly implement our algorithm for method lookup.
-\bruno{I felt like there's not enough explanation/context in this
-  section. It is just dumping definitions without connecting them and
-  their purpose properly.}
+%\bruno{I felt like there's not enough explanation/context in this
+ % section. It is just dumping definitions without connecting them and
+ % their purpose properly.}
+ 
+\bruno{used for what and where?}\haoyuan{todo: used for where}
 
 \subsection{Method Lookup Algorithm in \mbody{}}
 Before showing the definition of \mbody{}, we start with several examples of method lookup, as shown in Figure~\ref{fig:examplesmbody}. Note that we use \lstinline|m| to denote an original method, and ``\lstinline|m|$\uparrow$\lstinline|A|'' for hierarchical overriding on \lstinline|A|. For each small example, the result gives the interface to which $m$ is dispatched. (a) is our old friend example for unintentional method conflicts (triangle inheritance); (b) and (c) demonstrate
 that hierarchical dispatch can find the most specific original method and hierarchical overriding method. More interesting are the two bad examples (d) and (e), they both fail on $\mbody$. (d) is the well-known diamond inheritance, where $\mbody(m, D, A)$ is \Undefined; (e) is again a diamond conflict because the two hierarchical overriding methods are overriding the same branch. Both counter-examples imply that \lstinline|(A)new D().m()| will
-lead to ambiguity, and in order to ensure type soundness, both of them have to be rejected by the type checker. Our model guarantees this by the interface checking rule\textsc{(T-Intf)} in Figure~\ref{fig:typingrules}. 
+lead to ambiguity, and in order to ensure type soundness, both of them have to be rejected by the type checker. Our model guarantees this by the interface checking rule\textsc{(T-Intf)} in Figure~\ref{fig:typingrules}. \haoyuan{need better explanation on these examples.}
 
 Now we present the formal definition of \mbody{} that gives the expected results of the above mentioned examples. 
 
@@ -26,9 +28,9 @@ Now we present the formal definition of \mbody{} that gives the expected results
 \end{flalign*}
 $\mbody(m, I_d, I_s)$ denotes the method body lookup function.
 We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation, more
-accurately, its parameters, returned expression (empty for abstract methods) and the types. It considers both originally-defined methods and hierarchical overriding methods, so $\mostSpecific$ and $\mostSpecificOverride$ (see the definition in Section~\ref{sec:mostSpecific} and Section~\ref{sec:mostSpecificOverride}) are invoked as helper functions.
+accurately, its parameters, returned expression (empty for abstract methods) and the types. It considers both originally-defined methods and hierarchical overriding methods, so $\mostSpecific$ and $\mostSpecificOverride$ (see the definition in Section~\ref{sec:mostSpecific} and Section~\ref{sec:mostSpecificOverride}) are both invoked.
 
-To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
+To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
 
 \haoyuan{Need more examples?}\bruno{ask Marco.}
 \begin{figure*}[t]
@@ -51,9 +53,9 @@ To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for 
 
 
 \subsection{Finding the Most Specific Origin: \mostSpecific}\label{sec:mostSpecific}
-We proceed to give the definition of auxiliary functions \mostSpecific{} and \mostSpecificOverride, which are two core functions for the method lookup algorithm. Generally,
+We proceed to give the definition of two core functions that support method lookup, namely \mostSpecific{} and \mostSpecificOverride. Generally,
 $\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined, they should be above $I$ and
-along path $J$. ``Along path $J$'' means one should be either a subtype or a super type of $J$. Finally with $\prune$(defined in Section~\ref{sec:otherdefs})
+along path $J$. ``Along path $J$'' means one should be either a subtype or a super type of $J$. Finally with $\prune$ (defined in Section~\ref{sec:otherdefs})
 the overridden interfaces will be filtered out.
 
 \begin{flalign*}
@@ -87,7 +89,7 @@ By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only 
 
 
 \subsection{Others}\label{sec:otherdefs}
-Below we give other minor definitions of the auxiliary functions that are used in previous sections
+Below we give other minor definitions of the auxiliary functions that are used in previous sections.
 
 %%%%============================ I[m override J] ================%%%%%%%%
 \begin{flalign*}
@@ -125,15 +127,13 @@ $\canOverride$ just checks that two original $m$ in $I$ and $J$ have the same ty
 %%%%============================ canOverride end ================%%%%%%%%
 
 %%%%============================ canInstantiate ================%%%%%%%%
-$\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the keyword $\kwnew$.
-Below is the algorithm:\bruno{used for what and where?}
-
 \begin{flalign*}
 	& \rhd \textit{Definition of } \canInstantiate(I): & \\
 	& \bullet \canInstantiate(I) = True & \\
 	& \indent\indent \textrm{with: } \forall J \in \mostSpecific(m, I, I), \mostSpecificOverride(m, I, J) = \{K\}, & \\
 	& \hspace{.77in} \textrm{ and } K[m\ \kwoverride\ J] = \method{I_e}{m}{I_x}{x}{J}{e_0} &
 \end{flalign*}
+$\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the keyword $\kwnew$.
 $\mostSpecific(m, I, I)$ represents the set of branches $I$ inherits on method $m$. $I$ can be instantiated
 if and only if for every branch, the most specific implementation is unambiguous and non-abstract.
 %%%%============================ canInstantiate end ================%%%%%%%%
