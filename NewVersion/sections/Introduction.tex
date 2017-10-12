@@ -170,7 +170,7 @@ from both \lstinline|SafeDeck| and \lstinline|Drawable|. Hierchical
 overriding is used in \lstinline|DrawableSafeDeck| to keep two separate \lstinline|draw|
 methods for each parent, but overriding \emph{only} the \lstinline|draw|
 method coming from \lstinline|Drawable|, in order to draw a widget
-with a deck of cards. Note that hierchical overriding is denoted in the UML
+with a deck of cards. Note that hierarchical overriding is denoted in the UML
 diagram with the notation
 \lstinline|draw()|$\shneg$\lstinline|Drawable|. In this case the
 notation expresses that the \lstinline|draw| method from \lstinline|Drawable|
@@ -183,11 +183,6 @@ To present hierarchical overriding and dispatching, we introduce a
 formalized model \MIM{} in Section~\ref{sec:formalization} based on
 Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
 proofs for type soundness. 
-
-%%Our model can be viewed as
-%%a generalization of the simplified trait model by providing additional support to
-%%the triangle inheritance.
-
 In summary, our contributions are:
 \begin{itemize}
 	\item \textbf{Formalization of a hierarchical dispatching algorithm} that integrates both the static type and dynamic type for method dispatch, and hence
