@@ -39,7 +39,7 @@ can be drawn and also includes a method called \lstinline|draw| for
 visual display. For simple illustration, the default implementation of
 \lstinline|draw| in \lstinline|Drawable| only creates a blank canvas
 on the screen, while the \lstinline|draw| method in \lstinline|Deck| simply
-prints out a message.
+prints out a message \lstinline|"Draw a card."|.
 
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
@@ -49,10 +49,9 @@ interface Deck {
 }
 
 interface Drawable {
-  JFrame draw() { // draws something on the screen
+  void draw() { // draws something on the screen
     JFrame frame = new JFrame();
     frame.setVisible(true);
-    return frame;
   }
 }
 \end{lstlisting}\vspace{3pt}
@@ -65,8 +64,8 @@ unsupported in our formalization. We could have also defined an interface called
 and return an object of that type instead, but for simplicity of
 presentation we use \lstinline|void|. For the method \lstinline|draw| in
 \lstinline|Drawable|
-the program has to create a blank canvas by \lstinline|JFrame|, which
-is a pre-defined type.
+the program create a blank canvas by \lstinline|JFrame| and set the visibility to \lstinline|true|.
+
 \begin{comment}
 \vspace{3pt}\begin{lstlisting}
 interface JFrame {
@@ -174,9 +173,8 @@ interface Deck {
   void shuffleAndDraw() { this.shuffle(); this.draw(); }
 }
 \end{lstlisting}\vspace{3pt}
-Here \lstinline|shuffleAndDraw| \emph{invokes \lstinline|draw| from its own enclosing type}. Ideally,
-we want that invocation to be dynamically dispatched. This is important, because a programmer may define a subtype
-of \lstinline|Deck| and override the method:
+Here \lstinline|shuffleAndDraw| \emph{invokes \lstinline|draw| from its own enclosing type}. In \MIM{}, this invocation is dynamically dispatched. This is important, because a programmer may define a subtype
+of \lstinline|Deck| and override the method \lstinline|draw|:
 
 \vspace{3pt}\begin{lstlisting}
 interface SafeDeck extends Deck {
@@ -187,9 +185,8 @@ interface SafeDeck extends Deck {
   }
 }
 \end{lstlisting}\vspace{3pt}
-With static dispatching, we may have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|,
-so as to be adaptive to the new \lstinline|draw|. Yet dynamic dispatching immediately saves us from the duplicated work,
-since the method becomes automatically adaptive. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity,
+Without dynamic dispatching, we may have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|, so that \lstinline|shuffleAndDraw| calls the new \lstinline|draw| defined in \lstinline|SafeDeck|. Yet dynamic dispatching immediately saves us from the duplication work,
+since the method becomes automatically dispatched to the most specific one. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity,
 for instance, when we have the class hierarchy structure shown in Figure~\ref{fig:drawablesafedeck}(left) and the following code:
 
 % \begin{figure*}[t]
@@ -218,7 +215,6 @@ for instance, when we have the class hierarchy structure shown in Figure~\ref{fi
   \end{minipage}  
   \caption{UML graphs for \lstinline|DrawableSafeDeck|.}\label{fig:drawablesafedeck}
 \end{figure*}
-\yanlin{todo: change text and add a ref in Introduction}
 
 \vspace{3pt}\begin{lstlisting}
 interface DrawableSafeDeck extends Drawable, SafeDeck {}
@@ -280,6 +276,7 @@ dynamic type. Finally \lstinline|SafeDeck.draw| is correctly returned.
 %Unfortunately, the C++ language, or rather the feature on triangle inheritance, has not been well formalized.
 
 \paragraph{Implicit and Explicit Upcasts}
+\yanlin{todo: Haoyuan.}
 In our language model, there are two types of casts: \emph{implicit casts} and \emph{explicit upcasts}. The implicit casts appear
 when passing arguments and returning expressions, they are also
 upcasts. Hence all casts are safe. C++ implementations also support a
@@ -298,7 +295,6 @@ soundness.
 
 
 \subsection{Problem 3: Overriding on Individual Branches}\label{subsec:partialoverrides}
-
 Method overriding is common in Object-Oriented Programming. 
 With diamond inheritance where conflicting methods are intended to have 
 the same semantics, method overriding is not a problem. If conflicting
@@ -317,7 +313,7 @@ conflicting methods into a single merged one. We illustrate the
 problem and the need for a more refined overrding mechanism with 
 an example.
 
-Suppose that the programmer defines \lstinline|DrawableSafeDeck|, but he needs to override
+Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck| (based on the code in Section~\ref{subsec:problem2} without the old \lstinline|DrawableSafeDeck|), but he needs to override
 \lstinline|Drawable.draw| and give a new implementation of drawing, so that the deck can indeed be visualized on the canvas.
 
 %\paragraph{Problem:} how to update the conflicting methods separately, after the triangle inheritance.
