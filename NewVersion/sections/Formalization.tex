@@ -1,5 +1,5 @@
 \section{Formalization}~\label{sec:formalization}
-In this section, we present the formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following similar style of 
+In this section, we present a formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following similar style of 
 Featherweight Java~\cite{Igarashi01FJ}. \MIM{} is a minimal core calculus that formalizes the core concept of hierarchical dispatch and overriding. The syntax, typing rules,
 small-step semantics and theorems for type soundness are presented.
 
@@ -96,11 +96,13 @@ the self-reference $\kwthis$.
 \textsc{(T-Invk)} is the typing rule for method invocation.
 Naturally, the receiver and the arguments are required to be well-typed.
 $\mbody$ is our key function for method lookup, based on the
-hierarchical dispatching algorithm. The formal definition will be introduced in
-Section~\ref{sec:auxdefs}. To overview,
-the hierarchical invocation $\mbody(m, I, J)$ means ``finding most specific $m$
+hierarchical dispatching algorithm. 
+The hierarchical invocation $\mbody(m, I, J)$ means ``finding most specific $m$
 above $I$ and along path $J$'', and usually $I$ denotes the dynamic type while $J$
-denotes the static type. In \textsc{(T-Invk)}, as the compilation should not be aware
+denotes the static type. 
+The formal definition of $\mbody(m, I, J)$ will be introduced in
+Section~\ref{sec:auxdefs}.
+In \textsc{(T-Invk)}, as the compilation should not be aware
 of the dynamic type, it only requires that invoking $m$ is valid for the static type of the
 receiver. The result of $\mbody$ contains the interface that provides the most specific implementation,
 the parameters and the return type. We use underscore for the return expression, to imply that an empty return expression
@@ -109,11 +111,16 @@ Note that we accept implicit upcasts on the arguments.
 % \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
-\textsc{(T-New)} is the typing rule for object creation $\new{I}$. The auxiliary function $\canInstantiate(I)$ checks whether interface $I$ can be instantiated or not, formalized in Section~\ref{sec:auxdefs}. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
+\textsc{(T-New)} is the typing rule for object creation $\new{I}$. The
+auxiliary function $\canInstantiate(I)$ checks whether interface $I$
+can be instantiated or not, and is formalized in Section~\ref{sec:auxdefs}. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
 
 \textsc{(T-Method)} is more interesting since a method can either be an original method or a hierarchical overriding, though
-they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a fundamental function from Section~\ref{sec:auxdefs},
-used to find ``the most specific interfaces that are above $I$ and along path $J$, and originally defines $m$''. By ``most specific interfaces'',
+they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a fundamental function,
+used to find ``the most specific interfaces that are above $I$ and
+along path $J$, and originally defines $m$'' (see
+Section~\ref{sec:auxdefs} for full definition).
+By ``most specific interfaces'',
 it implies that the inherited super types are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates a characteristic of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original $m$ in between.
 Then $\mbody(m, J, J)$ provides the type of the original method, so hierarchical overriding has to preserve the type. Finally the return expression
 needs to be type-checked, and there is also an implicit cast to the declared return type. For the definition of an original method, $I$ equals $J$ and the rule is straightforward. \textsc{(T-AbsMethod)} is a similar rule but works on abstract method declarations.
@@ -257,7 +264,7 @@ By typing rules, the code is well-compiled. And during runtime,
 \subsection{Properties}
 
 We present the type soundness of the model by a few theorems below, following the standard technique of
-subject reduction and progress proposed by Wright et al.~\cite{Wright1994}. The proof, together with some lemmas, are
+subject reduction and progress proposed by Wright and Felleisen~\cite{Wright1994}. The proof, together with some lemmas, are
 in Appendix. Type soundness states that if an expression is well-typed, then after many reduction
 steps it must reduce to a value, and its annotation is the same as the static type of the original expression.
 
