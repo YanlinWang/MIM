@@ -390,4 +390,26 @@ and improve explanation.}
 
 A special rule for hierarchical overriding is: it can only refine \textbf{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
 
+\begin{figure*}[t]
+	\vspace{-1ex}
+	\hspace{-15pt}\begin{tabular}{clclcl}
+		&\multicolumn{1}{c}{\includegraphics[width=1.5cm]{pics/P1.pdf}} & &
+		\multicolumn{1}{c}{\includegraphics[width=1.5cm]{pics/P2.pdf}} & &
+		\multicolumn{1}{c}{\includegraphics[width=1.5cm]{pics/P3.pdf}} \\
+		(a) & $\mbody(m,C,A) = (A,...)$\ \ \  & (b) & $\mbody(m,C,A) = (C,...)$\ \ \  & (c) & $\mbody(m,C,A) = (C,...)$ \\
+		& $\mbody(m,C,B) = (B,...)$ & & $\mbody(m,C,B) = (C,...)$ & & $\mbody(m,C,B) = (B,...)$ \\
+		& $\mbody(m,C,C) = \keyword{undefined}$ & & $\mbody(m,C,C) = (C,...)$ & & $\mbody(m,C,C) = \keyword{undefined}$ \\
+		& & & & & \\
+		& \multicolumn{1}{c}{\includegraphics[height=3cm]{pics/P4.pdf}} & &
+		\multicolumn{1}{c}{\includegraphics[height=3cm]{pics/P5.pdf}} & & 
+		\multicolumn{1}{c}{\includegraphics[height=3cm]{pics/P6.pdf}} \\ 
+		(d) & $\mbody(m,T,T) = (T,...)$\ \ \  & (e) & $\mbody(m,T,T) = (T,...)$\ \ \ & (f) & $\mbody(m,C,T) = (C,...)$ \\
+		& $\mbody(m,C,T) = \keyword{undefined}$ & & $\mbody(m,C,T) = \keyword{undefined}$ & & $\mbody(m,C,A) = (C,...)$ \\
+		& $C\text{ rejected by type-check}$ & & $C\text{ rejected by type-check}$ & & $\mbody(m,C,B) = (C,...)$ \\
+		& & & & & $\mbody(m,C,C) = (C,...)$
+	\end{tabular}
+	\caption{Examples on $\mbody$. ``$\uparrow$'' stands for hierarchical overriding.}\label{fig:examplesmbody}
+	%\saveSpaceFig
+\end{figure*}
+
 % Similar to many OO languages, the model also allows \textit{super method invocation} in a method body. The invocation \lstinline|super.T::m()| will ignore all the subtypes of \lstinline|T|, and only look at \lstinline|T| together with its super interfaces. It should behave the same as \lstinline|new T().m()| in principle.
