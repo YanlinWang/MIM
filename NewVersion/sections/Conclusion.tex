@@ -1,10 +1,31 @@
 \section{Conclusion}
 
-\bruno{I think that the conclusion is not upto date. Please update it and let me know when ready.}
-\yanlin{done}
-This paper proposes \MIM{} as a new multiple inheritance model for unintentional method conflicts. 
-Existing approaches we discussed before either do not support unintentional method conflicts or have to compromise between code reuse and type safety; the closest one (C++) do not support partial method override. Two key mechanisms in this paper are hierarchical dispatching and hierarchical overriding. For hierarchical dispatching, we mimic the method lookup algorithm as in C++ and provide the formal algorithm in \mbody{} in \MIM{}. It makes use of both dynamic type information and path information from either upcasts or parameters' information. 
-Such an approach not only offers great code reuse like dynamic dispatch but also ensures unambiguity by our algorithm for method resolution. This paper also introduces hierarchical overriding that refines branches individually.
-\MIM{} is formalized following the style of Featherweight Java and a few properties(theorems) of type-soundness are proved on \MIM{}. The prototype is implemented in Scala as a simple interpreter.
 
-Our model can certainly be improved at some aspects. We do not formalize fields as in Featherweight Java for the reason of simplicity. And we do not formalize other common features including method overloading, casts, covariant return types, and so on, some of which are orthogonal in the design space. Moreover, we restrict that hierarchical overriding can only work on original methods. Potentially a looser condition can better support encapsulation and modularity with respect to code design as discussed in Section~\ref{sec:discussion} and could be a good future work.
+This paper proposes \MIM{} as a new multiple inheritance model for
+unintentional method conflicts. Previous approaches 
+either do not support unintentional method conflicts, have to
+compromise between code reuse and type safety, or do not fully support
+overriding in the presence of unintentional conflicts. To deal with unintentional method conflicts we
+introduce two key mechanisms: hierarchical dispatching and
+hierarchical overriding. Hierarchical dispatching is inspired by the
+mechanisms in C++. We provide a minimal formal model of hierarchical
+dispatching in \MIM{}. Such algorithm makes use of both dynamic type
+information and path information from either upcasts or parameters'
+information. Such an approach not only offers great code reuse like
+dynamic dispatch but also ensures unambiguity by our algorithm for
+method resolution. Additionally we introduce \emph{hierarchical
+  overriding} to allow conflicting methods in different branches to be
+individually overriden. \MIM{} is formalized following the style of
+Featherweight Java and type-soundness is proved. A prototype language is
+implemented in Scala as a simple interpreter.
+
+Our model can certainly be improved at some aspects. We do not
+formalize fields as in Featherweight Java for the reason of
+simplicity\bruno{I'm not sure that simplicity is a good excuse; 
+following the trait model may be a better excuse.}. And we do not formalize other common features including
+method overloading, casts, covariant return types, and so on, some of
+which are orthogonal in the design space. Moreover, we restrict that
+hierarchical overriding can only work on original methods. Potentially
+a looser condition can better support encapsulation and modularity
+with respect to code design as discussed in
+Section~\ref{sec:discussion} and could be a good future work.
