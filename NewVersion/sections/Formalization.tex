@@ -132,17 +132,11 @@ The second condition of \textsc{(T-Intf)} is more complex, and is the key to typ
 \MIM{} rejects on the definition of interfaces when they reach a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
 is defined but $\mbody(m, I, J)$ is undefined for some $J$ and $m$. This indicates that $m$ is available and unambiguous from the perspective of $J$,
 but is ambiguous to $I$ on branch $J$. That means that there are multiple overriding paths of $m$ from $J$ to $I$, which form a diamond. Hence rejecting
-that case meets our expectation.
-
-Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
-
-\paragraph{Example} \bruno{what is the purpose of this example:
+that case meets our expectation. Below is an example (Figure~\ref{fig:examplesmbody} (e)) that illustrates the reason why this condition is needed:
+\bruno{what is the purpose of this example:
   state-it upfront please. Is this example meant to ilustrate T-Inf?
   Then it's better to have the example together with the text
-  explaining T-inf.}
-Here we refer to case (e)
-in Figure~\ref{fig:examplesmbody}. To be specific, the entire program in \MIM{} is as follows:
-
+  explaining T-inf.} \yanlin{revised.please check whether you're happy with it.}
 \vspace{3pt}\begin{lstlisting}
 interface T                 {}
 interface T1 extends T      {}
@@ -161,9 +155,12 @@ simply rejects the definition of $D$. To resolve the issue, the programmer need 
 the conflicting ones.
 
 
+
+Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
+
+
 \begin{figure*}[t]
 \saveSpaceFig
-
 \begin{mathpar}
 	\framebox{$ I <: J $} \hspace{.5in} \subid \\
 	\subtrans \hspace{.5in} \subextends \\
