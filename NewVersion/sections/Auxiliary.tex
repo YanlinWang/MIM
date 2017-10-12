@@ -32,26 +32,6 @@ accurately, its parameters, returned expression (empty for abstract methods) and
 
 To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
 
-\haoyuan{Need more examples?}\bruno{ask Marco.}
-\begin{figure*}[t]
-	\centering
-	\vspace{-1ex}
-	\begin{tabular}{ccc}
-		\includegraphics[width=1.5cm]{pics/P1.pdf}\hspace{4pt} &
-		\includegraphics[width=1.5cm]{pics/P2.pdf}\hspace{4pt} &
-		\includegraphics[width=1.5cm]{pics/P3.pdf}\hspace{4pt} \\
-		(a) $\mbody(m,C,A) = (A,...)$\ \ \  & (b) $\mbody(m,C,A) = (C,...)$\ \ \  & (c) $\mbody(m,C,A) = (C,...)$
-	\end{tabular} \\
-	\begin{tabular}{cc}
-		\includegraphics[height=3cm]{pics/P4.pdf}\hspace{4pt} &
-		\includegraphics[height=3cm]{pics/P5.pdf}\hspace{4pt} \\ 
-		(d) $\mbody(m,D,A) = \keyword{undefined}$\ \ \  & (e) $\mbody(m,D,A) = \keyword{undefined}$
-	\end{tabular}
-	\caption{Examples on $\mbody$. ``$\uparrow$'' stands for hierarchical overriding.}\label{fig:examplesmbody}
-	%\saveSpaceFig
-\end{figure*}
-
-
 \subsection{Finding the Most Specific Origin: \mostSpecific}\label{sec:mostSpecific}
 We proceed to give the definition of two core functions that support method lookup, namely \mostSpecific{} and \mostSpecificOverride. Generally,
 $\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined, they should be above $I$ and
