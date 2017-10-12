@@ -9,11 +9,12 @@ directly implement our algorithm for method lookup.
 \bruno{used for what and where?}\haoyuan{todo: used for where}
 
 \subsection{Method Lookup Algorithm in \mbody{}}\label{subsec:mbodydef}
-Before showing the definition of \mbody{}, we start with several examples of method lookup, as shown in Figure~\ref{fig:examplesmbody}. Note that we use \lstinline|m| to denote an original method, and ``\lstinline|m|$\uparrow$\lstinline|A|'' for hierarchical overriding on \lstinline|A|. For each small example, the result gives the interface to which $m$ is dispatched. (a) is our old friend example for unintentional method conflicts (triangle inheritance); (b) and (c) demonstrate
-that hierarchical dispatch can find the most specific original method and hierarchical overriding method. More interesting are the two bad examples (d) and (e), they both fail on $\mbody$. (d) is the well-known diamond inheritance, where $\mbody(m, D, A)$ is \Undefined; (e) is again a diamond conflict because the two hierarchical overriding methods are overriding the same branch. Both counter-examples imply that \lstinline|(A)new D().m()| will
-lead to ambiguity, and in order to ensure type soundness, both of them have to be rejected by the type checker. Our model guarantees this by the interface checking rule\textsc{(T-Intf)} in Figure~\ref{fig:typingrules}. \haoyuan{need better explanation on these examples.}
 
-Now we present the formal definition of \mbody{} that gives the expected results of the above mentioned examples. 
+$\mbody(m, I_d, I_s)$ denotes the method body lookup function.
+We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation, more
+accurately, its parameters, returned expression (empty for abstract methods) and the types. It considers both originally-defined methods and hierarchical overriding methods, so $\mostSpecific$ and $\mostSpecificOverride$ (see the definition in Section~\ref{sec:mostSpecific} and Section~\ref{sec:mostSpecificOverride}) are both invoked.
+ The formal definition gives the expected results
+for the earlier examples in Figure~\ref{fig:examplesmbody}.
 
 \begin{flalign*}
 	& \rhd \textit{Definition of } \mbody(m, I_d, I_s): & \\
@@ -26,10 +27,6 @@ Now we present the formal definition of \mbody{} that gives the expected results
 	& \hspace{.77in} \mostSpecificOverride(m, I_d, I) = \{J\} & \\
 	& \hspace{.77in} J[m\ \kwoverride\ I] = \absmethod{I_e}{m}{I_x}{x}{I} & \\
 \end{flalign*}
-$\mbody(m, I_d, I_s)$ denotes the method body lookup function.
-We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation, more
-accurately, its parameters, returned expression (empty for abstract methods) and the types. It considers both originally-defined methods and hierarchical overriding methods, so $\mostSpecific$ and $\mostSpecificOverride$ (see the definition in Section~\ref{sec:mostSpecific} and Section~\ref{sec:mostSpecificOverride}) are both invoked.
-
 To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
 
 \subsection{Finding the Most Specific Origin: \mostSpecific}\label{sec:mostSpecific}
