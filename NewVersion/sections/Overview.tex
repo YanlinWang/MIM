@@ -277,6 +277,7 @@ dynamic type. Finally \lstinline|SafeDeck.draw| is correctly returned.
 
 \paragraph{Implicit and Explicit Upcasts}
 \yanlin{todo: Haoyuan.}
+\haoyuan{To move to S5.}
 In our language model, there are two types of casts: \emph{implicit casts} and \emph{explicit upcasts}. The implicit casts appear
 when passing arguments and returning expressions, they are also
 upcasts. Hence all casts are safe. C++ implementations also support a
@@ -337,9 +338,8 @@ interface DrawableSafeDeck extends DrawableRect, SafeDeck {}
 This workaround seems to work, but there are severe issues:
 \begin{itemize}
 	\item It changes the hierarchy and existing code, hence breaks the modularity.
-	\item The demand for separate overriding after the triangle
-          inheritance comes especially when there is
-          interaction\bruno{what interaction?}. In the above code we assume
+	\item Separate overriding is required to come after the triangle
+          inheritance, especially when the implementation needs functionality from both parents. In the above code we have assumed
 	that the overriding is unrelated to \lstinline|Deck|. But when the drawing relies on some information of the \lstinline|Deck|
 	object, we have to either introduce field methods for delegation, or change the signature of \lstinline|draw| to take a parameter.
 	Either way introduces unnecessary complexity and affects extensibility.
@@ -370,25 +370,14 @@ Here the idea is that \emph{only} \lstinline{Drawable.draw} is
 overriden. This is accomplished by specifying, in the method
 definition, that only the method override only overrides the method 
 from \lstinline|Drawable|.  
-The direct support for individual overriding also works when there is interaction. In our formalization, this feature is necessary
-and also involves in the algorithm of hierarchical dispatch.\bruno{the
-last two sentences are a bit unclear. I think it is related to ``interaction''.}
+The individual overriding allows us to make use of the methods from \lstinline|SafeDeck| as well. In the formalization, the 
+hierarchical overriding feature is also an important feature that involves in the algorithm of hierarchical dispatch.
+%\bruno{the last two sentences are a bit unclear. I think it is related to ``interaction''.}
 
-\paragraph{Terminology:} The \lstinline|draw| methods we saw in
-previous subsections\bruno{by now I saw many methods. Please be more precise.} are called \textit{original methods} in this paper, because they are originally defined in its interface.
+\paragraph{Terminology:} In \lstinline|Drawable|, \lstinline|Deck| and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
 
-\paragraph{A peek of hierarchical dispatching algorithm:} In our
-model, triangle inheritance allows several original methods (branches)
-to coexist, and hierarchical dispatch first finds the most specific
-original method (branch), then it finds the most specific hierarchical
-overriding on that branch. A quick counter-example is when there are
-two hierarchical overriding methods on \lstinline|Drawable| in
-\lstinline|DrawableSafeDeck|, it leads to ambiguity. The compiler is
-supposed to forbid the case.\bruno{please show code illustrating this,
-and improve explanation.}
-
-A special rule for hierarchical overriding is: it can only refine \textbf{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
+A special rule for hierarchical overriding is: it can only refine \textbf{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch. \haoyuan{I think we are abusing font styles. Maybe put all bold text in italic, except for code.}
 
 \begin{figure*}[t]
 	\vspace{-1ex}
@@ -408,8 +397,21 @@ A special rule for hierarchical overriding is: it can only refine \textbf{origin
 		& $C\text{ rejected by type-check}$ & & $C\text{ rejected by type-check}$ & & $\mbody(m,C,B) = (C,...)$ \\
 		& & & & & $\mbody(m,C,C) = (C,...)$
 	\end{tabular}
-	\caption{Examples on $\mbody$. ``$\uparrow$'' stands for hierarchical overriding.}\label{fig:examplesmbody}
+	\caption{Examples in \MIM{}. ``$m\uparrow A$'' stands for hierarchical overriding ``$m$ \lstinline|override| $A$''.}\label{fig:examplesmbody}
 	%\saveSpaceFig
 \end{figure*}
 
+\paragraph{A peek of hierarchical dispatching algorithm:} In \MIM{}, triangle inheritance allows several original methods (branches)
+to coexist, and hierarchical dispatch first finds the most specific
+original method (branch), then it finds the most specific hierarchical
+overriding on that branch.
+
+Before the formalized algorithm, Figure~\ref{fig:examplesmbody} gives a peek at the behavior by
+some quick examples. The UML diagrams present the hierarchy. In (c) and (e), an up-arrow $\uparrow$ is short for ``\lstinline|override|''.
+In (d) and (e), a cross mark indicates that the interface fails to type-check. Generally, \MIM{} rejects on the definition of an interface
+during compilation, if it reaches a diamond and hence is possible to cause ambiguity. $\mbody$ is the method lookup function for hierarchical
+dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody(m, X, Y) = (Z, ...)$ reflects that the source code \lstinline|((X) new Y()).m()| calls \lstinline|Z.m| in the runtime. It is undefined when method dispatch is ambiguous.
+
+In  Figure~\ref{fig:examplesmbody}, (a) is the base case for unintentional conflicts, namely the triangle inheritance. (b) uses overriding to explicitly merge the conflicting methods. (c) represents hierarchical overriding. (d) and (e) are two base cases of diamond inheritance in \MIM{}, and the definition of each $C$ is rejected because $T$ is an ambiguous parent to $C$. (f) gives a common solution to the diamond as in Java or traits, which is to explicitly override $A.m$ and $B.m$ in $C$. In the last three examples, conflicting methods $A.m$ and $B.m$ should be viewed as
+intentional conflicts, as they come from the same source $T$.
 % Similar to many OO languages, the model also allows \textit{super method invocation} in a method body. The invocation \lstinline|super.T::m()| will ignore all the subtypes of \lstinline|T|, and only look at \lstinline|T| together with its super interfaces. It should behave the same as \lstinline|new T().m()| in principle.

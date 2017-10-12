@@ -8,7 +8,7 @@ directly implement our algorithm for method lookup.
  
 \bruno{used for what and where?}\haoyuan{todo: used for where}
 
-\subsection{Method Lookup Algorithm in \mbody{}}
+\subsection{Method Lookup Algorithm in \mbody{}}\label{subsec:mbodydef}
 Before showing the definition of \mbody{}, we start with several examples of method lookup, as shown in Figure~\ref{fig:examplesmbody}. Note that we use \lstinline|m| to denote an original method, and ``\lstinline|m|$\uparrow$\lstinline|A|'' for hierarchical overriding on \lstinline|A|. For each small example, the result gives the interface to which $m$ is dispatched. (a) is our old friend example for unintentional method conflicts (triangle inheritance); (b) and (c) demonstrate
 that hierarchical dispatch can find the most specific original method and hierarchical overriding method. More interesting are the two bad examples (d) and (e), they both fail on $\mbody$. (d) is the well-known diamond inheritance, where $\mbody(m, D, A)$ is \Undefined; (e) is again a diamond conflict because the two hierarchical overriding methods are overriding the same branch. Both counter-examples imply that \lstinline|(A)new D().m()| will
 lead to ambiguity, and in order to ensure type soundness, both of them have to be rejected by the type checker. Our model guarantees this by the interface checking rule\textsc{(T-Intf)} in Figure~\ref{fig:typingrules}. \haoyuan{need better explanation on these examples.}
