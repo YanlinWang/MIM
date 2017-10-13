@@ -1,7 +1,7 @@
 \section{Conclusion}
 
 
-This paper proposes \MIM{} as a new multiple inheritance model for
+This paper proposes \MIM{} as a formalized multiple inheritance model for
 unintentional method conflicts. Previous approaches 
 either do not support unintentional method conflicts, have to
 compromise between code reuse and type safety, or do not fully support
@@ -15,17 +15,17 @@ information. Such an approach not only offers great code reuse like
 dynamic dispatch but also ensures unambiguity by our algorithm for
 method resolution. Additionally we introduce \emph{hierarchical
   overriding} to allow conflicting methods in different branches to be
-individually overriden. \MIM{} is formalized following the style of
-Featherweight Java and type-soundness is proved. A prototype language is
-implemented in Scala as a simple interpreter.
+individually overriden.
 
-Our model can certainly be improved at some aspects. We do not
-formalize fields as in Featherweight Java for the reason of
-simplicity\bruno{I'm not sure that simplicity is a good excuse; 
-following the trait model may be a better excuse.}. And we do not formalize other common features including
-method overloading, casts, covariant return types, and so on, some of
-which are orthogonal in the design space. Moreover, we restrict that
-hierarchical overriding can only work on original methods. Potentially
-a looser condition can better support encapsulation and modularity
-with respect to code design as discussed in
-Section~\ref{sec:discussion} and could be a good future work.
+\MIM{} is formalized following the style of
+Featherweight Java and type-soundness is proved. A prototype language is
+implemented in Scala as a simple interpreter. We believe that the formalization of
+hierarchical dispatching features is general and
+can be safely embedded to other OO models, so as to have support for the triangle
+inheritance.
+
+Our model can certainly be improved at some aspects. 
+As discussed in Section~\ref{sec:discussion}, there are orthogonal and
+non-orthogonal features that can potentially be added to the design space. 
+The future work relates to loosening the model without giving up its soundness,
+together with more exploration on fields in the multiple inheritance setting.
