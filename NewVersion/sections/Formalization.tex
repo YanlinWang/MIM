@@ -138,23 +138,18 @@ that case meets our expectation. Below is an example (Figure~\ref{fig:examplesmb
   Then it's better to have the example together with the text
   explaining T-inf.} \yanlin{revised.please check whether you're happy with it.}
 \vspace{3pt}\begin{lstlisting}
-interface T                 {}
-interface T1 extends T      {}
-interface T2 extends T      {}
-interface A                 { T m() override A { return new T(); } }
-interface B extends A       { T m() override A { return new T1(); } }
-interface C extends A       { T m() override A { return new T2(); } }
-interface D extends B, C {}
+interface T                 { T m() override T { return new T(); } }
+interface A extends T       { T m() override T { return new A(); } }
+interface B extends T       { T m() override T { return new B(); } }
+interface C extends A, B {}
 
-((A) new D()).m()
+((T) new C()).m()
 \end{lstlisting}\vspace{3pt}
-This program does not compile on $D$, because of the second condition in \textsc{(T-Intf)}, where $I$ equals $D$ and $J$ equals $A$.
-By the algorithm, $\mbody(m, A, A)$ will refer to $A.m$, but $\mbody(m, D, A)$ is undefined, since both $B.m$ and $C.m$ are most specific
-to D along path $A$, which forms a diamond. The expression \lstinline|((A) new D()).m()| is one example of triggering ambiguity, but \MIM{}
-simply rejects the definition of $D$. To resolve the issue, the programmer need to have an overriding method in $D$, to explicitly merge
+This program does not compile on interface $C$, because of the second condition in \textsc{(T-Intf)}, where $I$ equals $C$ and $J$ equals $T$.
+By the algorithm, $\mbody(m, T, T)$ will refer to $T.m$, but $\mbody(m, C, T)$ is undefined, since both $A.m$ and $B.m$ are most specific
+to $C$ along path $T$, which forms a diamond. The expression \lstinline|((A) new D()).m()| is one example of triggering ambiguity, but \MIM{}
+simply rejects the definition of $C$. To resolve the issue, the programmer need to have an overriding method in $C$, to explicitly merge
 the conflicting ones.
-
-
 
 Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
 
