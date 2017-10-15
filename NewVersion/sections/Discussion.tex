@@ -20,15 +20,18 @@ is abstract or not.
 Our formalization has a simple form of abstract methods, which behave similarly to conventional methods with respect to conflicts.
 Other languages support more complicated behaviour.
 For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. We omit
-that case for two reasons. First, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
-the rules and the proof a lot. Second, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance. The triangle inheritance should distinguish and treat differently on the two methods instead of fusing them, since they represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
-methods, and implicitly assumming diamond inheritance.
+that case for two reasons. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
+the rules and the proof a lot. Secondly, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance.
+\bruno{don't quite understand the last sentence.} In the presence of triangle inheritance we distinguish and treat differently on the two methods instead of fusing them, since they represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
+methods, and implicitly assumming diamond inheritance. 
+It is possible to change our model to account for other behaviour for abstract methods, but we view this as a mostly 
+orthogonal change to our work, that should not affect the essence of the model presented here.
 
 \subsection{Orthogonal \& Non-Orthogonal Extensions}\label{sec:orthoext}
 
 Our model is designed as a minimal calculus for focusing only on resolving unintentional conflicts. Therefore, we have omitted a number of
 common orthogonal features including primitive types, assignments, method overloading, covariant method return types, static dispatch, and so on.
-Those features can be modularly added to the model without breaking type soundness \haoyuan{correct?}. For example, we present the additional syntax, typing and semantic rules of static invocation below as an extension:
+Those features can, in principle, be modularly added to the model without breaking type soundness. For example, we present the additional syntax, typing and semantic rules of static invocation below as an extension:
 
 \begin{mathpar}
 	\begin{array}{llrl}
@@ -37,15 +40,15 @@ Those features can be modularly added to the model without breaking type soundne
 	\tstaticinvk \\
 	\sstaticinvk
 \end{mathpar}
-A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ in $J_0$ that hierarchically overrides $J_1$, thus $J_0[m\ \kwoverride\ J_1]$ is invoked. As shown in \textsc{(S-StaticInvk)}, static dispatch needs a receiver to involve in the substitution for ``$\kwthis$'' reference, so as to provide the latest implementations. In fact, static dispatch is common in OO programming, as it provides a shortcut to the reuse of old implementation easily, and super calls can also rely on this feature. For convenience we just make it simple above, whereas in languages like C++ or Java, the static or super invocations are more flexible hence complicated; they can climb the class hierarchy. 
+A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ in $J_0$ that hierarchically overrides $J_1$, thus $J_0[m\ \kwoverride\ J_1]$ is invoked. As shown in \textsc{(S-StaticInvk)}, static dispatch needs a receiver for the substitution of the ``$\kwthis$'' reference, so as to provide the latest implementations. In fact, static dispatch is common in OO programming, as it provides a shortcut to the reuse of old implementation easily, and super calls can also rely on this feature. For convenience we just make it simple above, whereas in languages like C++ or Java, the static or super invocations are more flexible, as they can climb the class hierarchy. 
 
 One typical non-orthogonal extension to \MIM{} could be to have fields.
-The design of \MIM{} can be viewed as an extension to Java 8 with default methods which allows for unintentional method conflicts.
-Like Java interfaces and traits, state is forbidden in \MIM{} since having state in OO multiple inheritance is a non-trivial issue. There has been some related work on it, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. To directly support fields it requires more discussions and experiments, we leave them as our future work.
+The design of \MIM{} can be viewed as an variant of Java 8 with default methods which allows for unintentional method conflicts.
+Like Java interfaces and traits, state is forbidden in \MIM{} since having state in OO multiple inheritance is a non-trivial issue. There has been some related work on it, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. However such an extension requires more though, so we leave it to future work.
 
-\subsection{Loosening the Model}
+\subsection{Loosening the Model: Reject Early or Reject Later?}
 
-For the goal of simplifying the model and type soundness proof, we have added a few constraints in the minimal calculus. Our language simply rejects the diamond inheritance, see the example below:
+Our language simply rejects the following case of diamond inheritance:
 
 \vspace{3pt}\begin{lstlisting}
 interface A { void m() {...} }
@@ -53,9 +56,23 @@ interface B extends A { void m() {...} }
 interface C extends A { void m() {...} }
 interface D extends B, C {}
 \end{lstlisting}\vspace{3pt}
-In the example, both $B.m$ and $C.m$ override $A.m$, so we think they should represent the same operation. In that case, we believe that D inherits
-both conflicting methods without an explicit override, and it is in fact an intention conflict. Our calculus rejects these intentional conflicts by rule \textsc{(T-Intf)}, where $D$ is considered to be ill-formed. Nonetheless, as a general-purpose language, C++ accepts the definition of $D$, but forbids a cast from $D$ to $A$ because of ambiguity. For the conciseness of the proof, our language is more conservative on interfaces, but open on up-casts. We could also loosen the model and perform ambiguity check on casts and other expressions. We need to handle more cases than C++, for instance, in the above program assume that $B.m$ and $C.m$ are hierarchical overrides on $A$, it is still a diamond.
+In the example, both $B.m$ and $C.m$ override $A.m$. In the example, D inherits
+both conflicting methods without an explicit override. In this case automatically merging 
+the two methods (to achieve diamond inheritance) is not possible, which is why many 
+models (like traits and Java 8) reject such programs. Moreover, keeping the two 
+method implementations in \lstinline|D| is problematic. 
+In essence, hierarchical information is 
+not helpful to disambiguate later method calls, since the two methods share 
+the same origin (\lstinline|A.m|). 
+Our calculus rejects such conflicts by the \textsc{(T-Intf)} rule, where $D$ is considered to be ill-formed. 
+We believe that rejecting \lstinline|D| follows the principle of models like traits and Java 8 interfaces, 
+where the language/type-system is meant to alert the programmer for a possible conflict.
 
+Nonetheless,
+ C++ accepts the definition of $D$, but forbids later upcasts from $D$ to $A$ because of ambiguity. Our language is more conservative on definitions of interfaces compared to C++, but on the upside up-casts are not rejected. We could also loosen the model to accept definitions such as \lstinline|D|, and perform ambiguity check on upcasts and other expressions. However, we would need to handle more cases than C++. For instance, in the above program assume that $B.m$ and $C.m$ are hierarchical overrides on $A$. Then such a case is still a diamond.
+
+\begin{comment}
 Another case is about the restriction on hierarchical overrides. In our language model there are two types of methods (though they share the same syntax): original methods and hierarchical overrides. We require that a hierarchical override should only override an original method. Yet from the idea of encapsulation and modularity on programs, we could also allow an override to work on another override, which forms a series of overrides.
+\end{comment}
 
 \haoyuan{more. 1) Path Invocation, more generalized diamond inheritance: not clear; other method resolution techniques: no example; better code reuse with other kinds of method invocation: no example. }
