@@ -16,9 +16,9 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       if (t1 == t2) return true
       typeMap.get(t1).get.exists(x => subType(x, t2))
     }
-    def overrideSet(i: String, j: String): Set[String] = {
-      if (!table.contains(i) || !table.contains(j)) throw new Exception("Error: overrideSet.")
-      methodMap.get(i).get.filter(x => x.update == j).map(x => x.name).toSet
+    def dispatch(i: String, m: String, j: String): Option[MethDef] = {
+      if (!table.contains(i) || !table.contains(j)) throw new Exception("Error: dispatch.")
+      methodMap.get(i).get.find(x => x.name == m && x.update == j)
     }
     def prune(set: Set[String]): Set[String] = set.filter(i => !set.exists(j => j != i && subType(j, i)))
     def collectMethods(i: String): Set[String] = {
@@ -27,7 +27,7 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       val op = (s: Set[String], x: String) => s ++ collectMethods(x)
       typeMap.get(i).get.foldLeft(start)(op)
     }
-    def mbody(m: String, id: String, is: String): Option[(String, List[(String, String)], (String, Expr))] = {
+    def mbody(m: String, id: String, is: String): Option[(String, List[(String, String)], (String, Option[Expr]))] = {
       if (!table.contains(id) || !table.contains(is)) throw new Exception("Error: mbody.")
       val set1 = mostSpecific(m, id, is)
       if (set1.size != 1) return None
@@ -45,15 +45,28 @@ object FHJ extends StandardTokenParsers with PackratParsers {
     }
     def mostSpecific(m: String, i: String, j: String): Set[String] = {
       if (!table.contains(i) || !table.contains(j)) throw new Exception("Error: mostSpecific.")
-      val set1 = table.filter(k => subType(k, j) && subType(i, k) && overrideSet(k, k).contains(m)).toSet
-      if (!set1.isEmpty) return prune(set1)
-      val set2 = table.filter(k => subType(j, k) && overrideSet(k, k).contains(m)).toSet
-      prune(set2)
+      val set = table.filter(k => subType(i, k) && (subType(k, j) || subType(j, k)) && dispatch(k, m, k).isDefined).toSet
+      prune(set)
     }
     def mostSpecificOverride(m: String, i: String, j: String): Set[String] = {
       if (!table.contains(i) || !table.contains(j)) throw new Exception("Error: mostSpecificOverride.")
-      val set = table.filter(k => subType(k, j) && subType(i, k) && overrideSet(k, j).contains(m)).toSet
+      val set = table.filter(k => subType(k, j) && subType(i, k) && dispatch(k, m, j).isDefined).toSet
       prune(set)
+    }
+    def canOverride(m: String, i: String, j: String): Boolean = {
+      if (!table.contains(i) || !table.contains(j)) throw new Exception("Error: canOverride.")
+      val meth = dispatch(i, m, i)
+      val meth2 = dispatch(j, m, j)
+      if (meth.isEmpty || meth2.isEmpty) return false
+      meth.get.returnType == meth2.get.returnType && meth.get.paras.zip(meth2.get.paras).forall(p => p._1._1 == p._2._1)
+    }
+    def canInstantiate(i: String): Boolean = {
+      if (!table.contains(i)) throw new Exception("Error: canInstantiate.")
+      val methods = collectMethods(i)
+      methods.forall(m => mostSpecific(m, i, i).forall(j => {
+        val set = mostSpecificOverride(m, i, j)
+        set.size == 1 && dispatch(set.head, m, j).exists(meth => meth.returnExpr.isDefined)
+      }))
     }
   }
   
@@ -93,9 +106,10 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       val checkType = e.checkType(env)
       if (checkType.isEmpty) Left("Expression type-check failed") else Right(checkType.get)
     }
-    def run: Option[Value] = {
-      if (programCheck.isLeft) None
-      else Some(e.eval(new {val info = collectInfo.get; val gamma = Map[String, String]()}))
+    def run: Either[String, Value] = {
+      val program_check = programCheck
+      if (program_check.isLeft) Left(program_check.left.get)
+      else Right(e.eval(new {val info = collectInfo.get; val gamma = Map[String, String]()}))
     }
     override def toString = {
       val isStr = if (is.isEmpty) "" else is.map(x => x.toString).reduce((a, b) => a + "\n" + b) + "\n\n"
@@ -109,8 +123,12 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       val env2: Env = new {val info = env.info; val gamma = env.gamma + ("this" -> name)}
       if (methods.exists(x => !x.methodCheck(env2))) return false
       val collectMethods = env.info.collectMethods(name)
-      !(collectMethods.exists(m => env.info.table.exists(j => env.info.subType(name, j) &&
+      val cond1 = !(collectMethods.exists(m => env.info.table.exists(j => env.info.subType(name, j) &&
           env.info.mtype(m, j).isDefined && env.info.mbody(m, name, j).isEmpty)))
+      val cond2 = !(collectMethods.exists(m => env.info.table.exists(j => env.info.subType(name, j) &&
+          env.info.dispatch(name, m, name).isDefined && env.info.dispatch(j, m, j).isDefined &&
+              !env.info.canOverride(m, name, j))))
+      cond1 && cond2
     }
     override def toString = {
       val supStr = if (sups.isEmpty) "" else " extends " + sups.reduce((a, b) => a + ", " + b)
@@ -119,27 +137,29 @@ object FHJ extends StandardTokenParsers with PackratParsers {
     }
   }
   
-  case class MethDef(returnType: String, name: String, paras: List[(String, String)], update: String, returnExpr: Expr) {
+  case class MethDef(returnType: String, name: String, paras: List[(String, String)], update: String, returnExpr: Option[Expr]) {
     def methodCheck(env: Env): Boolean = {
       if (!env.info.table.contains(returnType)) return false
       if (!env.info.table.contains(update)) return false
       if (paras.map(p => p._1).exists(x => !env.info.table.contains(x))) return false
       val thisType = env.gamma.get("this").get
       if (!env.info.subType(thisType, update)) return false
-      val env2: Env = new {val info = env.info; val gamma = env.gamma ++ paras.map(p => p._2 -> p._1).toMap}
-      val mtype = env.info.mtype(name, update)
-      if (mtype.isEmpty || mtype.get._1.size != paras.size) return false
-      if (mtype.get._1.zip(paras).exists(p => p._1 != p._2._1)) return false
-      if (mtype.get._2 != returnType) return false
-      val checkType = returnExpr.checkType(env2)
-      if (checkType.isEmpty || !env.info.subType(checkType.get, returnType)) return false
+      if (returnExpr.isDefined) {
+        val env2: Env = new {val info = env.info; val gamma = env.gamma ++ paras.map(p => p._2 -> p._1).toMap}
+        val mtype = env.info.mtype(name, update)
+        if (mtype.isEmpty || mtype.get._1.size != paras.size) return false
+        if (mtype.get._1.zip(paras).exists(p => p._1 != p._2._1)) return false
+        if (mtype.get._2 != returnType) return false
+        val checkType = returnExpr.get.checkType(env2)
+        if (checkType.isEmpty || !env.info.subType(checkType.get, returnType)) return false
+      }
       val mostSpecific = env.info.mostSpecific(name, thisType, update)
       mostSpecific.size == 1 && mostSpecific.head == update
     }
     override def toString = {
       val parasStr = if (paras.isEmpty) "" else paras.map(p => p._1 + " " + p._2).reduce((a, b) => a + ", " + b)
-      "  " + returnType + " " + name + "(" + parasStr + ") override " + update + " {\n    return " +
-        returnExpr.toString + ";\n  }"
+      val body = if (returnExpr.isEmpty) ";" else " {\n    return " + returnExpr.get.toString + ";\n  }"
+      "  " + returnType + " " + name + "(" + parasStr + ") override " + update + body
     }
   }
   
@@ -161,7 +181,7 @@ object FHJ extends StandardTokenParsers with PackratParsers {
   
   case class New(o: String) extends Expr {
     def copy = New(o)
-    def checkType(env: Env) = if (env.info.table.contains(o)) Some(o) else None
+    def checkType(env: Env) = if (env.info.table.contains(o) && env.info.canInstantiate(o)) Some(o) else None
     def subst(map: Map[String, Expr]) = New(o)
     def eval(env: Env) = new Value(o, o)
     override def toString = "new "+ o + "()"
@@ -185,9 +205,10 @@ object FHJ extends StandardTokenParsers with PackratParsers {
       val (tempI, tempJ) = (eValue.id, eValue.is)
       val argsValue = args.map(x => x.eval(env))
       val mbody = env.info.mbody(m, tempI, tempJ).get
+      if (mbody._3._2.isEmpty) throw new Exception("Error: Invk.eval.") 
       val map: Map[String, Expr] = Map("this" -> AnnoExpr(mbody._1, New(tempI))) ++
         mbody._2.zip(argsValue).map(p => p._1._2 -> AnnoExpr(p._1._1, New(p._2.id))).toMap
-      AnnoExpr(mbody._3._1, mbody._3._2.subst(map)).eval(env)
+      AnnoExpr(mbody._3._1, mbody._3._2.get.subst(map)).eval(env)
     }
     override def toString = {
       val argsStr = if (args.isEmpty) "" else args.map(x => x.toString).reduce((a, b) => a + ", " + b)
@@ -195,72 +216,19 @@ object FHJ extends StandardTokenParsers with PackratParsers {
     }
   }
   
-  case class PathInvk(e: Expr, i: String, m: String, args: List[Expr]) extends Expr {
-    def copy = PathInvk(e.copy, i, m, args.map(x => x.copy))
-    def checkType(env: Env): Option[String] = {
-      val eT = e.checkType(env)
-      if (eT.isEmpty) return None
-      if (!env.info.subType(eT.get, i)) return None
-      val mtype = env.info.mtype(m, i)
-      if (mtype.isEmpty) return None
-      val argsT = args.map(arg => arg.checkType(env))
-      if (mtype.get._1.size != argsT.size) return None
-      val argsMismatch = mtype.get._1.zip(argsT).exists(p => p._2.isEmpty || !env.info.subType(p._2.get, p._1))
-      if (argsMismatch) None else Some(mtype.get._2)
-    }
-    def subst(map: Map[String, Expr]) = PathInvk(e.subst(map), i, m, args.map(x => x.subst(map)))
-    def eval(env: Env) = {
-      val eValue = e.eval(env)
-      val (tempI, tempK) = (eValue.id, i)
-      val argsValue = args.map(x => x.eval(env))
-      val mbody = env.info.mbody(m, tempI, tempK).get
-      val map: Map[String, Expr] = Map("this" -> AnnoExpr(mbody._1, New(tempI))) ++
-        mbody._2.zip(argsValue).map(p => p._1._2 -> AnnoExpr(p._1._1, New(p._2.id))).toMap
-      AnnoExpr(mbody._3._1, mbody._3._2.subst(map)).eval(env)
-    }
-    override def toString = {
-      val argsStr = if (args.isEmpty) "" else args.map(x => x.toString).reduce((a, b) => a + ", " + b)
-      e.toString + "." + i + "::" + m + "(" + argsStr + ")"
-    }
-  }
-  
-  case class SuperInvk(i: String, m: String, args: List[Expr]) extends Expr {
-    def copy = SuperInvk(i, m, args.map(x => x.copy))
-    def checkType(env: Env): Option[String] = {
-      val thisType = env.gamma.get("this")
-      if (thisType.isEmpty) return None
-      if (!env.info.ext(thisType.get, i)) return None
-      val mtype = env.info.mtype(m, i)
-      if (mtype.isEmpty) return None
-      val argsT = args.map(arg => arg.checkType(env))
-      if (mtype.get._1.size != argsT.size) return None
-      val argsMismatch = mtype.get._1.zip(argsT).exists(p => p._2.isEmpty || !env.info.subType(p._2.get, p._1))
-      if (argsMismatch) None else Some(mtype.get._2)
-    }
-    def subst(map: Map[String, Expr]) = SuperInvk(i, m, args.map(x => x.subst(map)))
-    def eval(env: Env) = {
-      val tempK = i
-      val argsValue = args.map(x => x.eval(env))
-      val mbody = env.info.mbody(m, tempK, tempK).get
-      val map: Map[String, Expr] = Map("this" -> AnnoExpr(mbody._1, New(tempK))) ++
-        mbody._2.zip(argsValue).map(p => p._1._2 -> AnnoExpr(p._1._1, New(p._2.id))).toMap
-      AnnoExpr(mbody._3._1, mbody._3._2.subst(map)).eval(env)
-    }
-    override def toString = {
-      val argsStr = if (args.isEmpty) "" else args.map(x => x.toString).reduce((a, b) => a + ", " + b)
-      "super." + i + "::" + m + "(" + argsStr + ")"
-    }
-  }
-  
   case class AnnoExpr(i: String, e: Expr) extends Expr {
     def copy = AnnoExpr(i, e.copy)
-    def checkType(env: Env) = throw new Exception("Error: AnnoExpr.checkType.")
+    def checkType(env: Env) : Option[String] = {
+      if (!env.info.table.contains(i)) return None
+      val eT = e.checkType(env)
+      if (eT.isDefined && env.info.subType(eT.get, i)) return Some(i) else return None
+    }
     def subst(map: Map[String, Expr]) = AnnoExpr(i, e.subst(map))
     def eval(env: Env) = e match {
       case New(o) => Value(i, o)
       case e0 => Value(i, e0.eval(env).id)
     }
-    override def toString = "<" + i + "> " + e.toString
+    override def toString = "((" + i + ") " + e.toString + ")"
   }
   
   case class Value(is: String, id: String) {
@@ -280,96 +248,92 @@ object FHJ extends StandardTokenParsers with PackratParsers {
         { case n ~ sups ~ ms => new TypeDef(n, sups, ms) }
     val pMD : PackratParser[MethDef] =
       ucid ~ lcid ~ ("(" ~> repsep(ucid ~ lcid ^^ { case t ~ n => (t, n) }, ",") <~ ")") ~
-        ("override" ~> ucid) ~ ("{" ~> ("return" ~> pE <~ ";") <~ "}") ^^
+        ("override" ~> ucid) ~ ("{" ~> ("return" ~> pE <~ ";") <~ "}" ^^ { case pE => Some(pE) } | ";" ^^^ None) ^^
           { case t ~ m ~ paras ~ update ~ e => new MethDef(t, m, paras, update, e) }
     val pE : PackratParser[Expr] =
       pE ~ ("." ~> lcid) ~ ("(" ~> repsep(pE, ",") <~ ")") ^^
         { case e ~ m ~ args => Invk(e, m, args) } |||
-      pE ~ ("." ~> ucid) ~ ("::" ~> lcid) ~ ("(" ~> repsep(pE, ",") <~ ")") ^^
-        { case e ~ sup ~ m ~ args => PathInvk(e, sup, m, args) } |||
-      (("super" ~ ".") ~> ucid) ~ ("::" ~> lcid) ~ ("(" ~> repsep(pE, ",") <~ ")") ^^
-        { case sup ~ m ~ args => SuperInvk(sup, m, args) } |||
       lcid ~ ("(" ~> repsep(pE, ",") <~ ")") ^^
         { case m ~ args => Invk(Var("this"), m, args) } |||
-      ucid ~ ("::" ~> lcid) ~ ("(" ~> repsep(pE, ",") <~ ")") ^^
-        { case sup ~ m ~ args => PathInvk(Var("this"), sup, m, args) } |||
+      ("(" ~> ucid <~ ")") ~ pE ^^ { case i ~ e => AnnoExpr(i, e) } |||
       "new" ~> ucid <~ ("(" ~ ")") ^^ New ||| lcid ^^ Var ||| "(" ~> pE <~ ")" 
   }
   
-  def parse(in: String): Option[Program] = phrase(Parser.pP)(new lexical.Scanner(in)) match {
-      case t if t.successful => Some(t.get)
-      case t                 => None
+  def parse(in: String): Either[String, Program] = phrase(Parser.pP)(new lexical.Scanner(in)) match {
+      case t if t.successful => Right(t.get)
+      case t                 => Left(t.toString)
   }
   
   def run(p: String) = {
     val parsed = parse(p)
-    if (parsed.isEmpty) println("Parse failed.")
+    if (parsed.isLeft) println(parsed.left.get)
     else {
-      val pretty = parsed.get.toString
+      val pretty = parsed.right.get.toString
       println(pretty + "\n")
-      val eval = parsed.get.run
-      if (eval.isEmpty) println("Type-check failed.")
-      else println("==> " + eval.get.toString)
+      val eval = parsed.right.get.run
+      if (eval.isLeft) println("Type-check: " + eval.left.get)
+      else println("==> " + eval.right.get.toString)
     }
   }
   
-  val program1 = "interface P {}" +
-                 "interface FromA extends P {}" +
-                 "interface FromB extends P {}" +
-                 "interface FromC extends P {}" +
-                 "interface A { P m() override A {return new FromA();}}" +
-                 "interface B { P m() override B {return new FromB();}}" +
+  val program1 = "interface A { A m() override A { return new A(); } }" +
+                 "interface B { B m() override B { return new B(); } }" +
                  "interface C extends A, B {}" +
-                 "new C().A::m()"
+                 "((A) new C()).m()"
                  
-  val program2 = "interface P {}" +
-                 "interface FromA extends P {}" +
-                 "interface FromB extends P {}" +
-                 "interface FromC extends P {}" +
-                 "interface A { P m() override A {return new FromA();}}" +
-                 "interface B { P m() override B {return new FromB();}}" +
-                 "interface C extends A, B { P m() override C {return new FromC();}}" +
-                 "new C().A::m()"
+  val program2 = "interface A { A m() override A { return new A(); } }" +
+                 "interface B { A m() override B { return new A(); } }" +
+                 "interface C extends A, B { A m() override C { return new C(); } }" +
+                 "((A) new C()).m()"
                  
-  val program3 = "interface P {}" +
-                 "interface FromA extends P {}" +
-                 "interface FromB extends P {}" +
-                 "interface FromC extends P {}" +
-                 "interface A { P m() override A {return new FromA();}}" +
-                 "interface B { P m() override B {return new FromB();}}" +
-                 "interface C extends A, B { P m() override A {return new FromC();}}" +
-                 "new C().A::m()"
+  val program3 = "interface A { A m() override A { return new A(); } }" +
+                 "interface B { B m() override B { return new B(); } }" +
+                 "interface C extends A, B { A m() override A { return new C(); } }" +
+                 "((A) new C()).m()"
                  
-  val program4 = "interface P {}" +
-                 "interface FromA extends P {}" +
-                 "interface FromB extends P {}" +
-                 "interface FromC extends P {}" +
-                 "interface A { P m() override A {return new FromA();}}" +
-                 "interface B extends A { P m() override B {return new FromB();}}" +
-                 "interface C extends A { P m() override C {return new FromC();}}" +
-                 "interface D extends B, C {}" +
-                 "new D().A::m()"
+  val program4 = "interface T { T m() override T { return new T(); } }" + 
+                 "interface A extends T { T m() override A { return new A(); } }" +
+                 "interface B extends T { T m() override B { return new B(); } }" +
+                 "interface C extends A, B {}" +
+                 "((T) new C()).m()"
                  
-  val program5 = "interface P {}" +
-                 "interface FromA extends P {}" +
-                 "interface FromB extends P {}" +
-                 "interface FromC extends P {}" +
-                 "interface A { P m() override A {return new FromA();}}" +
-                 "interface B extends A { P m() override A {return new FromB();}}" +
-                 "interface C extends A { P m() override A {return new FromC();}}" +
-                 "interface D extends B, C {}" +
-                 "new D().A::m()"
+  val program5 = "interface T { T m() override T { return new T(); } }" + 
+                 "interface A extends T { T m() override T { return new A(); } }" +
+                 "interface B extends T { T m() override T { return new B(); } }" +
+                 "interface C extends A, B {}" +
+                 "((T) new C()).m()"
                  
-  val program6 = "interface P {}" +
+  val program6 = "interface T { T m() override T { return new T(); } }" + 
+                 "interface A extends T { T m() override A { return new A(); } }" +
+                 "interface B extends T { T m() override B { return new B(); } }" +
+                 "interface C extends A, B { T m() override C { return new C(); } }" +
+                 "((T) new C()).m()"
+                 
+  val program7 = "interface P {}" +
                  "interface FromDeck extends P {}" +
-                 "interface FromLoggingDeck extends P {}" +
+                 "interface FromSafeDeck extends P {}" +
                  "interface FromDrawable extends P {}" +
+                 "interface FromDrawableSafeDeck extends P {}" +                
                  "interface Deck { P draw() override Deck {return new FromDeck();}" +
-                                 " P shuffleAndDraw() override Deck {return this.draw();}}" +
-                 "interface LoggingDeck extends Deck { P draw() override LoggingDeck {return new FromLoggingDeck();}}" +
+                                 " P shuffleAndDraw() override Deck {return draw();}}" +
+                 "interface SafeDeck extends Deck { P draw() override SafeDeck {return new FromSafeDeck();}}" +
                  "interface Drawable { P draw() override Drawable {return new FromDrawable();}}" +
-                 "interface DrawableLoggingDeck extends Drawable, LoggingDeck {}" +
-                 "new DrawableLoggingDeck().shuffleAndDraw()"
+                 "interface DrawableSafeDeck extends Drawable, SafeDeck {" +
+                 "P draw() override Drawable {return new FromDrawableSafeDeck();}}" +
+                 "new DrawableSafeDeck().shuffleAndDraw()"
+                 
+  val program8 = "interface P {}" +
+                 "interface FromDeck extends P {}" +
+                 "interface FromSafeDeck extends P {}" +
+                 "interface FromDrawable extends P {}" +
+                 "interface FromDrawableSafeDeck extends P {}" +                
+                 "interface Deck { P draw() override Deck {return new FromDeck();}" +
+                                 " P shuffleAndDraw() override Deck {return draw();}}" +
+                 "interface SafeDeck extends Deck { P draw() override SafeDeck {return new FromSafeDeck();}}" +
+                 "interface Drawable { P draw() override Drawable {return new FromDrawable();}}" +
+                 "interface DrawableSafeDeck extends Drawable, SafeDeck {" +
+                 "P draw() override Drawable {return new FromDrawableSafeDeck();}}" +
+                 "((Drawable) new DrawableSafeDeck()).draw()"                 
   
   def main(args : Array[String]) = {
     println("----------------------------------")
@@ -384,6 +348,10 @@ object FHJ extends StandardTokenParsers with PackratParsers {
     run(program5)
     println("----------------------------------")
     run(program6)
+    println("----------------------------------")
+    run(program7)
+    println("----------------------------------")
+    run(program8)
     println("----------------------------------")
   }
 }
