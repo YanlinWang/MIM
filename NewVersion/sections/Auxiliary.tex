@@ -1,4 +1,6 @@
-\section{Method Lookup Algorithm and Auxiliary Definitions}\label{sec:auxdefs}
+% \section{Method Lookup Algorithm and Auxiliary Definitions}\label{sec:auxdefs}
+\section{Key Algorithms and Type-Soundness}\label{sec:auxdefs}
+\yanlin{title changed, is this ok?}
 In this section, we present the fundamental algorithms and auxiliary
 definitions used in our formalization, and show that the resulting
 calculus is type sound. The functions presented in this section are
@@ -8,7 +10,7 @@ the key components that implement our algorithm for method lookup.
   mentions of type-soundness there. Or better, in the summary of
   Section 3 you can point out that type soundness is proved at the 
 end of Section 4.
-}
+}\yanlin{Revised, please check.}
 
 \subsection{Method Lookup Algorithm in \mbody{}}\label{subsec:mbodydef}
 
@@ -72,7 +74,7 @@ By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only 
 \end{itemize}
 
 
-\subsection{Others}\label{sec:otherdefs}
+\subsection{Other Auxiliaries}\label{sec:otherdefs}
 Below we give other minor definitions of the auxiliary functions that are used in previous sections.
 
 %%%%============================ I[m override J] ================%%%%%%%%
@@ -121,3 +123,48 @@ $\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the key
 $\mostSpecific(m, I, I)$ represents the set of branches $I$ inherits on method $m$. $I$ can be instantiated
 if and only if for every branch, the most specific implementation is unambiguous and non-abstract.
 %%%%============================ canInstantiate end ================%%%%%%%%
+
+\subsection{Properties}
+
+We present the type soundness of the model by a few theorems below, following the standard technique of
+subject reduction and progress proposed by Wright and Felleisen~\cite{Wright1994}. The proof, together with some lemmas, are
+in Appendix. Type soundness states that if an expression is well-typed, then after many reduction
+steps it must reduce to a value, and its annotation is the same as the static type of the original expression.
+
+\begin{theorem}[Subject Reduction]~\label{theorem_subject}
+If $\judgeewf \Gamma {e : I}$ and $e \rightarrow e'$, 
+then $\judgeewf \Gamma {e' : I}$.
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
+
+\begin{theorem}[Progress]~\label{theorem_progress}
+Suppose $e$ is a well-typed expression, if $e$ includes 
+$\left((J)\emph{\kwnew}\;I()\right).m(\overline{v})$ as a sub-expression, then $\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0)$ and $\num{\overline{x}} = \num{\overline{v}}$ for some $I_0$, $\overline{I_x}$, $\overline{x}$, $I_e$ and $e_0$.
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
+
+\begin{theorem}[Type Soundness]~\label{theorem_soundness}
+If $\judgeewf \o {e : I}$ and $e \to^* e'$ with $e'$ a normal form, then $e'$ is 
+a value $v$ with $\judgeewf \o {v:I}$.
+\end{theorem}
+\begin{proof}
+Immediate from Theorem~\ref{theorem_subject} and Theroem~\ref{theorem_progress}.
+\end{proof}
+Note that in Theorem~\ref{theorem_progress}, ``$\#(\overline{x})$'' denotes the length of
+$\overline{x}$.
+
+Our theorems are stricter than those of Featherweight Java~\cite{Igarashi01FJ}. Specifically, in both term substitution (a lemma in Appendix)
+and subject reduction, reduction may lead to a term with a subtype in
+FJ, but in \MIM{} types are unchanged. The difference is due to
+%%subtyping; the parameter or \lstinline|this| reference requires some type $I$, but a value with a more specific type,
+%%which is subtype of $I$, can be passed. However, as 
+the fact that \MIM{} keeps track of the static types during
+reduction. 
+In FJ, the information about the static types is lost. 
+
+%the annotations in the
+%substitution actually ensures the type to be unchanged.
