@@ -54,16 +54,16 @@
 \newcommand{\authornote}[3]{{\color{#2} {\sc #1}: #3}}
 \newcommand{\authorText}[2]{{\color{#1}#2}}
 
- \newcommand\bruno[1]{\authornote{bruno}{red}{#1}}
- \newcommand\yanlin[1]{\authornote{yanlin}{purple}{#1}}
- \newcommand\marco[1]{\authornote{marco}{blue}{#1}}
- \newcommand\marcoT[1]{\authorText{blue}{#1}}
- \newcommand\haoyuan[1]{\authornote{haoyuan}{orange}{#1}}
+%\newcommand\bruno[1]{\authornote{bruno}{red}{#1}}
+%\newcommand\yanlin[1]{\authornote{yanlin}{purple}{#1}}
+%\newcommand\marco[1]{\authornote{marco}{blue}{#1}}
+%\newcommand\marcoT[1]{\authorText{blue}{#1}}
+%\newcommand\haoyuan[1]{\authornote{haoyuan}{orange}{#1}}
 
-%\newcommand\bruno[1]{}
-%\newcommand\yanlin[1]{}
-%\newcommand\marco[1]{}
-%\newcommand\haoyuan[1]{}
+\newcommand\bruno[1]{}
+\newcommand\yanlin[1]{}
+\newcommand\marco[1]{}
+\newcommand\haoyuan[1]{}
 
 \newcommand\saveSpaceFig{\vspace{-2ex}}
 
@@ -108,9 +108,8 @@
 % %\authorinfo{Marco Servetto}
 % %          {Victoria University of Wellington, New Zealand}
 % %          {marco.servetto@ecs.vuw.ac.nz}
-\author{Authors Omitted}
-
-\institute{}
+\author{Yanlin Wang\inst{1} \and Haoyuan Zhang\inst{1} \and Bruno C.d.S. Oliveira\inst{1} \and Marco Servetto\inst{2}}
+\institute{The University of Hong Kong \and Victoria University of Wellington \\ \email{ylwang@cs.hku.hk, hyzhang@cs.hku.hk, bruno@cs.hku.hk, marco.servetto@ecs.vuw.ac.nz}}
 
 \maketitle
 
@@ -148,7 +147,7 @@ This paper presents a new model called \emph{\textbf{F}eatherweight
 unintentional method conflicts.  In our new model, which is partly
 inspired by C++, conflicting methods arising from unrelated methods
 can coexist in the same class, and \emph{hierarchical dispatching}
-supports unambigous lookups in the presence of such conflicting
+supports unambiguous lookups in the presence of such conflicting
 methods.  To avoid ambiguity, hierarchical information is employed in
 method dispatching, which uses a combination of static and dynamic
 type information to choose the implementation of a method at run-time.
@@ -191,8 +190,6 @@ Authors would like to thank YYYYY.
 % \newpage
 % \clearpage
 % \bibliographystyle{abbrvnat}
-\bibliographystyle{splncs03}
-\bibliography{paper}
 
 
 
@@ -203,5 +200,10 @@ Authors would like to thank YYYYY.
 % \input{sections/Appendix_Formalization.tex}
 % \input{sections/Translation.tex}
 % \input{sections/Appendix_Translation.tex}
+
+\newpage
+
+\bibliographystyle{splncs03}
+\bibliography{paper}
 
 \end{document}

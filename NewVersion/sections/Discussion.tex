@@ -7,7 +7,7 @@ ways to improve our  work.\bruno{references please!!!} \haoyuan{Done}
 
 Abstract methods are one of the key features in most general OO languages. For example, Java interfaces were designed
 to include only method declarations, and those abstract methods can be implemented in a class body. 
-The formal Featherweight Java model~\cite{Igarashi01FJ} does not include abstract methods because of its orthogonality
+The formal Featherweight Java model~\cite{Igarashi01FJ} does not include abstract methods because of the orthogonality
 to the core calculus. In traits the
 similar idea is to use keywords like ``\textbf{require}'' for abstract method declarations~\cite{scharli03traits}.
 Abstract methods provide a way to
@@ -18,13 +18,13 @@ has to check whether an interface can be instantiated, by looking at all the inh
 is abstract or not.
 
 Our formalization has a simple form of abstract methods, which behave similarly to conventional methods with respect to conflicts.
-Other languages support more complicated behaviour.
+Other languages may support more complicated behaviours.
 For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. We omit
 that case for two reasons. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
 the rules and the proof a lot. Secondly, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance.
 \bruno{don't quite understand the last sentence.} In the presence of triangle inheritance we distinguish and treat differently on the two methods instead of fusing them, since they represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
-methods, and implicitly assumming diamond inheritance. 
-It is possible to change our model to account for other behaviour for abstract methods, but we view this as a mostly 
+methods, and implicitly assuming diamond inheritance. 
+It is possible to change our model to account for other behaviours for abstract methods, but we view this as a mostly 
 orthogonal change to our work, that should not affect the essence of the model presented here.
 
 \subsection{Orthogonal \& Non-Orthogonal Extensions}\label{sec:orthoext}
@@ -43,8 +43,8 @@ Those features can, in principle, be modularly added to the model without breaki
 A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ in $J_0$ that hierarchically overrides $J_1$, thus $J_0[m\ \kwoverride\ J_1]$ is invoked. As shown in \textsc{(S-StaticInvk)}, static dispatch needs a receiver for the substitution of the ``$\kwthis$'' reference, so as to provide the latest implementations. In fact, static dispatch is common in OO programming, as it provides a shortcut to the reuse of old implementation easily, and super calls can also rely on this feature. For convenience we just make it simple above, whereas in languages like C++ or Java, the static or super invocations are more flexible, as they can climb the class hierarchy. 
 
 One typical non-orthogonal extension to \MIM{} could be to have fields.
-The design of \MIM{} can be viewed as an variant of Java 8 with default methods which allows for unintentional method conflicts.
-Like Java interfaces and traits, state is forbidden in \MIM{} since having state in OO multiple inheritance is a non-trivial issue. There has been some related work on it, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. However such an extension requires more though, so we leave it to future work.
+The design of \MIM{} can be viewed as a variant of Java 8 with default methods which allows for unintentional method conflicts.
+Like Java interfaces and traits, state is forbidden in \MIM{} since having state in OO multiple inheritance is a non-trivial issue. There has been some related work on it, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. However such an extension requires more thoughts, so we leave it to future work.
 
 \subsection{Loosening the Model: Reject Early or Reject Later?}
 
@@ -56,7 +56,7 @@ interface B extends A { void m() {...} }
 interface C extends A { void m() {...} }
 interface D extends B, C {}
 \end{lstlisting}\vspace{3pt}
-In the example, both $B.m$ and $C.m$ override $A.m$. In the example, D inherits
+Here both $B.m$ and $C.m$ override $A.m$, and D inherits
 both conflicting methods without an explicit override. In this case automatically merging 
 the two methods (to achieve diamond inheritance) is not possible, which is why many 
 models (like traits and Java 8) reject such programs. Moreover, keeping the two 

@@ -26,7 +26,7 @@ of multiple inheritance.
 There are also proposals such as FeatherTrait Java~\cite{Liquori08ftj} 
 for extending Java with traits. Extensions~\cite{reppy2006foundation,Reppy:2007:MT:2394758.2394784} to 
 the original trait model exists with various advanced features, such as \emph{renaming}. As discussed in Section~\ref{sec:overview},
-the renaming feature helps to solve the unintentional method conflicts
+the renaming feature gives a workaround to the unintentional method conflicts
 problem. However, it breaks structural subtyping.
 
 \begin{comment}
@@ -53,7 +53,7 @@ The above-mentioned models/languages support multiple inheritance,
 focusing on diamond inheritance.
 They handle method conflicts in the same way, by simply disallowing
 two methods with the same signature from two different units to
-coexist. In contrast, our work provides mechanisms that allows 
+coexist. In contrast, our work provides mechanisms that allow 
 methods with the same signatures, but different parents to coexist 
 in a class. Disambiguation is possible in many cases by using both 
 static and dynamic type information during method dispatching.
@@ -62,7 +62,7 @@ reject interface definitions and/or method calls statically.
 
 \subsection{Resolving Unintentional Method Conflicts}\label{subsec:middleman}
 A few language implementations have realized the problem of
-unintentional conflicts and provide some support for it.
+unintentional conflicts and provided some support for it.
 
 \begin{comment} %C++ related work with code explaination
 \noindent {\bf C++ model.}
@@ -133,7 +133,7 @@ Figure~\ref{fig:middleman}. In this example, classes \texttt{A} and
 name \texttt{m}
 unintentionally.
 
-Class \texttt{MiddleMan}, as its name suggests, acts as a middle man between its class \texttt{C} and its parents \texttt{A, B}. \texttt{MiddleMan} defines a virtual method \texttt{m} that overrides a parent method \texttt{m} and delegate the implementation to another method \texttt{m\_impl} that takes \kwthis as parameter. C++ supports method overloading, so that multiple \texttt{m\_impl} methods with different parameter types can co-exist. When definning class \texttt{C}, we specify the parents to be \texttt{MiddleMan<A>, MiddleMan<B>} instead of \texttt{A, B}. This way, programmers may define new versions of \texttt{A.m} and \texttt{B.m} in class \texttt{C} by providing the corresponding \texttt{m\_impl} methods. Then in the client code, the method call \texttt{((A*)c)->m()} will print out string \texttt{"MA2"}, as expected. Although this workaround can help us defining partial method overrides to a certain extent, the drawbacks are obvious. Firsly, the approach is complex and requires the pre-knowledge of the programmer to this approach. Moreover, no direct syntax support makes the "MiddleMan" code cumbersome to write. Finally, the approach is ad-hoc, meaning that the class \texttt{MiddleMan} shown in Figure~\ref{fig:middleman} is not general enough to be used in other cases: more middle-mans are needed if partial method overrides happens in other classes.
+Class \texttt{MiddleMan}, as its name suggests, acts as a middle man between its class \texttt{C} and its parents \texttt{A, B}. \texttt{MiddleMan} defines a virtual method \texttt{m} that overrides a parent method \texttt{m} and delegates the implementation to another method \texttt{m\_impl} that takes $\kwthis$ as parameter. C++ supports method overloading, so that multiple \texttt{m\_impl} methods with different parameter types can coexist. When defining class \texttt{C}, we specify the parents to be \texttt{MiddleMan<A>, MiddleMan<B>} instead of \texttt{A, B}. In this way, programmers may define new versions of \texttt{A.m} and \texttt{B.m} in class \texttt{C} by providing the corresponding \texttt{m\_impl} methods. Then in the client code, the method call \texttt{((A*)c)->m()} will print out string \texttt{"MA2"}, as expected. Although this workaround can help us defining partial method overrides to a certain extent, the drawbacks are obvious. Firstly, the approach is complex and requires the pre-knowledge of the programmer to this approach. Moreover, the lack of direct syntax support makes MiddleMan code cumbersome to write. Finally, the approach is ad-hoc, meaning that the class \texttt{MiddleMan} shown in Figure~\ref{fig:middleman} is not general enough to be used in other cases: more middle-mans are needed if partial method overrides happens in other classes; and it is even worse when return types differ.
 
 \begin{figure*}[t]
 \begin{lstlisting}
@@ -167,7 +167,7 @@ Explicit method implementations is a special feature supported by
 class that implements an interface can explicitly implement a member
 of that interface. When a member is explicitly implemented, it can
 only be accessed through an instance of the interface. Explicit
-interface implementations allows an interface to inherit multiple 
+interface implementations allow an interface to inherit multiple 
 interfaces that share the same member names and give each interface
 member a separate implementation. 
 
@@ -178,7 +178,7 @@ interface that is of no interest to a consumer of that class or struct.
 Secondly, they allow disambiguation of interface members with the 
 same signature. However, there are two critical differences to \MIM{}:
 (1) default method implementations are not allowed in \csharp{} interfaces; 
-(2) there is only one level conflicting method implementations at the
+(2) there is only one level of conflicting method implementations at the
 class that implements the multiple parent interfaces. Further
 overriding of those methods is not possible in subclasses.
 
@@ -201,7 +201,7 @@ Featherweight Java (FJ)~\cite{Igarashi01FJ} is a minimal core calculus of the Ja
 proposed by Igarashi et. al. There are many models built on Featherweight Java, 
 including FeatherTrait~\cite{Liquori08ftj}, Featherweight defenders~\cite{goetz12fdefenders}, Jx~\cite{Nystrom2004}, 
 Featherweight Scala~\cite{Cremet2006}, and so on.
-FJ provides the standard model of formalizing a Java-like object-oriented languages and 
+FJ provides the standard model of formalizing Java-like object-oriented languages and 
 is easily extensible. In terms of formalization, the key novelty of our model is making use of various types (such as parameter types, method return types, etc) as upcasts along with various terms. As far as we know, this technique has not appeared in the literature before. This notion is of vital importance in our hierarchical dispatch algorithm, and it allows for a
 more precise subject-reduction theorem as discussed in
 Section~\ref{sec:formalization}.\bruno{put reference and make sure that we discuss this topic}

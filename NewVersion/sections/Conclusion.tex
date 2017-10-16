@@ -3,7 +3,7 @@
 
 This paper proposes \MIM{} as a formalized multiple inheritance model for
 unintentional method conflicts. Previous approaches 
-either do not support unintentional method conflicts, have to
+either do not support unintentional method conflicts, thus have to
 compromise between code reuse and type safety, or do not fully support
 overriding in the presence of unintentional conflicts. To deal with unintentional method conflicts we
 introduce two key mechanisms: hierarchical dispatching and
@@ -11,21 +11,21 @@ hierarchical overriding. Hierarchical dispatching is inspired by the
 mechanisms in C++. We provide a minimal formal model of hierarchical
 dispatching in \MIM{}. Such algorithm makes use of both dynamic type
 information and path information from either upcasts or parameters'
-information. Such an approach not only offers great code reuse like
+information. It not only offers great code reuse like
 dynamic dispatch but also ensures unambiguity by our algorithm for
 method resolution. Additionally we introduce \emph{hierarchical
   overriding} to allow conflicting methods in different branches to be
-individually overriden.
+individually overridden.
 
 \MIM{} is formalized following the style of
-Featherweight Java and type-soundness is proved. A prototype language is
-implemented in Scala as a simple interpreter. We believe that the formalization of
+Featherweight Java and proved to be sound. A prototype interpreter is
+implemented in Scala. We believe that the formalization of
 hierarchical dispatching features is general and
-can be safely embedded to other OO models, so as to have support for the triangle
+can be safely embedded in other OO models, so as to have support for the triangle
 inheritance.
 
-Our model can certainly be improved at some aspects. 
+Our model can certainly be improved in some aspects. 
 As discussed in Section~\ref{sec:discussion}, there are orthogonal and
 non-orthogonal features that can potentially be added to the design space. 
 The future work relates to loosening the model without giving up its soundness,
-together with more exploration on fields in the multiple inheritance setting.
+together with more exploration on supporting fields in the multiple inheritance setting.
