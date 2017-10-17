@@ -2,7 +2,7 @@
 This section illustrates the problem of unintentional method conflicts,
 together with the features of our model on addressing this issue, by
 a simple running example. In the following text we will introduce three
-problems one by one, and have a discussion on possible workarounds and
+problems one by one and have a discussion on possible workarounds and
 our solutions.
 Problems 1 and 2 are related to hierarchical dispatching, and in 
 C++ it is possible to have similar solutions as ours to both
@@ -58,7 +58,7 @@ interface Drawable {
 In \lstinline|Deck|,
 \lstinline|draw| uses \lstinline|println|, which is a
 library function. 
-The two \lstinline|draw| methods can have different return types, but for simplicity
+The two \lstinline|draw| methods can have different return types, but for simplicity, 
 they both return \lstinline|void| here. Note that, similarly to
 Featherweight Java~\cite{Igarashi01FJ}, \lstinline|void| is
 unsupported in our formalization. We could have also defined an interface called \lstinline|Void|
@@ -75,7 +75,7 @@ interface JFrame {
 \end{lstlisting}\vspace{3pt}
 \end{comment}
 
-Now, supppose that a programmer is designing a
+Now, suppose that a programmer is designing a
 card game with a GUI. He may want to draw a deck on the screen, so he first defines a drawable
 deck using multiple inheritance:
 
@@ -113,7 +113,7 @@ workarounds next:
   the source code for \lstinline|Drawable| or \lstinline|Deck| is available
   then it may be possible to rename one of the \lstinline|draw|
   methods. However this approach is non-modular, as it requires 
-  modifying existing code, and may not be possible if code is unavailable.
+  modifying existing code, and may not be possible if the code is unavailable.
   \item \textit{III. Method exclusion/renaming in traits.} Some trait models
   support method exclusion/renaming. Those features
    can eliminate conflicts, although most
@@ -133,7 +133,7 @@ workarounds next:
 
 \paragraph{\MIM{}'s solution:} To solve this problem it is important to preserve both conflicting methods
 during inheritance instead of merging them into a single
-method. Therefore \MIM{} accepts the definition of \lstinline|DrawableDeck|. To disambiguite method calls
+method. Therefore \MIM{} accepts the definition of \lstinline|DrawableDeck|. To disambiguate method calls, 
 we can use \emph{up-casts} in \MIM{}, so as to specify the ``branch'' in the
 inheritance hierarchy that should be called. The following code
 illustrates the use of up-casts for disambiguation:
@@ -151,7 +151,7 @@ In our language, the main program is merely an expression. The above cast indica
 that we expect to invoke the \lstinline|draw| from branch
 \lstinline|Deck|. Similarly we could have used an upcast to \lstinline|Drawable|
 to call the \lstinline|draw| method from \lstinline|Drawable|.
-Without the cast the call would be ambiguous, and
+Without the cast, the call would be ambiguous and
 \MIM{}'s type system would reject that call. 
 
 This example illustrates the basic form of triangle inheritance, where two unintentionally conflicting methods
@@ -298,10 +298,10 @@ soundness.
 Method overriding is common in Object-Oriented Programming. 
 With diamond inheritance where conflicting methods are intended to have 
 the same semantics, method overriding is not a problem. If conflicting
-methods arize from multiple parents, we can override all those methods 
+methods arise from multiple parents, we can override all those methods 
 in a single unified (or merged) method in the subclass. Therefore
 further overriding is simple, because there is only one method that
-can be overriden. 
+can be overridden. 
 
 With unintentional method conflicts, however, the situation is more
 complicated because different, separate, conflicting methods can coexist
@@ -310,7 +310,7 @@ methods too, in exactly the same way that overriding is available for
 other (non-conflicting) methods. However we need to be able to
 override the individual conflicting methods, rather than overriding all
 conflicting methods into a single merged one. We illustrate the
-problem and the need for a more refined overrding mechanism with 
+problem and the need for a more refined overriding mechanism with 
 an example.
 
 Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck| (based on the code in Section~\ref{subsec:problem2} without the old \lstinline|DrawableSafeDeck|), but he needs to override

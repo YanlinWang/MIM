@@ -1,10 +1,10 @@
 \section{Formalization}~\label{sec:formalization}
-In this section, we present a formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following similar style of 
+In this section, we present a formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following the similar style of 
 Featherweight Java~\cite{Igarashi01FJ}. \MIM{} is a minimal core calculus that formalizes the core concept of hierarchical dispatching and overriding. The syntax, typing rules and small-step semantics are presented.
 
 % \vspace{-2ex}
 \subsection{Syntax}
-The abstract syntax of \MIM{} interface declarations, method declarations, and expressions is given at Figure~\ref{fig:syntax}. The multiple
+The abstract syntax of \MIM{} interface declarations, method declarations, and expressions is given in Figure~\ref{fig:syntax}. The multiple
 inheritance feature of \MIM{} is inspired by Java 8 interfaces, which supports
 method implementations via default methods. This feature is 
 closely related to \emph{traits}. To demonstrate how
@@ -14,7 +14,7 @@ have a method body. Abstract methods can be overridden with future implementatio
 
 \paragraph{Notations}
 The metavariables $I, J$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
-conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in the obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
+conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in an obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
 
 \paragraph{Interfaces}
 In order to achieve multiple inheritance, an interface can have a set of 
@@ -127,7 +127,7 @@ needs to be type-checked, and there is also an implicit cast to the declared ret
 \textsc{(T-Intf)} defines the typing rule on interfaces. The first condition is obvious, namely its methods need to be well checked. The third
 condition checks whether the overriding between original methods preserves typing. In this condition we again use some helper functions defined in  Section~\ref{sec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any super type $J$ and any method $m$.
 
-The second condition of \textsc{(T-Intf)} is more complex, and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
+The second condition of \textsc{(T-Intf)} is more complex and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
 \MIM{} rejects on the definition of interfaces when they form a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
 is defined but $\mbody(m, I, J)$ is undefined for some $J$ and $m$. This indicates that $m$ is available and unambiguous from the perspective of $J$,
 but is ambiguous to $I$ on branch $J$. It means that there are multiple overriding paths of $m$ from $J$ to $I$, which forms a diamond. Hence rejecting
@@ -194,7 +194,7 @@ and in the meanwhile implicit casts are applied, so that static types are record
 there is again an annotation from the return type.
 
 \paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
-on receivers, arguments and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
+on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
 object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
 
 \begin{comment}

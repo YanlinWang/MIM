@@ -58,7 +58,7 @@ languages and research have addressed the issue of diamond inheritance extensive
 including how multiple inheritance deals with state, 
 have also been discussed quite extensively~\cite{classless,malayeri2009cz,stroustrup1995}.
 
-In contrast to diamond inheritance, a second case of ambiguity
+In contrast to diamond inheritance, the second case of ambiguity
 is \textit{unintentional method conflicts}~\cite{scharli03traits}. It is that the conflicting 
 methods do not actually refer to the same feature. 
 In a nominal system, methods can be designed for different
@@ -103,8 +103,7 @@ it is only possible to \emph{implement} multiple interfaces (but not
 multiple classes). %We will have more detailed discussion on this in Section~\ref{sec:relatedwork}.
 C++ accepts triangle inheritance and
 resolves the ambiguity by specifying the expected path by
-\emph{upcasts}. However
-neither the C\# or C++ approaches allow
+\emph{upcasts}. However, neither the C\# or C++ approaches allow
 such conflicting methods to be further overridden. 
 % However, C++ has
 % limited support for virtual methods with unintentional conflicts, and
@@ -160,7 +159,7 @@ adds expressive power that is not available in languages such as
 C++ or C\#. Hierarchical overriding allows overriding to work 
 for classes with multiple (conflicting) methods sharing the 
 same names and signatures. An example is presented in 
-Figure~\ref{fig:main}. In this example there are 4 classes/interfaces.
+Figure~\ref{fig:main}. In this example, there are 4 classes/interfaces.
 Two classes model a deck of cards (\lstinline|Deck|) and a class for
 drawable widgets (\lstinline|Drawable|). 
 The class \lstinline|SafeDeck| adds functionality to check whether the
@@ -191,7 +190,7 @@ In summary, our contributions are:
           methods to override individual branches of the class hierarchy.
 	\item \textbf{\name:} a formalized model based on
           Featherweight Java, supporting the above features. 
-          We provide the static and dynamic semantics, and prove the
+          We provide the static and dynamic semantics and prove the
           type soundness of the model.
 	\item \textbf{Prototype implementation\footnote{Available in
               supplementary material attached to the submission.}:} a
