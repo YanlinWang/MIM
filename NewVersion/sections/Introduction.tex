@@ -59,7 +59,8 @@ including how multiple inheritance deals with state,
 have also been discussed quite extensively~\cite{classless,malayeri2009cz,stroustrup1995}.
 
 In contrast to diamond inheritance, the second case of ambiguity
-is \textit{unintentional method conflicts}~\cite{scharli03traits}. It is that the conflicting 
+is \textit{unintentional method conflicts}~\cite{scharli03traits}. In
+such a case conflicting 
 methods do not actually refer to the same feature. 
 In a nominal system, methods can be designed for different
 functionality, but happen to have the same names (and signatures).
@@ -146,7 +147,7 @@ extensibility are preserved. The main novelty over existing work is
 the formalization of the essence of a hierarchical dispatching
 algorithm, which (as far as we know) has not been formalized before. 
 
-\begin{figure}
+\begin{figure}[t]
 \center  \includegraphics[height=4cm]{pics/DrawableSafeDeck3.pdf}
 \caption{\lstinline|DrawableSafeDeck|: an illustration of hierarchical overriding.}
 \label{fig:main}
@@ -171,7 +172,7 @@ methods for each parent, but overriding \emph{only} the \lstinline|draw|
 method coming from \lstinline|Drawable|, in order to draw a widget
 with a deck of cards. Note that hierarchical overriding is denoted in the UML
 diagram with the notation
-\lstinline|draw()|$\shneg$\lstinline|Drawable|. It expresses that the \lstinline|draw| method from \lstinline|Drawable|
+\lstinline|draw()|$\shneg$\lstinline|Drawable|, expressing that the \lstinline|draw| method from \lstinline|Drawable|
 is overridden. Although in this example only one of the
 \lstinline|draw| methods is overridden (and the other is simply inherited), hierarchical overriding
 supports multiple conflicting methods to be independently overridden as well.
@@ -183,7 +184,7 @@ Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
 proofs for type soundness. 
 In summary, our contributions are:
 \begin{itemize}
-	\item \textbf{Formalization of a hierarchical dispatching algorithm} that integrates both the static type and dynamic type for method dispatch, and hence
+	\item \textbf{A formalization of a hierarchical dispatching algorithm} that integrates both the static type and dynamic type for method dispatch, and 
 	ensures unambiguity as well as extensibility in the presence
         of unintentional method conflicts.
 	\item \textbf{Hierarchical overriding:} a novel notion that allows
@@ -192,8 +193,8 @@ In summary, our contributions are:
           Featherweight Java, supporting the above features. 
           We provide the static and dynamic semantics and prove the
           type soundness of the model.
-	\item \textbf{Prototype implementation\footnote{Available in
-              supplementary material attached to the submission.}:} a
+	\item \textbf{Prototype implementation\footnote{\bruno{URL
+                here} URL}:} a
           simple implementation of \MIM{} interpreter in Scala.
 \end{itemize}
 

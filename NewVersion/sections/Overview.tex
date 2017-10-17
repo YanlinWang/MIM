@@ -5,13 +5,13 @@ a simple running example. In the following text we will introduce three
 problems one by one and have a discussion on possible workarounds and
 our solutions.
 Problems 1 and 2 are related to hierarchical dispatching, and in 
-C++ it is possible to have similar solutions as ours to both
+C++ it is possible to have similar solutions to both
 problems. Hence it is important to emphasize that, with respect to
 hierarchical dispatching, our contribution is not a novel
 mechanism. Instead, 
 inspired by the C++ solution, our contribution is formalizing a minimal calculus
 of this feature together with a proof of type soundness. However, for the final problem, there is no satisfactory approach
-in existing languages, thus we propose a new feature (hierarchical
+in existing languages, thus what we propose is a new feature (hierarchical
 overriding) with the corresponding formalization of that feature.
 
 In the rest of the paper, we use a Java-like syntax for programs. All types are defined with the keyword
@@ -62,9 +62,10 @@ The two \lstinline|draw| methods can have different return types, but for simpli
 they both return \lstinline|void| here. Note that, similarly to
 Featherweight Java~\cite{Igarashi01FJ}, \lstinline|void| is
 unsupported in our formalization. We could have also defined an interface called \lstinline|Void|
-and return an object of that type instead. To be concise, we use \lstinline|void| in this code.
-For \lstinline|Drawable| the \lstinline|draw|
-creates a blank canvas by \lstinline|JFrame| and set the visibility to \lstinline|true|.
+and return an object of that type instead. To be concise, however, we
+use \lstinline|void| in our examples.
+For \lstinline|Drawable| the \lstinline|draw| method
+creates a blank canvas.
 
 \begin{comment}
 \vspace{3pt}\begin{lstlisting}
@@ -84,7 +85,7 @@ interface DrawableDeck extends Drawable, Deck {}
 \end{lstlisting}\vspace{3pt}
 The point of using multiple inheritance is for composing the features from various 
 components and to achieve code reuse, as supported by many mainstream OO
-languages. Nevertheless at this point, languages like Java simply treat the two \lstinline|draw| methods
+languages. Nevertheless, at this point, languages like Java simply treat the two \lstinline|draw| methods
 as the same, and hence the compiler throws an error
 on \lstinline|DrawableDeck| about the conflict.
 
@@ -133,8 +134,14 @@ workarounds next:
 
 \paragraph{\MIM{}'s solution:} To solve this problem it is important to preserve both conflicting methods
 during inheritance instead of merging them into a single
-method. Therefore \MIM{} accepts the definition of \lstinline|DrawableDeck|. To disambiguate method calls, 
-we can use \emph{up-casts} in \MIM{}, so as to specify the ``branch'' in the
+method. Therefore \MIM{} accepts the definition of
+\lstinline|DrawableDeck|\bruno{Marco complained about this sentence,
+  which is in the todo list. I've then complained that we should have
+  the todos at the places where TODOs were meant. Now, the sentence
+  remains unchanged. PLEASE go over the TODO list, and check whether
+  you've fixed the issue or not, if not move the TODO to the correct
+  location! }. To disambiguate method calls, 
+we can use \emph{up-casts} in \MIM{} to specify the ``branch'' in the
 inheritance hierarchy that should be called. The following code
 illustrates the use of up-casts for disambiguation:
 
@@ -186,8 +193,8 @@ interface SafeDeck extends Deck {
 }
 \end{lstlisting}\vspace{3pt}
 Without dynamic dispatching, we may have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|, so that \lstinline|shuffleAndDraw| calls the new \lstinline|draw| defined in \lstinline|SafeDeck|. Yet dynamic dispatching immediately saves us from the duplication work,
-since the method becomes automatically dispatched to the most specific one. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity,
-for instance, when we have the class hierarchy structure shown in Figure~\ref{fig:drawablesafedeck}(left) and the following code:
+since the method becomes automatically dispatched to the most specific one. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity.
+For instance, when we have the class hierarchy structure shown in Figure~\ref{fig:drawablesafedeck}(left) and the following code:
 
 % \begin{figure*}[t]
 % 	\saveSpaceFig
@@ -213,7 +220,7 @@ for instance, when we have the class hierarchy structure shown in Figure~\ref{fi
   \begin{minipage}[t]{0.25\textwidth}
   \includegraphics[height=4cm]{pics/DrawableSafeDeck3.pdf}
   \end{minipage}  
-  \caption{UML graphs for \lstinline|DrawableSafeDeck|.}\label{fig:drawablesafedeck}
+  \caption{UML diagrams for 3 variants of \lstinline|DrawableSafeDeck|.}\label{fig:drawablesafedeck}
 \end{figure*}
 
 \vspace{3pt}\begin{lstlisting}
@@ -264,6 +271,7 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {}
 // main program
 new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}\vspace{3pt}
+\bruno{Marco complined about this but this was not addressed either!!!}
 During the runtime, when \lstinline|this.draw()| in called,
 the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static type is actually
 \lstinline|Deck|. Here it is an instance of the \textit{hierarchical invocation}, which can be read as 
@@ -276,7 +284,8 @@ dynamic type \lstinline|DrawableSafeDeck|. Finally \lstinline|SafeDeck.draw| is 
 %Unfortunately, the C++ language, or rather the feature on triangle inheritance, has not been well formalized.
 In our language model, there are two types of casts: \emph{implicit casts} and \emph{explicit upcasts}. The implicit casts appear
 when passing arguments and returning expressions, they are also
-upcasts. Hence all casts are safe. 
+upcasts. Hence all casts are safe. \bruno{This discussion seems
+  inconplete. Either complete it or remove it.}
 
 \begin{comment}
 C++ implementations also support a
@@ -372,7 +381,7 @@ overridden. This is accomplished by specifying, in the method
 definition, that the method only overrides the \lstinline|draw| 
 from \lstinline|Drawable|.  
 The individual overriding allows us to make use of the methods from \lstinline|SafeDeck| as well. In the formalization, the 
-hierarchical overriding feature is also an important feature that involves in the algorithm of hierarchical dispatch.
+hierarchical overriding feature is also an important feature, involved in the algorithm of hierarchical dispatch.
 %\bruno{the last two sentences are a bit unclear. I think it is related to ``interaction''.}
 
 \paragraph{Terminology:} In \lstinline|Drawable|, \lstinline|Deck| and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
@@ -407,8 +416,9 @@ to coexist, and hierarchical dispatch first finds the most specific
 original method (branch), then it finds the most specific hierarchical
 overriding on that branch.
 
-Before the formalized algorithm, Figure~\ref{fig:examplesmbody} gives a peek at the behavior by
-some quick examples. The UML diagrams present the hierarchy. 
+Before the formalized algorithm, Figure~\ref{fig:examplesmbody} gives
+a peek at the behavior 
+using a few examples. The UML diagrams present the hierarchy. 
 In (d) and (e), a cross mark indicates that the interface fails to type-check. Generally, \MIM{} rejects on the definition of an interface
 during compilation, if it reaches a diamond and hence is possible to cause ambiguity. $\mbody$ is the method lookup function for hierarchical
 dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody(m, X, Y) = (Z, ...)$ reflects that the source code \lstinline|((X) new Y()).m()| calls \lstinline|Z.m| in the runtime. It is undefined when method dispatch is ambiguous.
