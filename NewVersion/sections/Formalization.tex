@@ -190,9 +190,7 @@ the types, the return expression $e_0$ and the interface $I_0$ which provides th
 Here we use $e_0$ to imply that the return expression is forced to be non-empty because it requires a concrete implementation. Now the
 rule reduces method invocation to $e_0$ with substitution.
 Parameters are substituted with arguments, and the \lstinline|this| reference is substituted by the receiver,
-and in the meanwhile implicit casts are applied, so that static types are recorded via annotations. Finally
-there is again an annotation from the return type.
-
+and in the meanwhile implicit casts are applied, so that static types are recorded via annotations. Finally the return type $I_e$ is put in the front as an annotation.
 \paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
 on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
 object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.

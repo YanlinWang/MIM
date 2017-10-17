@@ -268,8 +268,8 @@ During the runtime, when \lstinline|this.draw()| in called,
 the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static type is actually
 \lstinline|Deck|. Here it is an instance of the \textit{hierarchical invocation}, which can be read as 
 ``finding the most specific \lstinline|draw| along the path \lstinline|Deck|''. The meaning of ``along path
-\lstinline|Deck|'' not only implies what \lstinline|Deck| inherits, but also the domain of its subtypes until the
-dynamic type. Finally \lstinline|SafeDeck.draw| is correctly returned.
+\lstinline|Deck|'' not only implies what \lstinline|Deck| inherits, but also the domain of its subtypes up to the
+dynamic type \lstinline|DrawableSafeDeck|. Finally \lstinline|SafeDeck.draw| is correctly returned.
 
 %Note that in C++, if we put the \lstinline[language=c++]|virtual| keyword in front of every \lstinline|draw| method, that means
 %we enforce the dynamic dispatch, and it does the disambiguation correctly.
