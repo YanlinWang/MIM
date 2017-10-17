@@ -1,21 +1,20 @@
 \section{Formalization}~\label{sec:formalization}
-In this section, we present a formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following similar style of 
-Featherweight Java~\cite{Igarashi01FJ}. \MIM{} is a minimal core calculus that formalizes the core concept of hierarchical dispatch and overriding. The syntax, typing rules,
-small-step semantics and theorems for type soundness are presented.
+In this section, we present a formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following the similar style of 
+Featherweight Java~\cite{Igarashi01FJ}. \MIM{} is a minimal core calculus that formalizes the core concept of hierarchical dispatching and overriding. The syntax, typing rules and small-step semantics are presented.
 
 % \vspace{-2ex}
 \subsection{Syntax}
-The abstract syntax of \MIM{} interface declarations, method declarations, and expressions is given at Figure~\ref{fig:syntax}. The multiple
-inheritance feature of \MIM{} is inspired by Java 8 interfaces, which support
+The abstract syntax of \MIM{} interface declarations, method declarations, and expressions is given in Figure~\ref{fig:syntax}. The multiple
+inheritance feature of \MIM{} is inspired by Java 8 interfaces, which supports
 method implementations via default methods. This feature is 
 closely related to \emph{traits}. To demonstrate how
-unintentional method conflicts are untangled in \MIM{}, we only focus on a small subset of the interface model. For example, all the methods declared
+unintentional method conflicts are untangled in \MIM{}, we only focus on a small subset of the interface model. For example, all methods declared
 in an interface are either default methods or abstract methods. Default methods provide default implementations for methods. Abstract methods do not
 have a method body. Abstract methods can be overridden with future implementations.
 
 \paragraph{Notations}
 The metavariables $I, J$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
-conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in the obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
+conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in an obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
 
 \paragraph{Interfaces}
 In order to achieve multiple inheritance, an interface can have a set of 
@@ -30,14 +29,14 @@ method simply includes the returned expression $e$. Notably, we have introduced 
 \kwoverride{} keyword to override an old implementation of the
 method. If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as originally defined; otherwise it is an overriding method. The definition
-of abstract methods is done with $\absmethod{I}{m}{I_x}{x}{J}$, which is
+of abstract methods is written as $\absmethod{I}{m}{I_x}{x}{J}$, which is
 similar to a concrete method but without the method body. 
 For simplicity, overloading is not modelled for methods, which
 implies that we can uniquely identify a method by its name.
 
 \paragraph{Expressions \& Values}
 Expressions can be standard constructs such as variables, method
-invocation, or object creation, together with cast expressions. 
+invocation, object creation, together with cast expressions. 
 Object creation is represented by $\new I$. Fields and primitive types are not modelled in \MIM{}. 
 The casts are merely safe up-casts, and in fact, they can be viewed as
 annotated expressions, where the annotation indicates its static type.
@@ -47,8 +46,8 @@ A value
 is the final result of multiple reduction steps evaluating an
 expression.
 
-For simplicity, \name{} does not formalize statements like assignments and so on because they are orthogonal features.
-A program consists of a list of interface declarations, plus a single expression.
+For simplicity, \name{} does not formalize statements like assignments and so on because they are orthogonal features to the hierarchical dispatching and overriding feature.
+A program in \name{} consists of a list of interface declarations, plus a single expression.
 
 \begin{figure*}[t]
 \saveSpaceFig
@@ -95,9 +94,9 @@ the self-reference $\kwthis$.
 
 \textsc{(T-Invk)} is the typing rule for method invocation.
 Naturally, the receiver and the arguments are required to be well-typed.
-$\mbody$ is our key function for method lookup, based on the
+$\mbody$ is our key function for method lookup that implements the
 hierarchical dispatching algorithm. 
-The hierarchical invocation $\mbody(m, I, J)$ means ``finding most specific $m$
+The hierarchical invocation $\mbody(m, I, J)$ means ``finding most specific method $m$
 above $I$ and along path $J$'', and usually $I$ denotes the dynamic type while $J$
 denotes the static type. 
 The formal definition of $\mbody(m, I, J)$ will be introduced in
@@ -112,8 +111,8 @@ Note that we accept implicit upcasts on the arguments.
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
 \textsc{(T-New)} is the typing rule for object creation $\new{I}$. The
-auxiliary function $\canInstantiate(I)$ checks whether interface $I$
-can be instantiated or not, and is formalized in Section~\ref{sec:auxdefs}. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
+auxiliary function $\canInstantiate(I)$ (see definition in Section~\ref{sec:otherdefs}) checks whether an interface $I$ 
+can be instantiated or not. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
 
 \textsc{(T-Method)} is more interesting since a method can either be an original method or a hierarchical overriding, though
 they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a fundamental function,
@@ -121,17 +120,17 @@ used to find ``the most specific interfaces that are above $I$ and
 along path $J$, and originally defines $m$'' (see
 Section~\ref{sec:auxdefs} for full definition).
 By ``most specific interfaces'',
-it implies that the inherited super types are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates a characteristic of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original $m$ in between.
+it implies that the inherited super types are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates a characteristic of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original method $m$ in between.
 Then $\mbody(m, J, J)$ provides the type of the original method, so hierarchical overriding has to preserve the type. Finally the return expression
 needs to be type-checked, and there is also an implicit cast to the declared return type. For the definition of an original method, $I$ equals $J$ and the rule is straightforward. \textsc{(T-AbsMethod)} is a similar rule but works on abstract method declarations.
 
 \textsc{(T-Intf)} defines the typing rule on interfaces. The first condition is obvious, namely its methods need to be well checked. The third
-condition checks whether the overriding between original methods preserves typing. In the condition we again use some helper functions from Section~\ref{sec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any super type $J$ and any method $m$.
+condition checks whether the overriding between original methods preserves typing. In this condition we again use some helper functions defined in  Section~\ref{sec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any super type $J$ and any method $m$.
 
-The second condition of \textsc{(T-Intf)} is more complex, and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
-\MIM{} rejects on the definition of interfaces when they reach a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
+The second condition of \textsc{(T-Intf)} is more complex and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
+\MIM{} rejects on the definition of interfaces when they form a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
 is defined but $\mbody(m, I, J)$ is undefined for some $J$ and $m$. This indicates that $m$ is available and unambiguous from the perspective of $J$,
-but is ambiguous to $I$ on branch $J$. That means that there are multiple overriding paths of $m$ from $J$ to $I$, which form a diamond. Hence rejecting
+but is ambiguous to $I$ on branch $J$. It means that there are multiple overriding paths of $m$ from $J$ to $I$, which forms a diamond. Hence rejecting
 that case meets our expectation. Below is an example (Figure~\ref{fig:examplesmbody} (e)) that illustrates the reason why this condition is needed:
 \bruno{what is the purpose of this example:
   state-it upfront please. Is this example meant to ilustrate T-Inf?
@@ -186,16 +185,14 @@ the end. \haoyuan{we need to be consistent on paragraph upper/lower case.}
 \paragraph{Semantic Rules} \textsc{(S-Invk)} is the only computation rule we need for method invocation.
 As a small-step rule and by congruence, it assumes that the receiver and the arguments are already values.
 Specifically, the receiver $(J)\new{I}$ indicates the dynamic type $I$
-together with the static type $J$. Therefore $\mbody(m, I, J)$ carries out hierarchical dispatch, acquires
+together with the static type $J$. Therefore $\mbody(m, I, J)$ carries out hierarchical dispatching, acquires
 the types, the return expression $e_0$ and the interface $I_0$ which provides the most specific method.
 Here we use $e_0$ to imply that the return expression is forced to be non-empty because it requires a concrete implementation. Now the
 rule reduces method invocation to $e_0$ with substitution.
 Parameters are substituted with arguments, and the \lstinline|this| reference is substituted by the receiver,
-and in the meanwhile implicit casts are applied, so that static types are recorded via annotations. Finally
-there is again an annotation from the return type.
-
+and in the meanwhile implicit casts are applied, so that static types are recorded via annotations. Finally the return type $I_e$ is put in the front as an annotation.
 \paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
-on receivers, arguments and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
+on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
 object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
 
 \begin{comment}
@@ -251,49 +248,3 @@ By typing rules, the code is well-compiled. And during runtime,
 \caption{Congruence.}\label{fig:congruence}
 \end{figure*}
 \end{comment}
-
-
-\subsection{Properties}
-
-We present the type soundness of the model by a few theorems below, following the standard technique of
-subject reduction and progress proposed by Wright and Felleisen~\cite{Wright1994}. The proof, together with some lemmas, are
-in Appendix. Type soundness states that if an expression is well-typed, then after many reduction
-steps it must reduce to a value, and its annotation is the same as the static type of the original expression.
-
-\begin{theorem}[Subject Reduction]~\label{theorem_subject}
-If $\judgeewf \Gamma {e : I}$ and $e \rightarrow e'$, 
-then $\judgeewf \Gamma {e' : I}$.
-\end{theorem}
-\begin{proof}
-See Appendix~\ref{appendix_proof}.
-\end{proof}
-
-\begin{theorem}[Progress]~\label{theorem_progress}
-Suppose $e$ is a well-typed expression, if $e$ includes 
-$\left((J)\emph{\kwnew}\;I()\right).m(\overline{v})$ as a sub-expression, then $\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0)$ and $\num{\overline{x}} = \num{\overline{v}}$ for some $I_0$, $\overline{I_x}$, $\overline{x}$, $I_e$ and $e_0$.
-\end{theorem}
-\begin{proof}
-See Appendix~\ref{appendix_proof}.
-\end{proof}
-
-\begin{theorem}[Type Soundness]~\label{theorem_soundness}
-If $\judgeewf \o {e : I}$ and $e \to^* e'$ with $e'$ a normal form, then $e'$ is 
-a value $v$ with $\judgeewf \o {v:I}$.
-\end{theorem}
-\begin{proof}
-Immediate from Theorem~\ref{theorem_subject} and Theroem~\ref{theorem_progress}.
-\end{proof}
-Note that in Theorem~\ref{theorem_progress}, ``$\#(\overline{x})$'' denotes the length of
-$\overline{x}$.
-
-Our theorems are stricter than those of Featherweight Java~\cite{Igarashi01FJ}. Specifically, in both term substitution (a lemma in Appendix)
-and subject reduction, reduction may lead to a term with a subtype in
-FJ, but in \MIM{} types are unchanged. The difference is due to
-%%subtyping; the parameter or \lstinline|this| reference requires some type $I$, but a value with a more specific type,
-%%which is subtype of $I$, can be passed. However, as 
-the fact that \MIM{} keeps track of the static types during
-reduction. 
-In FJ, the information about the static types is lost. 
-
-%the annotations in the
-%substitution actually ensures the type to be unchanged.

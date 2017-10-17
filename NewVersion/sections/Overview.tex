@@ -2,7 +2,7 @@
 This section illustrates the problem of unintentional method conflicts,
 together with the features of our model on addressing this issue, by
 a simple running example. In the following text we will introduce three
-problems one by one, and have a discussion on possible workarounds and
+problems one by one and have a discussion on possible workarounds and
 our solutions.
 Problems 1 and 2 are related to hierarchical dispatching, and in 
 C++ it is possible to have similar solutions as ours to both
@@ -58,13 +58,13 @@ interface Drawable {
 In \lstinline|Deck|,
 \lstinline|draw| uses \lstinline|println|, which is a
 library function. 
-The method returns \lstinline|void|. Note that, similarly to
+The two \lstinline|draw| methods can have different return types, but for simplicity, 
+they both return \lstinline|void| here. Note that, similarly to
 Featherweight Java~\cite{Igarashi01FJ}, \lstinline|void| is
 unsupported in our formalization. We could have also defined an interface called \lstinline|Void|
-and return an object of that type instead, but for simplicity of
-presentation we use \lstinline|void|. For the method \lstinline|draw| in
-\lstinline|Drawable|
-the program create a blank canvas by \lstinline|JFrame| and set the visibility to \lstinline|true|.
+and return an object of that type instead. To be concise, we use \lstinline|void| in this code.
+For \lstinline|Drawable| the \lstinline|draw|
+creates a blank canvas by \lstinline|JFrame| and set the visibility to \lstinline|true|.
 
 \begin{comment}
 \vspace{3pt}\begin{lstlisting}
@@ -75,12 +75,12 @@ interface JFrame {
 \end{lstlisting}\vspace{3pt}
 \end{comment}
 
-Now, supppose that a programmer is designing a
-card game with a GUI. He may want to draw a deck on the screen, so he defines a drawable
+Now, suppose that a programmer is designing a
+card game with a GUI. He may want to draw a deck on the screen, so he first defines a drawable
 deck using multiple inheritance:
 
 \vspace{3pt}\begin{lstlisting}
-interface DrawableDeck extends Drawable, Deck {...} 
+interface DrawableDeck extends Drawable, Deck {} 
 \end{lstlisting}\vspace{3pt}
 The point of using multiple inheritance is for composing the features from various 
 components and to achieve code reuse, as supported by many mainstream OO
@@ -88,7 +88,7 @@ languages. Nevertheless at this point, languages like Java simply treat the two 
 as the same, and hence the compiler throws an error
 on \lstinline|DrawableDeck| about the conflict.
 
-This case is the so-called \textit{unintentional method conflicts}. It arises when two inherited methods happen to have
+This case is the so-called \textit{unintentional method conflict}. It arises when two inherited methods happen to have
 the same name and parameter types, but they are designed for different functionalities with different semantics.
 Now one may quickly come up with a workaround, which is to manually merge them, by
 creating a new \lstinline|draw| method in \lstinline|DrawableDeck| to
@@ -113,7 +113,7 @@ workarounds next:
   the source code for \lstinline|Drawable| or \lstinline|Deck| is available
   then it may be possible to rename one of the \lstinline|draw|
   methods. However this approach is non-modular, as it requires 
-  modifying existing code, and may not be possible if code is unavailable.
+  modifying existing code, and may not be possible if the code is unavailable.
   \item \textit{III. Method exclusion/renaming in traits.} Some trait models
   support method exclusion/renaming. Those features
    can eliminate conflicts, although most
@@ -133,7 +133,7 @@ workarounds next:
 
 \paragraph{\MIM{}'s solution:} To solve this problem it is important to preserve both conflicting methods
 during inheritance instead of merging them into a single
-method. Therefore \MIM{} accepts the definition of \lstinline|DrawableDeck|. To disambiguite method calls
+method. Therefore \MIM{} accepts the definition of \lstinline|DrawableDeck|. To disambiguate method calls, 
 we can use \emph{up-casts} in \MIM{}, so as to specify the ``branch'' in the
 inheritance hierarchy that should be called. The following code
 illustrates the use of up-casts for disambiguation:
@@ -151,7 +151,7 @@ In our language, the main program is merely an expression. The above cast indica
 that we expect to invoke the \lstinline|draw| from branch
 \lstinline|Deck|. Similarly we could have used an upcast to \lstinline|Drawable|
 to call the \lstinline|draw| method from \lstinline|Drawable|.
-Without the cast the call would be ambiguous, and
+Without the cast, the call would be ambiguous and
 \MIM{}'s type system would reject that call. 
 
 This example illustrates the basic form of triangle inheritance, where two unintentionally conflicting methods
@@ -200,12 +200,12 @@ for instance, when we have the class hierarchy structure shown in Figure~\ref{fi
 \begin{figure*}[t]
   % \nocaptionrule
   \centering
-  \begin{minipage}[t]{0.28\textwidth}
+  \begin{minipage}[t]{0.32\textwidth}
   \includegraphics[height=4cm]{pics/DrawableSafeDeck1.pdf}
   \end{minipage}
   \centering
   \hspace*{2pt}
-  \begin{minipage}[t]{0.4\textwidth}
+  \begin{minipage}[t]{0.38\textwidth}
   \includegraphics[height=4cm]{pics/DrawableSafeDeck0.pdf}
   \end{minipage}
   \centering
@@ -238,9 +238,9 @@ specifies the branch to use unambiguously.
 \paragraph{\MIM's solution:} 
 The essential problem is how to ensure that the correct method is
 invoked. To solve this problem \MIM{} uses a variant of method
-disptaching that we call \textit{hierarchical dispatch}. In
+dispatching that we call \textit{hierarchical dispatch}. In
 hierarchical dispatch both the static and dynamic type information 
-ared used to select the right method implementation.
+are used to select the right method implementation.
 %Inspired by C++, we have formalized this feature into a minimal core calculus,
 %studied and proved the type soundness. It is concise and can readily be imported to other systems. 
 %And in the formalization, we propose \textit{hierarchical dispatch} in our model
@@ -268,19 +268,18 @@ During the runtime, when \lstinline|this.draw()| in called,
 the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static type is actually
 \lstinline|Deck|. Here it is an instance of the \textit{hierarchical invocation}, which can be read as 
 ``finding the most specific \lstinline|draw| along the path \lstinline|Deck|''. The meaning of ``along path
-\lstinline|Deck|'' not only implies what \lstinline|Deck| inherits, but also the domain of its subtypes until the
-dynamic type. Finally \lstinline|SafeDeck.draw| is correctly returned.
+\lstinline|Deck|'' not only implies what \lstinline|Deck| inherits, but also the domain of its subtypes up to the
+dynamic type \lstinline|DrawableSafeDeck|. Finally \lstinline|SafeDeck.draw| is correctly returned.
 
 %Note that in C++, if we put the \lstinline[language=c++]|virtual| keyword in front of every \lstinline|draw| method, that means
 %we enforce the dynamic dispatch, and it does the disambiguation correctly.
 %Unfortunately, the C++ language, or rather the feature on triangle inheritance, has not been well formalized.
-
-\paragraph{Implicit and Explicit Upcasts}
-\yanlin{todo: Haoyuan.}
-\haoyuan{To move to S5.}
 In our language model, there are two types of casts: \emph{implicit casts} and \emph{explicit upcasts}. The implicit casts appear
 when passing arguments and returning expressions, they are also
-upcasts. Hence all casts are safe. C++ implementations also support a
+upcasts. Hence all casts are safe. 
+
+\begin{comment}
+C++ implementations also support a
 similar solution. However a notable difference between \MIM{} and C++
 is that C++ checks ambiguity on casts, whereas our model is open to those safe casts. Unfortunately,
 it introduces ambiguity in what we call ``the diamond inheritance'': when two methods override a same base method
@@ -291,7 +290,7 @@ soundness.
 \bruno{I think the difference between C++ and our model is an important discussion, but very confusingly
   written. I believe that some more detail is needed. Do we have an
   extended discussion later?}
-
+\end{comment}
 
 
 
@@ -299,19 +298,19 @@ soundness.
 Method overriding is common in Object-Oriented Programming. 
 With diamond inheritance where conflicting methods are intended to have 
 the same semantics, method overriding is not a problem. If conflicting
-methods arize from multiple parents, we can override all those methods 
+methods arise from multiple parents, we can override all those methods 
 in a single unified (or merged) method in the subclass. Therefore
 further overriding is simple, because there is only one method that
-can be overriden. 
+can be overridden. 
 
 With unintentional method conflicts, however, the situation is more
-complicated because different, separate, conflicting methods can exist
-in a class. Ideally we would like to support overriding for those
+complicated because different, separate, conflicting methods can coexist
+in one class. Ideally we would like to support overriding for those
 methods too, in exactly the same way that overriding is available for 
 other (non-conflicting) methods. However we need to be able to
 override the individual conflicting methods, rather than overriding all
 conflicting methods into a single merged one. We illustrate the
-problem and the need for a more refined overrding mechanism with 
+problem and the need for a more refined overriding mechanism with 
 an example.
 
 Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck| (based on the code in Section~\ref{subsec:problem2} without the old \lstinline|DrawableSafeDeck|), but he needs to override
@@ -319,9 +318,9 @@ Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck|
 
 %\paragraph{Problem:} how to update the conflicting methods separately, after the triangle inheritance.
 
-\paragraph{Potential solutions/workarounds in existing languages:} Unfortunately in all languages we known
+\paragraph{Potential solutions/workarounds in existing languages:} Unfortunately in all languages we have known
 (including C++), the existing approaches are unsatisfactory.
-One direction is to simply avoid this issue, by putting overriding before inheritance. For example, as shown in Figure~\ref{fig:drawablesafedeck}(right), we define a new component \lstinline|DrawableRect| that extends \lstinline|Drawable|, which simply draws the deck as a rectangle, and modifies the hierarchy:
+One direction is to simply avoid this issue, by putting overriding before inheritance. For example, as shown in Figure~\ref{fig:drawablesafedeck}(middle), we define a new component \lstinline|DrawableRect| that extends \lstinline|Drawable|, which simply draws the deck as a rectangle, and modifies the hierarchy:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableRect extends Drawable {
   void draw() {
@@ -366,9 +365,11 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {
 ((Drawable)new DrawableSafeDeck()).draw(); // calls the latest draw
 \end{lstlisting}\vspace{3pt}
 
+The UML graph is shown in Figure~\ref{fig:drawablesafedeck}(right), where
+the up-arrow $\uparrow$ is short for ``\lstinline|override|''.
 Here the idea is that \emph{only} \lstinline{Drawable.draw} is
-overriden. This is accomplished by specifying, in the method
-definition, that only the method override only overrides the method 
+overridden. This is accomplished by specifying, in the method
+definition, that the method only overrides the \lstinline|draw| 
 from \lstinline|Drawable|.  
 The individual overriding allows us to make use of the methods from \lstinline|SafeDeck| as well. In the formalization, the 
 hierarchical overriding feature is also an important feature that involves in the algorithm of hierarchical dispatch.
@@ -407,7 +408,7 @@ original method (branch), then it finds the most specific hierarchical
 overriding on that branch.
 
 Before the formalized algorithm, Figure~\ref{fig:examplesmbody} gives a peek at the behavior by
-some quick examples. The UML diagrams present the hierarchy. In (c) and (e), an up-arrow $\uparrow$ is short for ``\lstinline|override|''.
+some quick examples. The UML diagrams present the hierarchy. 
 In (d) and (e), a cross mark indicates that the interface fails to type-check. Generally, \MIM{} rejects on the definition of an interface
 during compilation, if it reaches a diamond and hence is possible to cause ambiguity. $\mbody$ is the method lookup function for hierarchical
 dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody(m, X, Y) = (Z, ...)$ reflects that the source code \lstinline|((X) new Y()).m()| calls \lstinline|Z.m| in the runtime. It is undefined when method dispatch is ambiguous.
