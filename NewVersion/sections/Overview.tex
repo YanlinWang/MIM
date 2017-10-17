@@ -233,10 +233,10 @@ When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, t
 is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver
 is replaced by the object \lstinline|new DrawableSafeDeck()|.
 
-From the perspective of \lstinline|DrawableSafeDeck|, the \lstinline|draw| method seems ambiguous. But ideally we would
+From the perspective of \lstinline|DrawableSafeDeck|, the \lstinline|draw| method seems to be ambiguous since \lstinline|DrawableSafeDeck| inherits two \lstinline|draw| method from both \lstinline|SafeDeck| and \lstinline|Drawable|. But ideally we would
 like \lstinline|shuffleAndDraw| to invoke \lstinline|SafeDeck.draw|
-because they belong to the same class hierarchy branch. It
-seems that we choose dynamic dispatch but also make use of static type
+because they belong to the same class hierarchy branch. Intuitively, it 
+seems like we need to choose dynamic dispatch but also make use of static type
 information, since the type of this-reference (\lstinline|Deck|)
 specifies the branch to use unambiguously.
 
@@ -244,16 +244,16 @@ specifies the branch to use unambiguously.
 
 \paragraph{\MIM's solution:} 
 The essential problem is how to ensure that the correct method is
-invoked. To solve this problem \MIM{} uses a variant of method
-dispatching that we call \textit{hierarchical dispatch}. In
-hierarchical dispatch both the static and dynamic type information 
+invoked. To solve this problem, \MIM{} uses a variant of method
+dispatching that we call \textit{hierarchical dispatching}. In
+hierarchical dispatching both the static and dynamic type information 
 are used to select the right method implementation.
 %Inspired by C++, we have formalized this feature into a minimal core calculus,
 %studied and proved the type soundness. It is concise and can readily be imported to other systems. 
 %And in the formalization, we propose \textit{hierarchical dispatch} in our model
 %as the default method lookup algorithm. 
-During the runtime, the method call \lstinline|e.m()|
-makes use of both the static type and the dynamic type of the receiver, so it is seemingly a
+During runtime, the method call \lstinline|e.m()|
+makes use of both the static type and the dynamic type of the receiver, so it seems to be a
 combination of static and dynamic dispatch. Intuitively, the static type specifies one branch
 to avoid ambiguity, and the dynamic type finds the most specific implementation on that branch. The formal algorithm will be introduced in Section~\ref{sec:formalization} and Section~\ref{sec:auxdefs}.
 
@@ -272,10 +272,10 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {}
 new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}\vspace{3pt}
 \bruno{Marco complined about this but this was not addressed either!!!}
-During the runtime, when \lstinline|this.draw()| in called,
+During the runtime, when \lstinline|this.draw()| is called,
 the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static type is actually
 \lstinline|Deck|. Here it is an instance of the \textit{hierarchical invocation}, which can be read as 
-``finding the most specific \lstinline|draw| along the path \lstinline|Deck|''. The meaning of ``along path
+``finding the most specific \lstinline|draw| method along path \lstinline|Deck|''. The meaning of ``along path
 \lstinline|Deck|'' not only implies what \lstinline|Deck| inherits, but also the domain of its subtypes up to the
 dynamic type \lstinline|DrawableSafeDeck|. Finally \lstinline|SafeDeck.draw| is correctly returned.
 
