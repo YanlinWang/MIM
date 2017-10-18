@@ -1,0 +1,25 @@
+interface T {
+  T m() override T {
+    return new T();
+  }
+}
+
+interface A extends T {
+  T m() override A {
+    return new A();
+  }
+}
+
+interface B extends T {
+  T m() override B {
+    return new B();
+  }
+}
+
+interface C extends A, B {
+  T m() override C {
+    return new C();
+  }
+}
+
+((T) new C()).m()
