@@ -161,8 +161,8 @@ C++ or C\#. Hierarchical overriding allows overriding to work
 for classes with multiple (conflicting) methods sharing the 
 same names and signatures. An example is presented in 
 Figure~\ref{fig:main}. In this example, there are 4 classes/interfaces.
-Two classes model a deck of cards (\lstinline|Deck|) and a class for
-drawable widgets (\lstinline|Drawable|). 
+Two classes \lstinline|Deck| and \lstinline|Drawable| model a deck of cards
+ and a drawable widget, respectively. 
 The class \lstinline|SafeDeck| adds functionality to check whether the
 deck is empty and to prevent drawing a card from an empty deck. 
 The interesting class is \lstinline|DrawableSafeDeck|, which inherits 
@@ -194,7 +194,8 @@ In summary, our contributions are:
           We provide the static and dynamic semantics and prove the
           type soundness of the model.
 	\item \textbf{Prototype implementation\footnote{https://github.com/YanlinWang/MIM/tree/master/Calculus}:} a
-          simple implementation of \MIM{} interpreter in Scala.
+          simple implementation of \MIM{} interpreter in Scala. The implementation can type-check and run the variants
+          of all the examples shown in this paper.
 \end{itemize}
 
  

@@ -1,10 +1,13 @@
 \section{Discussion}\label{sec:discussion}
 In this section, we will discuss the design space and reflect about some of the design decisions of our work. We relate 
 our language to traits, Java interfaces as well as other languages. Furthermore, we discuss
-ways to improve our  work.\bruno{references please!!!} \haoyuan{Done}
+ways to improve our work.
 
 \subsection{Abstract Methods}
 
+\haoyuan{Add two figures: triangle inheritance with abstract methods; accepted by both FHJ and Java; but the difference is
+Java automatically merges them, whereas FHJ distinguishes them. Diamond inheritance with abstract methods; accepted by Java
+but rejected by FHJ for some reason.}
 Abstract methods are one of the key features in most general OO languages. For example, Java interfaces were designed
 to include only method declarations, and those abstract methods can be implemented in a class body. 
 The formal Featherweight Java model~\cite{Igarashi01FJ} does not include abstract methods because of the orthogonality
@@ -19,10 +22,10 @@ is abstract or not.
 
 Our formalization has a simple form of abstract methods, which behave similarly to conventional methods with respect to conflicts.
 Other languages may support more complicated behaviours.
-For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. We omit
+For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. We reject
 that case for two reasons. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
 the rules and the proof a lot. Secondly, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance.
-\bruno{don't quite understand the last sentence.} In the presence of triangle inheritance we distinguish and treat differently the two methods instead of fusing them, since they represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
+\bruno{don't quite understand the last sentence.} In the presence of triangle inheritance we distinguish and treat differently the two methods instead of fusing them, since they may represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
 methods, and implicitly assuming diamond inheritance. 
 It is possible to change our model to account for other behaviours for abstract methods, but we view this as a mostly 
 orthogonal change to our work, that should not affect the essence of the model presented here.
@@ -75,4 +78,4 @@ Nonetheless,
 Another case is about the restriction on hierarchical overrides. In our language model there are two types of methods (though they share the same syntax): original methods and hierarchical overrides. We require that a hierarchical override should only override an original method. Yet from the idea of encapsulation and modularity on programs, we could also allow an override to work on another override, which forms a series of overrides.
 \end{comment}
 
-\haoyuan{more. 1) Path Invocation, more generalized diamond inheritance: not clear; other method resolution techniques: no example; better code reuse with other kinds of method invocation: no example. }
+%\haoyuan{more. 1) Path Invocation, more generalized diamond inheritance: not clear; other method resolution techniques: no example; better code reuse with other kinds of method invocation: no example. }

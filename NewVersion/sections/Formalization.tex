@@ -27,7 +27,7 @@ method named $m$ with result type $I$, parameters $\overline{x}$ of
 type $\overline{I_x}$ and the overriding target $J$. The body of the
 method simply includes the returned expression $e$. Notably, we have introduced the
 \kwoverride{} keyword to override an old implementation of the
-method. If the interface that it overrides is exactly the enclosing
+method.\haoyuan{Marco: rephrase.} If the interface that it overrides is exactly the enclosing
 interface, then such a method is seen as originally defined; otherwise it is an overriding method. The definition
 of abstract methods is written as $\absmethod{I}{m}{I_x}{x}{J}$, which is
 similar to a concrete method but without the method body. 
@@ -37,7 +37,7 @@ implies that we can uniquely identify a method by its name.
 \paragraph{Expressions \& Values}
 Expressions can be standard constructs such as variables, method
 invocation, object creation, together with cast expressions. 
-Object creation is represented by $\new I$. Fields and primitive types are not modelled in \MIM{}. 
+Object creation is represented by $\new I$.\haoyuan{add a footnote: $new I()\{\}$ in Java.} Fields and primitive types are not modelled in \MIM{}. 
 The casts are merely safe up-casts, and in fact, they can be viewed as
 annotated expressions, where the annotation indicates its static type.
 The coexistence of static and dynamic types is the key to hierarchical dispatch.
@@ -100,13 +100,14 @@ The hierarchical invocation $\mbody(m, I, J)$ means ``finding most specific meth
 above $I$ and along path $J$'', and usually $I$ denotes the dynamic type while $J$
 denotes the static type. 
 The formal definition of $\mbody(m, I, J)$ will be introduced in
-Section~\ref{sec:auxdefs}.
+Section~\ref{sec:auxdefs}.\haoyuan{rephrase. I=J in typing rules and avoid talking about dynamic type.}
 In \textsc{(T-Invk)}, as the compilation should not be aware
 of the dynamic type, it only requires that invoking $m$ is valid for the static type of the
 receiver. The result of $\mbody$ contains the interface that provides the most specific implementation,
 the parameters and the return type. We use underscore for the return expression, to imply that an empty return expression
 from an abstract method is also acceptable.
-Note that we accept implicit upcasts on the arguments.
+Note that we accept implicit upcasts on the arguments.\haoyuan{Remove the last sentence; it is just subtyping in OO and
+check this in the paper everywhere.}
 % \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
@@ -166,10 +167,10 @@ Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the
 	% \tsuperinvk \\
 	% \tstaticinvk  \\
 	\tnew \\
+	\tanno \\
 	\tmethod \\
 	\tabsmethod \\
-	\tintf \\
-	\tanno
+	\tintf
 \end{mathpar}
 \saveSpaceFig
 \caption{Typing and subtyping of \name{}.}

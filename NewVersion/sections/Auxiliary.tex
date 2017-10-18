@@ -1,16 +1,9 @@
 % \section{Method Lookup Algorithm and Auxiliary Definitions}\label{sec:auxdefs}
 \section{Key Algorithms and Type-Soundness}\label{sec:auxdefs}
-\yanlin{title changed, is this ok?}
 In this section, we present the fundamental algorithms and auxiliary
 definitions used in our formalization, and show that the resulting
 calculus is type sound. The functions presented in this section are
 the key components that implement our algorithm for method lookup.
-\bruno{Yes, I agree with Marco: we can move 3.4 to the end of Section
-  4. Don't forget to revise earlier parts of Section 3 to remove
-  mentions of type-soundness there. Or better, in the summary of
-  Section 3 you can point out that type soundness is proved at the 
-end of Section 4.
-}\yanlin{Revised, please check.}
 
 \subsection{Method Lookup Algorithm in \mbody{}}\label{subsec:mbodydef}
 
@@ -35,6 +28,7 @@ for the earlier examples in Figure~\ref{fig:examplesmbody}.
 To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
 
 \subsection{Finding the Most Specific Origin: \mostSpecific}\label{sec:mostSpecific}
+\haoyuan{Visualize findorigin and findoverride with some figures.}
 We proceed to give the definitions of two core functions that support method lookup, namely \mostSpecific{} and \mostSpecificOverride. Generally,
 $\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined, they should be above $I$ and
 along path $J$. ``Along path $J$'' means one should be either a subtype or a super type of $J$. Finally with $\prune$ (defined in Section~\ref{sec:otherdefs})
@@ -116,7 +110,7 @@ $\canOverride$ just checks that two original $m$ in $I$ and $J$ have the same ty
 \begin{flalign*}
 	& \rhd \textit{Definition of } \canInstantiate(I): & \\
 	& \bullet \canInstantiate(I) = True & \\
-	& \indent\indent \textrm{with: } \forall J \in \mostSpecific(m, I, I), \mostSpecificOverride(m, I, J) = \{K\}, & \\
+	& \indent\indent \textrm{with: } \forall m, \forall J \in \mostSpecific(m, I, I), \mostSpecificOverride(m, I, J) = \{K\}, & \\
 	& \hspace{.77in} \textrm{ and } K[m\ \kwoverride\ J] = \method{I_e}{m}{I_x}{x}{J}{e_0} &
 \end{flalign*}
 $\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the keyword $\kwnew$.
