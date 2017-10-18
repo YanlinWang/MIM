@@ -89,9 +89,10 @@ languages. Nevertheless, at this point, languages like Java simply treat the two
 as the same, and hence the compiler throws an error
 on \lstinline|DrawableDeck| about the conflict.
 
-This case is the so-called \textit{unintentional method conflict}. It arises when two inherited methods happen to have
+This case is an example of a so-called \textit{unintentional method conflict}. It arises when two inherited methods happen to have
 the same name and parameter types, but they are designed for different functionalities with different semantics.
-Now one may quickly come up with a workaround, which is to manually merge them, by
+Now one may quickly come up with a workaround, which is to manually
+merge the two methods, by
 creating a new \lstinline|draw| method in \lstinline|DrawableDeck| to
 override the old ones. However, merging two methods with totally different functionalities does not make any sense.
 This non-solution will hide the
@@ -253,7 +254,8 @@ are used to select the right method implementation.
 %And in the formalization, we propose \textit{hierarchical dispatch} in our model
 %as the default method lookup algorithm. 
 During runtime, the method call \lstinline|e.m()|
-makes use of both the static type and the dynamic type of the receiver, so it seems to be a
+makes use of both the static type and the dynamic type of the
+receiver, so it is a
 combination of static and dynamic dispatch. Intuitively, the static type specifies one branch
 to avoid ambiguity, and the dynamic type finds the most specific implementation on that branch. The formal algorithm will be introduced in Section~\ref{sec:formalization} and Section~\ref{sec:auxdefs}.
 
@@ -274,7 +276,7 @@ new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \bruno{Marco complined about this but this was not addressed either!!!}
 During the runtime, when \lstinline|this.draw()| is called,
 the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static type is actually
-\lstinline|Deck|. Here it is an instance of the \textit{hierarchical invocation}, which can be read as 
+\lstinline|Deck|. This is an instance of \textit{hierarchical invocation}, which can be read as 
 ``finding the most specific \lstinline|draw| method along path \lstinline|Deck|''. The meaning of ``along path
 \lstinline|Deck|'' not only implies what \lstinline|Deck| inherits, but also the domain of its subtypes up to the
 dynamic type \lstinline|DrawableSafeDeck|. Finally \lstinline|SafeDeck.draw| is correctly returned.
@@ -305,7 +307,7 @@ soundness.
 
 \subsection{Problem 3: Overriding on Individual Branches}\label{subsec:partialoverrides}
 Method overriding is common in Object-Oriented Programming. 
-With diamond inheritance where conflicting methods are intended to have 
+With diamond inheritance, where conflicting methods are intended to have 
 the same semantics, method overriding is not a problem. If conflicting
 methods arise from multiple parents, we can override all those methods 
 in a single unified (or merged) method in the subclass. Therefore
