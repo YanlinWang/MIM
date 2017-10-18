@@ -72,7 +72,7 @@ We believe that rejecting \lstinline|D| follows the principle of models like tra
 where the language/type-system is meant to alert the programmer for a possible conflict.
 
 Nonetheless,
- C++ accepts the definition of $D$, but forbids later upcasts from $D$ to $A$ because of ambiguity. Our language is more conservative on definitions of interfaces compared to C++, but on the upside, up-casts are not rejected. We could also loosen the model to accept definitions such as \lstinline|D|, and perform ambiguity check on upcasts and other expressions. However, we would need to handle more cases than C++. For instance, in the above program assume that $B.m$ and $C.m$ are hierarchical overrides on $A$. Then such a case is still a diamond.
+ C++ accepts the definition of $D$, but forbids later upcasts from $D$ to $A$ because of ambiguity. Our language is more conservative on definitions of interfaces compared to C++, but on the upside, upcasts are not rejected. We could also loosen the model to accept definitions such as \lstinline|D|, and perform ambiguity check on upcasts and other expressions. However, we would need to handle more cases than C++. For instance, in the above program assume that $B.m$ and $C.m$ are hierarchical overrides on $A$. Then such a case is still a diamond.
 
 \begin{comment}
 Another case is about the restriction on hierarchical overrides. In our language model there are two types of methods (though they share the same syntax): original methods and hierarchical overrides. We require that a hierarchical override should only override an original method. Yet from the idea of encapsulation and modularity on programs, we could also allow an override to work on another override, which forms a series of overrides.

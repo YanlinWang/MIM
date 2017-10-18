@@ -137,9 +137,9 @@ workarounds next:
 during inheritance instead of merging them into a single
 method. Therefore \MIM{} accepts the definition of
 \lstinline|DrawableDeck|. To disambiguate method calls, 
-we can use \emph{up-casts} in \MIM{} to specify the ``branch'' in the
+we can use \emph{upcasts} in \MIM{} to specify the ``branch'' in the
 inheritance hierarchy that should be called. The following code
-illustrates the use of up-casts for disambiguation:
+illustrates the use of upcasts for disambiguation:
 
 \vspace{3pt}\begin{lstlisting}
 interface Deck { void draw() {...} }
@@ -159,7 +159,7 @@ Without the cast, the call would be ambiguous and
 
 This example illustrates the basic form of triangle inheritance, where two unintentionally conflicting methods
 are accepted by multiple inheritance. Note that C++ supports this feature and also addresses the
-ambiguity by up-casts. The code for the above example in C++ is similar. 
+ambiguity by upcasts. The code for the above example in C++ is similar. 
 
 
 \subsection{Problem 2: Dynamic Dispatching}\label{subsec:problem2}
@@ -384,7 +384,7 @@ hierarchical overriding feature is also an important feature, involved in the al
 \paragraph{Terminology:} In \lstinline|Drawable|, \lstinline|Deck| and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
 
-A special rule for hierarchical overriding is: it can only refine \textbf{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch. \haoyuan{I think we are abusing font styles. TODO: put all bold text in italic, except for code. Keep FHJ as bold.}
+A special rule for hierarchical overriding is: it can only refine \textit{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
 
 \begin{figure*}[t]
 	\vspace{-1ex}
