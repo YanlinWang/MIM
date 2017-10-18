@@ -22,7 +22,7 @@ Other languages may support more complicated behaviours.
 For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. We omit
 that case for two reasons. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
 the rules and the proof a lot. Secondly, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance.
-\bruno{don't quite understand the last sentence.} In the presence of triangle inheritance we distinguish and treat differently on the two methods instead of fusing them, since they represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
+\bruno{don't quite understand the last sentence.} In the presence of triangle inheritance we distinguish and treat differently the two methods instead of fusing them, since they represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
 methods, and implicitly assuming diamond inheritance. 
 It is possible to change our model to account for other behaviours for abstract methods, but we view this as a mostly 
 orthogonal change to our work, that should not affect the essence of the model presented here.
@@ -44,7 +44,7 @@ A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ 
 
 One typical non-orthogonal extension to \MIM{} could be to have fields.
 The design of \MIM{} can be viewed as a variant of Java 8 with default methods which allows for unintentional method conflicts.
-Like Java interfaces and traits, state is forbidden in \MIM{} since having state in OO multiple inheritance is a non-trivial issue. There has been some related work on it, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. However such an extension requires more thoughts, so we leave it to future work.
+Like Java interfaces and traits, state is forbidden in \MIM{} since having state in OO multiple inheritance is a non-trivial issue. There has been some related work on it, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. However such an extension requires more thought, so we leave it to future work.
 
 \subsection{Loosening the Model: Reject Early or Reject Later?}
 
