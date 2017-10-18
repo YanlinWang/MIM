@@ -7,7 +7,7 @@ This folder contains a Scala project that implements FHJ as a simple interpreter
 - [./src/framework/Main.scala](https://github.com/YanlinWang/MIM/blob/master/Calculus/src/framework/Main.scala): the main program to run the examples.
 
 ## How to run
-The project is developed using Scala Eclipse IDE on Windows. Please install Scala Eclipse, go back to the [parent directory](https://github.com/YanlinWang/MIM) and import the entire fold "Calculus/" into the IDE as a Scala project. Run Main.scala as a Scala application.
+The project is developed using Scala Eclipse IDE on Windows. Please install Scala Eclipse, go back to the [parent directory](https://github.com/YanlinWang/MIM) and import the entire fold "Calculus/" into the IDE as a Scala project. Run __Main.scala__ as a Scala application.
 
 ## Examples
-[./examples/] has some examples introduced in the paper. You can also write your own programs and run them in Main.
+[./examples/](https://github.com/YanlinWang/MIM/tree/master/Calculus/examples) has some examples introduced in the paper. You can also write your own programs and run them in Main.
