@@ -254,7 +254,7 @@ receiver, so it is a
 combination of static and dynamic dispatch. Intuitively, the static type specifies one branch
 to avoid ambiguity, and the dynamic type finds the most specific implementation on that branch. The formal algorithm will be introduced in Section~\ref{sec:formalization} and Section~\ref{sec:auxdefs}.
 
-Using hierarchical dispatching the following code is accepted:
+\noindent Using hierarchical dispatching the following code is accepted:
 \vspace{3pt}\begin{lstlisting}
 interface Deck {
   void draw() {...}
@@ -264,18 +264,36 @@ interface Deck {
 interface Drawable {...}
 interface SafeDeck extends Deck {...}
 interface DrawableSafeDeck extends Drawable, SafeDeck {}
-
 // main program
 new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}\vspace{3pt}
+
+\noindent We show the rough reductions here (without our techniques):
+\begin{lstlisting}
+new DrawableSafeDeck().shuffleAndDraw() 
+-> [new DrawableSafeDeck().shuffle(), new DrawableSafeDeck().draw()]
+-> [..., ambiguous call!}]
+\end{lstlisting}
+When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck| is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver 
+is replaced by the object \lstinline|new DrawableSafeDeck()|.
+From the perspective of \lstinline|DrawableSafeDeck|, the \lstinline|draw| method is ambiguous since \lstinline|DrawableSafeDeck| inherits two \lstinline|draw| method from both \lstinline|SafeDeck| and \lstinline|Drawable|. But ideally we would
+like \lstinline|shuffleAndDraw| to invoke \lstinline|SafeDeck.draw|
+because they belong to the same class hierarchy branch. Here is the rough reductions in our model that accept this call: 
+\begin{lstlisting}
+new DrawableSafeDeck().shuffleAndDraw() 
+-> [..., (Deck)new DrawableSafeDeck().draw()]
+-> [..., SafeDeck.draw()]
+\end{lstlisting}
+We make use of the branch information by adding the cast \lstinline|Deck|, since the type of this-reference (\lstinline|Deck|) specifies the branch to use unambiguously. 
 During the runtime, when \lstinline|this.draw()| is called,
 the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static type is actually
 \lstinline|Deck|. This is an instance of \textit{hierarchical invocation}, which can be read as 
 ``finding the most specific \lstinline|draw| method along path \lstinline|Deck|''. The meaning of ``along path
 \lstinline|Deck|'' not only implies what \lstinline|Deck| inherits, but also the domain of its subtypes up to the
-dynamic type \lstinline|DrawableSafeDeck|. Finally \lstinline|SafeDeck.draw| is correctly returned.
-\haoyuan{Add reduction steps for this example and illustrate it better.}
+dynamic type \lstinline|DrawableSafeDeck|. Finally \lstinline|SafeDeck.draw| is correctly returned. The details of how this is done will be explained in Section~\ref{sec:formalization}.
 
+\haoyuan{Add reduction steps for this example and illustrate it better.}
+\yanlin{Added, please review}
 %Note that in C++, if we put the \lstinline[language=c++]|virtual| keyword in front of every \lstinline|draw| method, that means
 %we enforce the dynamic dispatch, and it does the disambiguation correctly.
 %Unfortunately, the C++ language, or rather the feature on triangle inheritance, has not been well formalized.
