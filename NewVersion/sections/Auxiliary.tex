@@ -28,9 +28,8 @@ for the earlier examples in Figure~\ref{fig:examplesmbody}.
 To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
 
 \subsection{Finding the Most Specific Origin: \mostSpecific}\label{sec:mostSpecific}
-\haoyuan{Visualize findorigin and findoverride with some figures.}
 We proceed to give the definitions of two core functions that support method lookup, namely \mostSpecific{} and \mostSpecificOverride. Generally,
-$\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined. As shown in Figure~\ref{fig:findOrigin}(left), interfaces in this set should be above interface $I$ and along path $J$. ``Along path $J$'' means the interface should be either a subtype or a super type of $J$, visually, it should locate between $J$ and $I$ or above $J$. Finally with $\prune$ (defined in Section~\ref{sec:otherdefs})
+$\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined. Interfaces in this set should be above interface $I$ and along path $J$. Finally with $\prune$ (defined in Section~\ref{sec:otherdefs})
 the overridden interfaces will be filtered out.
 
 \begin{flalign*}
@@ -42,25 +41,10 @@ the overridden interfaces will be filtered out.
 By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only if:
 \begin{itemize}
 	\item It originally defines $m$;
-	\item It is a super type of $I$;
-	\item It is either a super type or a subtype of $J$ (including $J$ itself);
+	\item It is a super type of $I$ (including $I$);
+	\item It is either a super type or a subtype of $J$ (including $J$);
 	\item Any subtype of it does not belong to the same result set because of $\prune$.
 \end{itemize}
-
-\begin{figure*}[t]
-  % \nocaptionrule
-  % \centering
-  \centering
-  \begin{minipage}[t]{0.55\textwidth}
-  \includegraphics[width=1cm]{pics/P10.pdf}
-  \end{minipage}
-  \centering
-  \hspace*{2pt}
-  \begin{minipage}[t]{0.35\textwidth}
-  \includegraphics[width=1cm]{pics/P9.pdf}
-  \end{minipage}  
-  \caption{UMLs illustrating \mostSpecific(left) and \mostSpecificOverride(right)}\label{fig:findOrigin}
-\end{figure*}
 
 
 \subsection{Finding the Most Specific Overriding: \mostSpecificOverride}\label{sec:mostSpecificOverride}
@@ -75,9 +59,9 @@ tries to find the interfaces with the most specific implementations that hierarc
 	& \bullet \mostSpecificOverride(m, I, J) = \prune(overrides) & \\
 	& \indent\indent \textrm{with: } overrides = \{K \mid \subt{I}{K}, \; \subt{K}{J} \textrm{ and } K[m\ \kwoverride\ J] \textrm{ is defined} &
 \end{flalign*}
-By the definition, as shown in Figure~\ref{fig:findOrigin}, an interface belongs to $\mostSpecific(m, I, J)$ if and only if:
+By the definition, an interface belongs to $\mostSpecificOverride(m, I, J)$ if and only if:
 \begin{itemize}
-	\item it is between $I$ and $J$;
+	\item it is between $I$ and $J$ (including $I$, $J$);
 	\item it hierarchically overrides $J.m$;
 	\item any subtype of it does not belong to the same set.
 \end{itemize}
