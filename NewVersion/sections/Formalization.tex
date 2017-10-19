@@ -96,9 +96,10 @@ Naturally, the receiver and the arguments are required to be well-typed.
 $\mbody$ is our key function for method lookup that implements the
 hierarchical dispatching algorithm. The formal definition will be introduced in Section~\ref{sec:auxdefs}.
 Here $\mbody(m, I_0, I_0)$ finds the most specific $m$ above $I_0$. ``Above $I_0$'' specifies
-the search space: it not only includes the body of $I_0$, but also its super types.
+the search space, namely the super types of $I_0$ including itself.
 For the general case, however, the hierarchical invocation $\mbody(m, I, J)$ finds ``the most specific $m$
-above $I$ and along path/branch $J$''.\haoyuan{Make sure we mentioned this in Overview.}
+above $I$ and along path/branch $J$''. ``Along path $J$'' additionally requires the result to relate to $J$, that is to say,
+the most specific interface has a subtyping relationship with $J$.
 
 In \textsc{(T-Invk)}, as the compilation should not be aware
 of the dynamic type, it only requires that invoking $m$ is valid for the static type of the
