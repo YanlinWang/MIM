@@ -7,6 +7,31 @@ the key components that implement our algorithm for method lookup.
 
 \subsection{Method Lookup Algorithm in \mbody{}}\label{subsec:mbodydef}
 
+
+\begin{figure*}[t]
+\saveSpaceFig
+\begin{mathpar}
+	\framebox{$ I <: J $} \hspace{.5in} \subid \\
+	\subtrans \hspace{.5in} \subextends \\
+	
+	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
+	\tvar \\
+	\tinvk \\
+	% \tpathinvk \\
+	% \tsuperinvk \\
+	% \tstaticinvk  \\
+	\tnew \\
+	\tanno \\
+	\tmethod \\
+	\tabsmethod \\
+	\tintf
+\end{mathpar}
+\saveSpaceFig
+\caption{Typing and subtyping of \name{}.}
+\label{fig:typingrules}
+\end{figure*}
+
+
 $\mbody(m, I_d, I_s)$ denotes the method body lookup function.
 We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation. More
 accurately, $\mbody$ returns the parameters, returned expression

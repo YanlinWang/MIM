@@ -11,7 +11,7 @@ hierarchical dispatching, our model is not a novel
 mechanism. Instead, 
 inspired by the C++ solutions, our contribution is formalizing a minimal calculus
 of this feature together with a proof of type soundness. However, for the final problem, there is no satisfactory approach
-in existing languages, thus what we propose is a new feature (hierarchical
+in existing languages, thus what we propose is a novel feature (hierarchical
 overriding) with the corresponding formalization of that feature.
 
 In the rest of the paper, we use a Java-like syntax for programs. All types are defined with the keyword
@@ -59,12 +59,12 @@ In \lstinline|Deck|,
 \lstinline|draw| uses \lstinline|println|, which is a
 library function. 
 The two \lstinline|draw| methods can have different return types, but for simplicity, 
-they both return \lstinline|void| here. Note that, similarly to
+the return types are both \lstinline|void| here. Note that, similarly to
 Featherweight Java~\cite{Igarashi01FJ}, \lstinline|void| is
 unsupported in our formalization. We could have also defined an interface called \lstinline|Void|
 and return an object of that type instead. To be concise, however, we
 use \lstinline|void| in our examples.
-For \lstinline|Drawable| the \lstinline|draw| method
+In interface \lstinline|Drawable|, the \lstinline|draw| method
 creates a blank canvas.
 
 \begin{comment}

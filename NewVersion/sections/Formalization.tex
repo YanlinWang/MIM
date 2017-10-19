@@ -151,30 +151,6 @@ the conflicting ones.
 
 Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
 
-
-\begin{figure*}[t]
-\saveSpaceFig
-\begin{mathpar}
-	\framebox{$ I <: J $} \hspace{.5in} \subid \\
-	\subtrans \hspace{.5in} \subextends \\
-	
-	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
-	\tvar \\
-	\tinvk \\
-	% \tpathinvk \\
-	% \tsuperinvk \\
-	% \tstaticinvk  \\
-	\tnew \\
-	\tanno \\
-	\tmethod \\
-	\tabsmethod \\
-	\tintf
-\end{mathpar}
-\saveSpaceFig
-\caption{Typing and subtyping of \name{}.}
-\label{fig:typingrules}
-\end{figure*}
-
 \subsection{Small-step Semantics and Congruence}
 Figure~\ref{fig:smallstep} defines the small-step semantic and
 congruence rules of \MIM{}. When evaluating an expression, they
@@ -217,33 +193,4 @@ By typing rules, the code is well-compiled. And during runtime,
 	& ((Drawable) new DrawableDeck()).draw() \\
 \rightarrow & (JFrame) new JFrame()
 \end{align*}
-\end{comment}
-
-\begin{figure*}[t]
-\saveSpaceFig
-\begin{mathpar}
-	% \sinvk \\
-	\spathinvk \\
-	% \ssuperinvk \\
-	% \sstaticinvk \\
-	\creceiver \hspace{.5in}
-	% \cpathreceiver \\
-	\cargs \\
-	% \cpathargs \\
-	% \csuperargs \\
-	% \cstaticargs \\
-	\cstatictype \\
-	\cfreduce \\
-	\cannoreduce
-\end{mathpar}
-\caption{Small-step semantics.}\label{fig:smallstep}
-\saveSpaceFig
-\end{figure*}
-
-\begin{comment}
-\begin{figure*}[t]
-\begin{mathpar}
-\end{mathpar}
-\caption{Congruence.}\label{fig:congruence}
-\end{figure*}
 \end{comment}
