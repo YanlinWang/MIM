@@ -228,13 +228,31 @@ new DrawableSafeDeck().shuffleAndDraw()
 When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck|
 is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver
 is replaced by the object \lstinline|new DrawableSafeDeck()|.
+From the perspective of \lstinline|DrawableSafeDeck|, the
+\lstinline|draw| method seems to be ambiguous since
+\lstinline|DrawableSafeDeck| inherits two \lstinline|draw| method from
+both \lstinline|SafeDeck| and \lstinline|Drawable|. 
+Indeed, using the a reduction model similar to FJ~\cite{} (where static types tracked), the 
+reduction steps would roughly be:
+\begin{lstlisting}
+new DrawableSafeDeck().shuffleAndDraw() 
+-> [new DrawableSafeDeck().shuffle(), new DrawableSafeDeck().draw()]
+-> [..., ambiguous call!}]
+\end{lstlisting}
+When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck| is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver 
+is replaced by the object \lstinline|new DrawableSafeDeck()|.
+From the perspective of \lstinline|DrawableSafeDeck|, the \lstinline|draw| method is ambiguous since \lstinline|DrawableSafeDeck| inherits two \lstinline|draw| method from both \lstinline|SafeDeck| and \lstinline|Drawable|. But ideally we would
+like \lstinline|shuffleAndDraw| to invoke \lstinline|SafeDeck.draw|
+because they belong to the same class hierarchy branch.
 
-From the perspective of \lstinline|DrawableSafeDeck|, the \lstinline|draw| method seems to be ambiguous since \lstinline|DrawableSafeDeck| inherits two \lstinline|draw| method from both \lstinline|SafeDeck| and \lstinline|Drawable|. But ideally we would
+\begin{comment}
+But ideally we would
 like \lstinline|shuffleAndDraw| to invoke \lstinline|SafeDeck.draw|
 because they belong to the same class hierarchy branch. Intuitively, it 
 seems like we need to choose dynamic dispatch but also make use of static type
 information, since the type of this-reference (\lstinline|Deck|)
 specifies the branch to use unambiguously.
+\end{comment}
 
 %%\paragraph{Problem:} \\
 
@@ -268,23 +286,13 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {}
 new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}\vspace{3pt}
 
-\noindent We show the rough reductions here (without static types tracked):
-\begin{lstlisting}
-new DrawableSafeDeck().shuffleAndDraw() 
--> [new DrawableSafeDeck().shuffle(), new DrawableSafeDeck().draw()]
--> [..., ambiguous call!}]
-\end{lstlisting}
-When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck| is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver 
-is replaced by the object \lstinline|new DrawableSafeDeck()|.
-From the perspective of \lstinline|DrawableSafeDeck|, the \lstinline|draw| method is ambiguous since \lstinline|DrawableSafeDeck| inherits two \lstinline|draw| method from both \lstinline|SafeDeck| and \lstinline|Drawable|. But ideally we would
-like \lstinline|shuffleAndDraw| to invoke \lstinline|SafeDeck.draw|
-because they belong to the same class hierarchy branch. Here is the rough reductions in our model that accept this call: 
+Here are the reductions performed in \MIM{} to accept this call: 
 \begin{lstlisting}
 new DrawableSafeDeck().shuffleAndDraw() 
 -> [..., (Deck)new DrawableSafeDeck().draw()]
 -> [..., SafeDeck.draw()]
 \end{lstlisting}
-We make use of the branch information by adding the cast \lstinline|Deck|, since the type of this-reference (\lstinline|Deck|) specifies the branch to use unambiguously. 
+Notably, we make use of the branch information by adding the cast \lstinline|Deck|, since the type of this-reference (\lstinline|Deck|) specifies the branch to use unambiguously. 
 During the runtime, when \lstinline|this.draw()| is called,
 the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static type is actually
 \lstinline|Deck|. This is an instance of \textit{hierarchical invocation}, which can be read as 
