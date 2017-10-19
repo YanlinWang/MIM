@@ -5,9 +5,6 @@ ways to improve our work.
 
 \subsection{Abstract Methods}
 
-\haoyuan{Add two figures: triangle inheritance with abstract methods; accepted by both FHJ and Java; but the difference is
-Java automatically merges them, whereas FHJ distinguishes them. Diamond inheritance with abstract methods; accepted by Java
-but rejected by FHJ for some reason.}
 Abstract methods are one of the key features in most general OO languages. For example, Java interfaces were designed
 to include only method declarations, and those abstract methods can be implemented in a class body. 
 The formal Featherweight Java model~\cite{Igarashi01FJ} does not include abstract methods because of the orthogonality
@@ -21,14 +18,29 @@ has to check whether an interface can be instantiated, by looking at all the inh
 is abstract or not.
 
 Our formalization has a simple form of abstract methods, which behave similarly to conventional methods with respect to conflicts.
-Other languages may support more complicated behaviours.
-For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. We reject
-that case for two reasons. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
-the rules and the proof a lot. Secondly, our design choice tends to give more sense on those interesting cases, just as we reject the simple case of diamond inheritance.
-\bruno{don't quite understand the last sentence.} In the presence of triangle inheritance we distinguish and treat differently the two methods instead of fusing them, since they may represent different operations, even if they are abstract. Thus our model adopts a very conservative behaviour rather than automatically merging 
-methods, and implicitly assuming diamond inheritance. 
-It is possible to change our model to account for other behaviours for abstract methods, but we view this as a mostly 
+Other languages may support more complicated behaviors.
+For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. In Figure~\ref{fig:abstractdiamond}, we use italic $m$ to denote abstract methods. For both cases, the Java compiler automatically merges conflicting $m$ in $C$. In contrast, \MIM{} distinguishes $A.m$ and $B.m$ in triangle inheritance (left), and rejects the diamond inheritance (right). There are two reasons. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
+the rules and the proof a lot. Secondly, we distinguish and treat differently on the conflicting methods, since they may represent different operations, even if they are abstract. Thus our model adopts a very conservative behavior rather than automatically merging 
+methods. For the diamond case, as we have mentioned, it is actually an intentional conflict due to the same source $T$.
+It is possible to change our model to account for other behaviors for abstract methods, but we view this as a mostly 
 orthogonal change to our work, that should not affect the essence of the model presented here.
+
+\begin{figure*}[t]
+    % \nocaptionrule
+    % \centering
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=2cm]{pics/P7.pdf}
+    \end{minipage}
+    \centering
+    \hspace*{2pt}
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=2cm]{pics/P8.pdf}
+    \end{minipage}  
+    \caption{Triangle inheritance (left) and diamond inheritance (right) on abstract methods.}\label{fig:abstractdiamond}
+\end{figure*}
 
 \subsection{Orthogonal \& Non-Orthogonal Extensions}\label{sec:orthoext}
 
@@ -37,11 +49,11 @@ common orthogonal features including primitive types, assignments, method overlo
 Those features can, in principle, be modularly added to the model without breaking type soundness. For example, we present the additional syntax, typing and semantic rules of static invocation below as an extension:
 
 \begin{mathpar}
-	\begin{array}{llrl}
-		\text{Expressions}  & e  & \Coloneqq & \ldots \; \mid \; e.J_0@J_1::m(\overline{e})
-	\end{array} \\
-	\tstaticinvk \\
-	\sstaticinvk
+    \begin{array}{llrl}
+        \text{Expressions}  & e  & \Coloneqq & \ldots \; \mid \; e.J_0@J_1::m(\overline{e})
+    \end{array} \\
+    \tstaticinvk \\
+    \sstaticinvk
 \end{mathpar}
 A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ in $J_0$ that hierarchically overrides $J_1$, thus $J_0[m\ \kwoverride\ J_1]$ is invoked. As shown in \textsc{(S-StaticInvk)}, static dispatch needs a receiver for the substitution of the ``$\kwthis$'' reference, so as to provide the latest implementations. In fact, static dispatch is common in OO programming, as it provides a shortcut to the reuse of old implementation easily, and super calls can also rely on this feature. For convenience we just make it simple above, whereas in languages like C++ or Java, the static or super invocations are more flexible, as they can climb the class hierarchy. 
 
