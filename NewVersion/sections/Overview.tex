@@ -268,7 +268,7 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {}
 new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}\vspace{3pt}
 
-\noindent We show the rough reductions here (without our techniques):
+\noindent We show the rough reductions here (without static types tracked):
 \begin{lstlisting}
 new DrawableSafeDeck().shuffleAndDraw() 
 -> [new DrawableSafeDeck().shuffle(), new DrawableSafeDeck().draw()]
