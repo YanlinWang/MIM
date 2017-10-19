@@ -143,7 +143,7 @@ illustrates the use of upcasts for disambiguation:
 
 \vspace{3pt}\begin{lstlisting}
 interface Deck { void draw() {...} }
-interface Drawable { JFrame draw() {...} }
+interface Drawable { void draw() {...} }
 interface DrawableDeck extends Drawable, Deck {}
 
 // main program
@@ -408,7 +408,7 @@ A special rule for hierarchical overriding is: it can only refine \textit{origin
 	%\saveSpaceFig
 \end{figure*}
 
-\paragraph{A peek of hierarchical dispatching algorithm:} In \MIM{}, triangle inheritance allows several original methods (branches)
+\paragraph{A peek at the hierarchical dispatching algorithm:} In \MIM{}, triangle inheritance allows several original methods (branches)
 to coexist, and hierarchical dispatch first finds the most specific
 original method (branch), then it finds the most specific hierarchical
 overriding on that branch.
@@ -416,9 +416,9 @@ overriding on that branch.
 Before the formalized algorithm, Figure~\ref{fig:examplesmbody} gives
 a peek at the behavior 
 using a few examples. The UML diagrams present the hierarchy. 
-In (d) and (e), a cross mark indicates that the interface fails to type-check. Generally, \MIM{} rejects on the definition of an interface
-during compilation, if it reaches a diamond and hence is possible to cause ambiguity. $\mbody$ is the method lookup function for hierarchical
-dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody(m, X, Y) = (Z, ...)$ reflects that the source code \lstinline|((X) new Y()).m()| calls \lstinline|Z.m| in the runtime. It is undefined when method dispatch is ambiguous.
+In (d) and (e), a cross mark indicates that the interface fails to type-check. Generally, \MIM{} rejects the definition of an interface
+during compilation if it reaches a diamond with ambiguity. $\mbody$ is the method lookup function for hierarchical
+dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody(m, X, Y) = (Z, ...)$ reflects that the source code \lstinline|((Y) new X()).m()| calls \lstinline|Z.m| in the runtime. It is undefined when method dispatch is ambiguous.
 
 In  Figure~\ref{fig:examplesmbody}, (a) is the base case for unintentional conflicts, namely the triangle inheritance. (b) uses overriding to explicitly merge the conflicting methods. (c) represents hierarchical overriding. (d) and (e) are two base cases of diamond inheritance in \MIM{}, and the definition of each $C$ is rejected because $T$ is an ambiguous parent to $C$. (f) gives a common solution to the diamond as in Java or traits, which is to explicitly override $A.m$ and $B.m$ in $C$. In the last three examples, conflicting methods $A.m$ and $B.m$ should be viewed as
 intentional conflicts, as they come from the same source $T$.
