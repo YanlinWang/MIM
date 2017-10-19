@@ -188,17 +188,9 @@ interface SafeDeck extends Deck {
   }
 }
 \end{lstlisting}\vspace{3pt}
-Without dynamic dispatching, we may have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|, so that \lstinline|shuffleAndDraw| calls the new \lstinline|draw| defined in \lstinline|SafeDeck|. Yet dynamic dispatching immediately saves us from the duplication work,
+Without dynamic dispatching, we may have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|, so that \lstinline|shuffleAndDraw| calls the new \lstinline|draw| defined in \lstinline|SafeDeck|. Dynamic dispatching immediately saves us from the duplication work,
 since the method becomes automatically dispatched to the most specific one. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity.
-For instance, when we have the class hierarchy structure shown in Figure~\ref{fig:drawablesafedeck}(left) and the following code:
-
-% \begin{figure*}[t]
-% 	\saveSpaceFig
-% 	\centering
-% 	\includegraphics[height=2cm]{pics/DrawableSafeDeck.pdf}
-% 	\caption{UML graph for \lstinline|DrawableSafeDeck|.}\label{fig:drawablesafedeck}
-% 	\saveSpaceFig
-% \end{figure*}
+For instance, when we have the class hierarchy structure shown in Figure~\ref{fig:drawablesafedeck}(left) with the following code:
 
 \begin{figure*}[t]
   % \nocaptionrule
@@ -221,27 +213,34 @@ For instance, when we have the class hierarchy structure shown in Figure~\ref{fi
 
 \vspace{3pt}\begin{lstlisting}
 interface DrawableSafeDeck extends Drawable, SafeDeck {}
-
 // main program
 new DrawableSafeDeck().shuffleAndDraw()
 \end{lstlisting}\vspace{3pt}
-When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck|
+
+\noindent Indeed, using the a reduction model similar to FJ~\cite{Igarashi01FJ} (without static types tracked), the reduction steps would roughly be:
+
+% \begin{equation}\label{}
+% \begin{split}
+% A & = \frac{\pi r^2}{2} \\
+%  & = \frac{1}{2} \pi r^2
+% \end{split}
+% \end{equation}
+
+\begin{lstlisting}[style=reduction, escapechar=\%]
+   %\underline{new DrawableSafeDeck()}%.shuffleAndDraw()
+-> %\underline{new DrawableSafeDeck().shuffle()}%, new DrawableSafeDeck().draw()
+-> ..., %\underline{new DrawableSafeDeck().draw()}%
+-> ..., ambiguous call!!!
+\end{lstlisting}
+
+\noindent When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck|
 is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver
 is replaced by the object \lstinline|new DrawableSafeDeck()|.
 From the perspective of \lstinline|DrawableSafeDeck|, the
 \lstinline|draw| method seems to be ambiguous since
-\lstinline|DrawableSafeDeck| inherits two \lstinline|draw| method from
+\lstinline|DrawableSafeDeck| inherits two \lstinline|draw| methods from
 both \lstinline|SafeDeck| and \lstinline|Drawable|. 
-Indeed, using the a reduction model similar to FJ~\cite{} (where static types tracked), the 
-reduction steps would roughly be:
-\begin{lstlisting}
-new DrawableSafeDeck().shuffleAndDraw() 
--> [new DrawableSafeDeck().shuffle(), new DrawableSafeDeck().draw()]
--> [..., ambiguous call!}]
-\end{lstlisting}
-When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck| is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver 
-is replaced by the object \lstinline|new DrawableSafeDeck()|.
-From the perspective of \lstinline|DrawableSafeDeck|, the \lstinline|draw| method is ambiguous since \lstinline|DrawableSafeDeck| inherits two \lstinline|draw| method from both \lstinline|SafeDeck| and \lstinline|Drawable|. But ideally we would
+But ideally we would
 like \lstinline|shuffleAndDraw| to invoke \lstinline|SafeDeck.draw|
 because they belong to the same class hierarchy branch.
 
@@ -254,8 +253,6 @@ information, since the type of this-reference (\lstinline|Deck|)
 specifies the branch to use unambiguously.
 \end{comment}
 
-%%\paragraph{Problem:} \\
-
 \paragraph{\MIM's solution:} 
 The essential problem is how to ensure that the correct method is
 invoked. To solve this problem, \MIM{} uses a variant of method
@@ -266,10 +263,10 @@ are used to select the right method implementation.
 %studied and proved the type soundness. It is concise and can readily be imported to other systems. 
 %And in the formalization, we propose \textit{hierarchical dispatch} in our model
 %as the default method lookup algorithm. 
-During runtime, the method call \lstinline|e.m()|
+During runtime, a method call \lstinline|e.m()|
 makes use of both the static type and the dynamic type of the
 receiver, so it is a
-combination of static and dynamic dispatch. Intuitively, the static type specifies one branch
+combination of static and dynamic dispatching. Intuitively, the static type specifies one branch
 to avoid ambiguity, and the dynamic type finds the most specific implementation on that branch. The formal algorithm will be introduced in Section~\ref{sec:formalization} and Section~\ref{sec:auxdefs}.
 
 \noindent Using hierarchical dispatching the following code is accepted:
@@ -286,12 +283,16 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {}
 new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}\vspace{3pt}
 
-Here are the reductions performed in \MIM{} to accept this call: 
-\begin{lstlisting}
-new DrawableSafeDeck().shuffleAndDraw() 
--> [..., (Deck)new DrawableSafeDeck().draw()]
--> [..., SafeDeck.draw()]
+\noindent Here are the reductions performed in \MIM{}:
+\begin{lstlisting}[style=reduction, escapechar=\%]
+   %\underline{new DrawableSafeDeck()}%.shuffleAndDraw()
+-> %\underline{((DrawableSafeDeck)new DrawableSafeDeck()).shuffleAndDraw()}%
+-> %\underline{((Deck)new DrawableSafeDeck()).shuffle()}%, ((Deck)new DrawableSafeDeck()).draw()
+-> ..., %\underline{((Deck)new DrawableSafeDeck()).draw()}%
+-> ..., ... %//SafeDeck.draw()%
 \end{lstlisting}
+
+
 Notably, we make use of the branch information by adding the cast \lstinline|Deck|, since the type of this-reference (\lstinline|Deck|) specifies the branch to use unambiguously. 
 During the runtime, when \lstinline|this.draw()| is called,
 the dynamic type of the receiver is \lstinline|DrawableSafeDeck|, but the static type is actually
