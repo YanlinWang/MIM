@@ -227,10 +227,11 @@ new DrawableSafeDeck().shuffleAndDraw()
 % \end{equation}
 
 \vspace{3pt}\begin{lstlisting}[style=reduction, escapechar=\%]
-   %\underline{new DrawableSafeDeck()}%.shuffleAndDraw()
--> %\underline{new DrawableSafeDeck().shuffle()}%, new DrawableSafeDeck().draw()
--> ..., %\underline{new DrawableSafeDeck().draw()}%
--> ..., ambiguous call!!!
+   %new DrawableSafeDeck()%.shuffleAndDraw()
+-> %new DrawableSafeDeck().shuffle()%; new DrawableSafeDeck().draw()
+-> ...
+-> %new DrawableSafeDeck().draw()%
+-> ambiguous call!!!
 \end{lstlisting}\vspace{3pt}
 
 \noindent When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck|
@@ -284,21 +285,39 @@ new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}\vspace{3pt}
 And the computation performed in \MIM{} is as follows:
 \vspace{3pt}\begin{lstlisting}[style=reduction, escapechar=\%]
-   %\underline{new DrawableSafeDeck()}%.shuffleAndDraw()
--> %\underline{((DrawableSafeDeck) new DrawableSafeDeck()).shuffleAndDraw()}%
--> %\underline{((Deck) new DrawableSafeDeck()).shuffle()}%, ((Deck) new DrawableSafeDeck()).draw()
--> ..., %\underline{((Deck) new DrawableSafeDeck()).draw()}%
--> ..., ... %// SafeDeck.draw%
+   %new DrawableSafeDeck()%.shuffleAndDraw()
+-> %((DrawableSafeDeck) new DrawableSafeDeck()).shuffleAndDraw()%
+-> %((Deck) new DrawableSafeDeck()).shuffle()%; ((Deck) new DrawableSafeDeck()).draw()
+-> ...
+-> %((Deck) new DrawableSafeDeck()).draw()%
+-> ... %// SafeDeck.draw%
 \end{lstlisting}\vspace{3pt}
 
-Notably, we track the static types by adding casts. In the second reduction step, when 
-\lstinline|shuffleAndDraw| is dispatched, the receiver \lstinline|(DrawableSafeDeck) new DrawableSafeDeck()|
-has to replace the special variable \lstinline|this|, but at this point the cast becomes the type of \lstinline|this|,
-namely \lstinline|Deck|. Thus the information is saved for future disambiguation. And later in the fourth step,
+Notably, we track the static types by adding casts. In contrast to FJ,
+where \lstinline|new C()| is a value, in \MIM{} such expression is not 
+a value. Instead an expression of the form \lstinline|new C()| is reduced to
+\lstinline|(C) new C()|, which is a value in \MIM{}. This rule is
+applied in the first reduction step. 
+In the second reduction step, when 
+\lstinline|shuffleAndDraw| is dispatched, the receiver
+\lstinline|(DrawableSafeDeck) new DrawableSafeDeck()|
+replaces the special variable \lstinline|this| by 
+\lstinline|(Deck) new DrawableSafeDeck()|. Here, the static type used
+in the cast denotes the origin of the \lstinline|shuffleAndDraw|
+method used
+for method dispatching. 
+%The static type information about the origin
+%of the method is helpful for future disambiguation. 
+Later, in the fourth step,
 \lstinline|((Deck) new DrawableSafeDeck()).draw()|
 is an instance of \textit{hierarchical invocation}, which can be read as 
 ``finding the most specific \lstinline|draw| above \lstinline|DrawableSafeDeck| and along path \lstinline|Deck|''. The meaning of ``above \lstinline|DrawableSafeDeck|'' implies its super types, and ``along path
-\lstinline|Deck|'' specifies the branch. It finally finds the most specific version in \lstinline|SafeDeck|.
+\lstinline|Deck|'' specifies the branch. Finally, in the last
+reduction step, we find the most
+specific version of \lstinline|draw| in \lstinline|SafeDeck|. In this
+reduction, the cast that tracks the origin of
+\lstinline|shuffleAndDraw| is crutial to unambiguously find the
+correct implementation of \lstinline|draw|.
 The formal procedure will be introduced in Section~\ref{sec:formalization} and Section~\ref{sec:auxdefs}.
 %Note that in C++, if we put the \lstinline[language=c++]|virtual| keyword in front of every \lstinline|draw| method, that means
 %we enforce the dynamic dispatch, and it does the disambiguation correctly.
