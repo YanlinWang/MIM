@@ -128,8 +128,8 @@ the most specific interface that has a subtyping relationship with $J$.
 In \textsc{(T-Invk)}, as the compilation should not be aware
 of the dynamic type, it only requires that invoking $m$ is valid for the static type of the
 receiver. The result of $\mbody$ contains the interface that provides the most specific implementation,
-the parameters and the return type. We use underscore for the return expression, to imply that an empty return expression
-from an abstract method is also acceptable.
+the parameters and the return type. We use underscore for the return expression, implying that an empty return expression
+from an abstract method is acceptable.
 % \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
@@ -159,14 +159,13 @@ that case meets our expectation. Below is an example (Figure~\ref{fig:examplesmb
 %  state-it upfront please. Is this example meant to ilustrate T-Inf?
 %  Then it's better to have the example together with the text
 %  explaining T-inf.} \yanlin{revised.please check whether you're happy with it.}
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface T                 { T m() override T { return new T(); } }
 interface A extends T       { T m() override T { return new A(); } }
 interface B extends T       { T m() override T { return new B(); } }
 interface C extends A, B {}
-
 ((T) new C()).m()
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 This program does not compile on interface $C$, because of the second condition in \textsc{(T-Intf)}, where $I$ equals $C$ and $J$ equals $T$.
 By the algorithm, $\mbody(m, T, T)$ will refer to $T.m$, but $\mbody(m, C, T)$ is undefined, since both $A.m$ and $B.m$ are most specific
 to $C$ along path $T$, which forms a diamond. The expression \lstinline|((A) new D()).m()| is one example of triggering ambiguity, but \MIM{}
@@ -178,7 +177,7 @@ Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the
 \subsection{Small-step Semantics and Congruence}
 Figure~\ref{fig:smallstep} defines the small-step semantics and
 congruence rules of \MIM{}. When evaluating an expression, they
-are invoked recursively and produce a single value in
+are invoked and produce a single value in
 the end. %\haoyuan{we need to be consistent on paragraph upper/lower case.}
 
 \paragraph{Semantic Rules} \textsc{(S-Invk)} is the only computation rule we need for method invocation.

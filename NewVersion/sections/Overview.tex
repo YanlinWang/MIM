@@ -41,20 +41,19 @@ visual display. For simple illustration, the default implementation of
 on the screen, while the \lstinline|draw| method in \lstinline|Deck| simply
 prints out a message \lstinline|"Draw a card."|.
 
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface Deck {
   void draw() { // draws a card from the Deck
     println("Draw a card.");
   }
 }
-
 interface Drawable {
   void draw() { // create a blank canvas
     JFrame frame = new JFrame();
     frame.setVisible(true);
   }
 }
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 In \lstinline|Deck|,
 \lstinline|draw| uses \lstinline|println|, which is a
 library function. 
@@ -140,15 +139,14 @@ we can use \emph{upcasts} in \MIM{} to specify the ``branch'' in the
 inheritance hierarchy that should be called. The following code
 illustrates the use of upcasts for disambiguation:
 
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface Deck { void draw() {...} }
 interface Drawable { void draw() {...} }
 interface DrawableDeck extends Drawable, Deck {}
-
 // main program
 ((Deck) new DrawableDeck()).draw()  // calls Deck.draw
 // (new DrawableDeck()).draw()        // this call is ambiguous and rejected
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 In our language, the main program is merely an expression. The above cast indicates
 that we expect to invoke the \lstinline|draw| from the branch
 \lstinline|Deck|. Similarly we could have used an upcast to \lstinline|Drawable|
@@ -168,17 +166,17 @@ become more complicated with dynamic dispatching. Dynamic
 dispatching is very common in OO programming for code reuse. Let us expand the previous
 example a bit, by redefining those interfaces with more features:
 
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface Deck {
   void draw() {...}
   void shuffle() {...}
   void shuffleAndDraw() { this.shuffle(); this.draw(); }
 }
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 Here \lstinline|shuffleAndDraw| \emph{invokes \lstinline|draw| from its own enclosing type}. In \MIM{}, this invocation is dynamically dispatched. This is important, because a programmer may define a subtype
 of \lstinline|Deck| and override the method \lstinline|draw|:
 
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface SafeDeck extends Deck {
   boolean isEmpty() {...}
   void draw() { // overriding
@@ -186,7 +184,7 @@ interface SafeDeck extends Deck {
     else println("Draw a card");
   }
 }
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 Without dynamic dispatching, we may have to copy the \lstinline|shuffleAndDraw| code into \lstinline|SafeDeck|, so that \lstinline|shuffleAndDraw| calls the new \lstinline|draw| defined in \lstinline|SafeDeck|. Dynamic dispatching immediately saves us from the duplication work,
 since the method becomes automatically dispatched to the most specific one. Nevertheless, as seen before, dynamic dispatch would potentially introduce ambiguity.
 For instance, when we have the class hierarchy structure shown in Figure~\ref{fig:drawablesafedeck}(left) with the following code:
@@ -210,11 +208,11 @@ For instance, when we have the class hierarchy structure shown in Figure~\ref{fi
   \caption{UML diagrams for 3 variants of \lstinline|DrawableSafeDeck|.}\label{fig:drawablesafedeck}
 \end{figure*}
 
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface DrawableSafeDeck extends Drawable, SafeDeck {}
 // main program
 new DrawableSafeDeck().shuffleAndDraw()
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 
 \noindent Indeed, using the a reduction model similar to FJ~\cite{Igarashi01FJ} (without static types tracked), the reduction steps would roughly be:
 
@@ -225,13 +223,13 @@ new DrawableSafeDeck().shuffleAndDraw()
 % \end{split}
 % \end{equation}
 
-\vspace{3pt}\begin{lstlisting}[style=reduction, escapechar=\%]
+\begin{lstlisting}[style=reduction, escapechar=\%]
    %new DrawableSafeDeck()%.shuffleAndDraw()
 -> %new DrawableSafeDeck().shuffle()%; new DrawableSafeDeck().draw()
 -> ...
 -> %new DrawableSafeDeck().draw()%
 -> <<error: ambiguous call!!!>>
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 
 \noindent When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck|
 is dispatched. But then \lstinline|shuffleAndDraw| invokes ``\lstinline|this.draw()|'', and at this point, the receiver
@@ -268,9 +266,8 @@ makes use of both the static type and the dynamic type of the
 receiver, so it is a
 combination of static and dynamic dispatching. Intuitively, the static type specifies one branch
 to avoid ambiguity, and the dynamic type finds the most specific implementation on that branch.
-
 To be specific, the following code is accepted by \MIM{}:
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface Deck {
   void draw() {...}
   void shuffle() {...}
@@ -281,16 +278,17 @@ interface SafeDeck extends Deck {...}
 interface DrawableSafeDeck extends Drawable, SafeDeck {}
 // main program
 new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
-\end{lstlisting}\vspace{3pt}
-And the computation performed in \MIM{} is as follows:
-\vspace{3pt}\begin{lstlisting}[style=reduction, escapechar=\%]
+\end{lstlisting}
+
+\noindent The computation performed in \MIM{} is as follows:
+\begin{lstlisting}[style=reduction, escapechar=\%]
    %new DrawableSafeDeck()%.shuffleAndDraw()
 -> %((DrawableSafeDeck) new DrawableSafeDeck()).shuffleAndDraw()%
 -> %((Deck) new DrawableSafeDeck()).shuffle()%; ((Deck) new DrawableSafeDeck()).draw()
 -> ...
 -> %((Deck) new DrawableSafeDeck()).draw()%
 -> ... %// SafeDeck.draw%
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 
 Notably, we track the static types by adding casts. In contrast to FJ,
 where \lstinline|new C()| is a value, in \MIM{} such expression is not 
@@ -371,19 +369,17 @@ Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck|
 \paragraph{Potential solutions/workarounds in existing languages:} Unfortunately in all languages we have known
 (including C++), the existing approaches are unsatisfactory.
 One direction is to simply avoid this issue, by putting overriding before inheritance. For example, as shown in Figure~\ref{fig:drawablesafedeck}(middle), we define a new component \lstinline|DrawableRect| that extends \lstinline|Drawable|, which simply draws the deck as a rectangle, and modifies the hierarchy:
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface DrawableRect extends Drawable {
   void draw() {
     JFrame frame = new JFrame("Canvas");
     frame.setSize(600, 600);
     frame.getContentPane().setBackground(Color.red);
-    frame.getContentPane().add(new Square(10,10,100,100));
-    ....
+    frame.getContentPane().add(new Square(10,10,100,100)); ...
   }
 }
-
 interface DrawableSafeDeck extends DrawableRect, SafeDeck {}
-\end{lstlisting} \vspace{3pt}
+\end{lstlisting}
 This workaround seems to work, but there are severe issues:
 \begin{itemize}
 	\item It changes the hierarchy and existing code, hence breaks the modularity.
@@ -400,20 +396,18 @@ such an approach is presented in Section~\ref{subsec:middleman}.
 
 \paragraph{\MIM{}'s solution:} An additional feature of our model is \textit{hierarchical overriding}. It allows conflicting methods
 to be overridden on individual branches, and hence offers independent extensibility. The above example can be easily realized by:
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface DrawableSafeDeck extends Drawable, SafeDeck {
   void draw() override Drawable {
     JFrame frame = new JFrame("Canvas");
     frame.setSize(600, 600);
     frame.getContentPane().setBackground(Color.red);
-    frame.getContentPane().add(new Square(10,10,100,100));
-    ...
+    frame.getContentPane().add(new Square(10,10,100,100)); ...
   }
 }
-
 // main program
 ((Drawable)new DrawableSafeDeck()).draw(); // calls the latest draw
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 
 The UML graph is shown in Figure~\ref{fig:drawablesafedeck}(right), where
 the up-arrow $\uparrow$ is short for ``\lstinline|override|''.
