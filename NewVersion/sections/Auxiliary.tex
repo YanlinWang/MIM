@@ -17,6 +17,7 @@ accurately, $\mbody$ returns the parameters, returned expression
  The formal definition gives the expected results
 for the earlier examples in Figure~\ref{fig:examplesmbody}.
 
+\saveSpaceFig
 \begin{flalign*}
 	& \rhd \textit{Definition of } \mbody(m, I_d, I_s): & \\
 	& \bullet \mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; e_0) & \\
@@ -28,6 +29,8 @@ for the earlier examples in Figure~\ref{fig:examplesmbody}.
 	& \hspace{.77in} \mostSpecificOverride(m, I_d, I) = \{J\} & \\
 	& \hspace{.77in} J[m\ \kwoverride\ I] = \absmethod{I_e}{m}{I_x}{x}{I} & \\
 \end{flalign*}
+\saveSpaceFig
+
 To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
 
 \begin{figure*}[t]
@@ -56,6 +59,7 @@ We proceed to give the definitions of two core functions that support method loo
 $\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined. Interfaces in this set should be above interface $I$ and along path $J$. Finally with $\prune$ (defined in Section~\ref{sec:otherdefs})
 the overridden interfaces will be filtered out.
 
+\saveSpaceFig
 \begin{flalign*}
 	& \rhd \textit{Definition of } \mostSpecific(m, I, J): & \\
 	& \bullet \mostSpecific(m, I, J) = \prune(origins) & \\
@@ -69,7 +73,7 @@ By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only 
 	\item It is either a super type or a subtype of $J$ (including $J$);
 	\item Any subtype of it does not belong to the same result set because of $\prune$.
 \end{itemize}
-
+\saveSpaceFig
 
 \subsection{Finding the Most Specific Overriding: \mostSpecificOverride}\label{sec:mostSpecificOverride}
 The $\mostSpecific$ function only focuses on original method
@@ -78,11 +82,14 @@ during that step. On the other hand, $\mostSpecificOverride(m, I, J)$
 has the assumption that $J$ defines an original $m$, and this function
 tries to find the interfaces with the most specific implementations that hierarchically overrides such an $m$. Formally,
 
+\saveSpaceFig
 \begin{flalign*}
 	& \rhd \textit{Definition of } \mostSpecificOverride(m, I, J): & \\
 	& \bullet \mostSpecificOverride(m, I, J) = \prune(overrides) & \\
 	& \indent\indent \textrm{with: } overrides = \{K \mid \subt{I}{K}, \; \subt{K}{J} \textrm{ and } K[m\ \kwoverride\ J] \textrm{ is defined} &
 \end{flalign*}
+\saveSpaceFig
+
 By the definition, an interface belongs to $\mostSpecificOverride(m, I, J)$ if and only if:
 \begin{itemize}
 	\item it is between $I$ and $J$ (including $I$, $J$);
@@ -110,32 +117,38 @@ by our syntax, $I[m\ \kwoverride\ I]$ is looking for the originally-defined meth
 %%%%============================ I[m override J] end================%%%%%%%%
 
 %%%%============================ prune(set) ================%%%%%%%%
+\saveSpaceFig
 \begin{flalign*}
 	& \rhd \textit{Definition of } \prune(set): & \\
 	& \bullet \prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\} &
 \end{flalign*}
+
 The $\prune$ function takes a set of
 types, and filters out those that have subtypes in the same set. In the returned set,
 none of them has subtyping relation to one another, since all super types have been removed.
 %%%%============================ prune(set) end ================%%%%%%%%
 
 %%%%============================ canOverride ================%%%%%%%%
+\saveSpaceFig
 \begin{flalign*}
 	& \rhd \textit{Definition of } \canOverride(m, I, J): & \\
 	& \bullet \canOverride(m, I, J) = True & \\
 	& \indent\indent \textrm{with: } I[m\ \kwoverride\ I] = I_e \; m(\overline{I_x} \; \overline{x}) \; \kwoverride \; I \ldots & \\
 	& \hspace{.77in} J[m\ \kwoverride\ J] = I_e \; m(\overline{I_x} \; \overline{y}) \; \kwoverride \; J \ldots &
 \end{flalign*}
+\saveSpaceFig
 $\canOverride$ just checks that two original $m$ in $I$ and $J$ have the same type.
 %%%%============================ canOverride end ================%%%%%%%%
 
 %%%%============================ canInstantiate ================%%%%%%%%
+\saveSpaceFig
 \begin{flalign*}
 	& \rhd \textit{Definition of } \canInstantiate(I): & \\
 	& \bullet \canInstantiate(I) = True & \\
 	& \indent\indent \textrm{with: } \forall m, \forall J \in \mostSpecific(m, I, I), \mostSpecificOverride(m, I, J) = \{K\}, & \\
 	& \hspace{.77in} \textrm{ and } K[m\ \kwoverride\ J] = \method{I_e}{m}{I_x}{x}{J}{e_0} &
 \end{flalign*}
+
 $\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the keyword $\kwnew$.
 $\mostSpecific(m, I, I)$ represents the set of branches $I$ inherits on method $m$. $I$ can be instantiated
 if and only if for every branch, the most specific implementation is unambiguous and non-abstract.

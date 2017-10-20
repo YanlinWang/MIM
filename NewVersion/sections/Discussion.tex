@@ -30,24 +30,25 @@ It is possible to change our model to account for other behaviors for abstract m
 orthogonal change to our work, that should not affect the essence of the model presented here.
 
 \begin{figure*}[t]
+\saveSpaceFig
     % \nocaptionrule
     % \centering
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
-        \includegraphics[width=2cm]{pics/P7.pdf}
+        \includegraphics[width=1.4cm]{pics/P7.pdf}
     \end{minipage}
     \centering
     \hspace*{2pt}
     \begin{minipage}[t]{0.45\textwidth}
         \centering
-        \includegraphics[width=2cm]{pics/P8.pdf}
+        \includegraphics[width=1.2cm]{pics/P8.pdf}
     \end{minipage}  
     \caption{Triangle inheritance (left) and diamond inheritance (right) on abstract methods.}\label{fig:abstractdiamond}
+\saveSpaceFig
 \end{figure*}
 
 \subsection{Orthogonal \& Non-Orthogonal Extensions}\label{sec:orthoext}
-
 Our model is designed as a minimal calculus for focusing only on resolving unintentional conflicts. Therefore, we have omitted a number of
 common orthogonal features including primitive types, assignments, method overloading, covariant method return types, static dispatch, and so on.
 Those features can, in principle, be modularly added to the model without breaking type soundness. For example, we present the additional syntax, typing and semantic rules of static invocation below as an extension:
@@ -68,13 +69,12 @@ Like Java interfaces and traits, state is forbidden in \MIM{}. There are some in
 \subsection{Loosening the Model: Reject Early or Reject Later?}\label{subsec:loosen}
 
 \MIM{} rejects the following case of diamond inheritance:
-
-\vspace{3pt}\begin{lstlisting}
+\begin{lstlisting}
 interface A { void m() {...} }
 interface B extends A { void m() {...} }
 interface C extends A { void m() {...} }
 interface D extends B, C {}
-\end{lstlisting}\vspace{3pt}
+\end{lstlisting}
 Here both $B.m$ and $C.m$ override $A.m$, and D inherits
 both conflicting methods without an explicit override. In this case automatically merging 
 the two methods (to achieve diamond inheritance) is not possible, which is why many 

@@ -68,7 +68,7 @@ unintentional conflicts and provide some support for it.
 \noindent {\bf C++ model.}
 C++ supports a very flexible inheritance model and allows programmers to choose either static dispatch or dynamic dispatch for method lookup.
 It allows unintentional conflicts and uses static dispatch to resolve them, as discussed in Section~\ref{sec:overview}. For example, given the following code
-\begin{lstlisting}[language=Java]
+\begin{lstlisting}[language=cpp]
 class A { public: void m() {cout << "MA" << endl;} };
 class B { public: void m() {cout << "MB" << endl;} };
 class C : public A, public B { 
@@ -136,6 +136,7 @@ unintentionally.
 Class \texttt{MiddleMan}, as its name suggests, acts as a middle man between its class \texttt{C} and its parents \texttt{A, B}. \texttt{MiddleMan} defines a virtual method \texttt{m} that overrides a parent method \texttt{m} and delegates the implementation to another method \texttt{m\_impl} that takes $\kwthis$ as parameter. C++ supports method overloading, so that multiple \texttt{m\_impl} methods with different parameter types can coexist. When defining class \texttt{C}, we specify the parents to be \texttt{MiddleMan<A>, MiddleMan<B>} instead of \texttt{A, B}. In this way, programmers may define new versions of \texttt{A.m} and \texttt{B.m} in class \texttt{C} by providing the corresponding \texttt{m\_impl} methods. Then in the client code, the method call \texttt{((A*)c)->m()} will print out string \texttt{"MA2"}, as expected. Although this workaround can help us defining partial method overrides to a certain extent, the drawbacks are obvious. Firstly, the approach is complex and requires the pre-knowledge of the programmer to this approach. Moreover, the lack of direct syntax support makes MiddleMan code cumbersome to write. Finally, the approach is ad-hoc, meaning that the class \texttt{MiddleMan} shown in Figure~\ref{fig:middleman} is not general enough to be used in other cases: more middle-mans are needed if partial method overrides happens in other classes; and it is even worse when return types differ.
 
 \begin{figure*}[t]
+\saveSpaceFig
 \begin{lstlisting}
 class A { public: virtual void m() {cout << "MA" << endl;}};
 class B { public: virtual void m() {cout << "MB" << endl;}};
@@ -159,6 +160,7 @@ int main()
 \end{lstlisting}
 \caption{The \emph{MiddleMan} approach.}
 \label{fig:middleman}
+\saveSpaceFig
 \end{figure*}
 
 \noindent  {\bf \csharp{} Explicit method implementations.}
