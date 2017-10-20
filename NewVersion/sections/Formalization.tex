@@ -72,6 +72,30 @@ e.m(\overline{e}) \mid
 \saveSpaceFig
 \end{figure*}
 
+
+\begin{figure*}[t]
+\saveSpaceFig
+\begin{mathpar}
+	\framebox{$ I <: J $} \hspace{.5in} \subid \\
+	\subtrans \hspace{.5in} \subextends \\
+	
+	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
+	\tvar \\
+	\tinvk \\
+	% \tpathinvk \\
+	% \tsuperinvk \\
+	% \tstaticinvk  \\
+	\tnew \\
+	\tanno \\
+	\tmethod \\
+	\tabsmethod \\
+	\tintf
+\end{mathpar}
+\saveSpaceFig
+\caption{Typing and subtyping of \name{}.}
+\label{fig:typingrules}
+\end{figure*}
+
 \subsection{Subtyping and Typing Rules}\label{subsec:typingrules}
 \paragraph{Subtyping}
 The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
@@ -169,6 +193,8 @@ and in the meanwhile the static types are recorded via annotations. Finally the 
 \paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
 on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
 object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
+
+
 
 \begin{comment}
 \paragraph{Example} In contrast with the counter-example in Section~\ref{subsec:typingrules}, it is better to understand semantics by
