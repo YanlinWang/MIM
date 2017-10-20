@@ -18,10 +18,14 @@ has to check whether an interface can be instantiated, by looking at all the inh
 is abstract or not.
 
 Our formalization has a simple form of abstract methods, which behave similarly to conventional methods with respect to conflicts.
-Other languages may support more complicated behaviors.
-For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. In Figure~\ref{fig:abstractdiamond}, we use italic $m$ to denote abstract methods. For both cases, the Java compiler automatically merges conflicting $m$ in $C$. In contrast, \MIM{} distinguishes $A.m$ and $B.m$ in triangle inheritance (left), and rejects the diamond inheritance (right). There are two reasons. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
-the rules and the proof a lot. Secondly, we distinguish and treat differently on the conflicting methods, since they may represent different operations, even if they are abstract. Thus our model adopts a very conservative behavior rather than automatically merging 
-methods. For the diamond case, as we have mentioned, it is actually an intentional conflict due to the same source $T$.
+Other languages may support different behaviors.
+For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. In Figure~\ref{fig:abstractdiamond}, we use italic $\emph{m}$ to denote abstract methods. In both cases, the Java compiler accepts the definition of $C$ and automatically merges the two inherited methods $m$ into a single one. \MIM{} behaves differently from Java in both cases.
+In the triangle inheritance case (left) $C$ will have two distict abstract methods corresponding to $A.m$ and $B.m$. 
+In the diamond inheritance case the definition of $C$ is rejected. 
+There are two reasons for this difference in behaviour. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
+the rules and proofs a lot. Secondly, and more importantly, we distinguish and treat differently conflicting methods, since they may represent different operations, even if they are abstract. Thus our model adopts a very conservative behavior rather than automatically merging 
+methods by default (as done in many languages). 
+Arguably, for the diamond case, as we have mentioned, it is actually an intentional conflict due to the same source $T$.
 It is possible to change our model to account for other behaviors for abstract methods, but we view this as a mostly 
 orthogonal change to our work, that should not affect the essence of the model presented here.
 
@@ -59,11 +63,11 @@ A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ 
 
 One typical non-orthogonal extension to \MIM{} could be to have fields.
 The design of \MIM{} can be viewed as a variant of Java 8 with default methods which allows for unintentional method conflicts.
-Like Java interfaces and traits, state is forbidden in \MIM{} since having state in OO multiple inheritance is a non-trivial issue. There has been some related work on it, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. However such an extension requires more thought, so we leave it to future work.
+Like Java interfaces and traits, state is forbidden in \MIM{}. There are some inheritance models that also account for fields, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. However such an extension requires more thought, so we leave it to future work.
 
 \subsection{Loosening the Model: Reject Early or Reject Later?}\label{subsec:loosen}
 
-Our language simply rejects the following case of diamond inheritance:
+\MIM{} rejects the following case of diamond inheritance:
 
 \vspace{3pt}\begin{lstlisting}
 interface A { void m() {...} }
@@ -81,7 +85,7 @@ not helpful to disambiguate later method calls, since the two methods share
 the same origin (\lstinline|A.m|). 
 Our calculus rejects such conflicts by the \textsc{(T-Intf)} rule, where $D$ is considered to be ill-formed. 
 We believe that rejecting \lstinline|D| follows the principle of models like traits and Java 8 interfaces, 
-where the language/type-system is meant to alert the programmer for a possible conflict.
+where the language/type-system is meant to alert the programmer for a possible conflict early.
 
 Nonetheless,
  C++ accepts the definition of $D$, but forbids later upcasts from $D$ to $A$ because of ambiguity. Our language is more conservative on definitions of interfaces compared to C++, but on the upside, upcasts are not rejected. We could also loosen the model to accept definitions such as \lstinline|D|, and perform ambiguity check on upcasts and other expressions. However, we would need to handle more cases than C++. For instance, in the above program assume that $B.m$ and $C.m$ are hierarchical overrides on $A$. Then such a case is still a diamond.
