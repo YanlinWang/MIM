@@ -30,7 +30,7 @@ an interface in our model has the following characteristics:
 %%for simplicity, our examples and formalization do not deal with state at
 %%this stage. %%, but that should not block our discussions below.
 
-\subsection{Problem 1: Unintentional Method Conflicts}\label{subsec:problem1}
+\subsection{Problem 1: Basic Unintentional Method Conflicts}\label{subsec:problem1}
 Suppose that two components \lstinline|Deck| and \lstinline|Drawable| 
 have been developed in a system. \lstinline|Deck| represents a deck
 of cards and defines a method \lstinline|draw| for drawing a card from the
@@ -150,7 +150,7 @@ interface DrawableDeck extends Drawable, Deck {}
 // (new DrawableDeck()).draw()        // this call is ambiguous and rejected
 \end{lstlisting}\vspace{3pt}
 In our language, the main program is merely an expression. The above cast indicates
-that we expect to invoke the \lstinline|draw| from the branch
+that we expect to invoke the \lstinline|draw| method from the branch
 \lstinline|Deck|. Similarly we could have used an upcast to \lstinline|Drawable|
 to call the \lstinline|draw| method from \lstinline|Drawable|.
 Without the cast, the call would be ambiguous and
@@ -292,7 +292,7 @@ And the computation performed in \MIM{} is as follows:
 -> ... %// SafeDeck.draw%
 \end{lstlisting}\vspace{3pt}
 
-Notably, we track the static types by adding casts. In contrast to FJ,
+Notably, we track the static types by adding upcasts during reduction. In contrast to FJ,
 where \lstinline|new C()| is a value, in \MIM{} such expression is not 
 a value. Instead an expression of the form \lstinline|new C()| is reduced to
 \lstinline|(C) new C()|, which is a value in \MIM{} and where the type
@@ -304,7 +304,7 @@ In the second reduction step, when
 replaces the special variable \lstinline|this| by 
 \lstinline|(Deck) new DrawableSafeDeck()|. Here, the static type used
 in the cast denotes the origin of the \lstinline|shuffleAndDraw|
-method used
+method (discovered during method lookup) used
 for method dispatching, and the static type is changed to that. 
 %The static type information about the origin
 %of the method is helpful for future disambiguation. 
