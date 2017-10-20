@@ -1,6 +1,6 @@
 \section{A Running Example: Drawable Deck}~\label{sec:overview}
 This section illustrates the problem of unintentional method conflicts,
-together with the features of our model on addressing this issue, by
+together with the features of our model for addressing this issue, by
 a simple running example. In the following text we will introduce three
 problems one by one and have a discussion on possible workarounds and
 our solutions.
@@ -151,7 +151,7 @@ interface DrawableDeck extends Drawable, Deck {}
 // (new DrawableDeck()).draw()        // this call is ambiguous and rejected
 \end{lstlisting}\vspace{3pt}
 In our language, the main program is merely an expression. The above cast indicates
-that we expect to invoke the \lstinline|draw| from branch
+that we expect to invoke the \lstinline|draw| from the branch
 \lstinline|Deck|. Similarly we could have used an upcast to \lstinline|Drawable|
 to call the \lstinline|draw| method from \lstinline|Drawable|.
 Without the cast, the call would be ambiguous and
@@ -231,7 +231,7 @@ new DrawableSafeDeck().shuffleAndDraw()
 -> %new DrawableSafeDeck().shuffle()%; new DrawableSafeDeck().draw()
 -> ...
 -> %new DrawableSafeDeck().draw()%
--> ambiguous call!!!
+-> <<error: ambiguous call!!!>>
 \end{lstlisting}\vspace{3pt}
 
 \noindent When the \lstinline|DrawableSafeDeck| object calls \lstinline|shuffleAndDraw|, the implementation in \lstinline|Deck|
@@ -296,7 +296,8 @@ And the computation performed in \MIM{} is as follows:
 Notably, we track the static types by adding casts. In contrast to FJ,
 where \lstinline|new C()| is a value, in \MIM{} such expression is not 
 a value. Instead an expression of the form \lstinline|new C()| is reduced to
-\lstinline|(C) new C()|, which is a value in \MIM{}. This rule is
+\lstinline|(C) new C()|, which is a value in \MIM{} and where the type
+in the cast denotes the static type of the expression. This rule is
 applied in the first reduction step. 
 In the second reduction step, when 
 \lstinline|shuffleAndDraw| is dispatched, the receiver
@@ -305,7 +306,7 @@ replaces the special variable \lstinline|this| by
 \lstinline|(Deck) new DrawableSafeDeck()|. Here, the static type used
 in the cast denotes the origin of the \lstinline|shuffleAndDraw|
 method used
-for method dispatching. 
+for method dispatching, and the static type is changed to that. 
 %The static type information about the origin
 %of the method is helpful for future disambiguation. 
 Later, in the fourth step,
@@ -315,8 +316,9 @@ is an instance of \textit{hierarchical invocation}, which can be read as
 \lstinline|Deck|'' specifies the branch. Finally, in the last
 reduction step, we find the most
 specific version of \lstinline|draw| in \lstinline|SafeDeck|. In this
-reduction, the cast that tracks the origin of
-\lstinline|shuffleAndDraw| is crutial to unambiguously find the
+sequence of
+reduction steps, the cast that tracks the origin of
+\lstinline|shuffleAndDraw| is crucial to unambiguously find the
 correct implementation of \lstinline|draw|.
 The formal procedure will be introduced in Section~\ref{sec:formalization} and Section~\ref{sec:auxdefs}.
 %Note that in C++, if we put the \lstinline[language=c++]|virtual| keyword in front of every \lstinline|draw| method, that means
