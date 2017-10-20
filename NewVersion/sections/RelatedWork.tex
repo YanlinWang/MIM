@@ -110,16 +110,14 @@ Furthermore, compared to our
 model, C++ does not support hierarchical overriding.
 \end{comment}
 
-
-
 \noindent {\bf C++ model.}
 C++ supports a very flexible inheritance model.
 C++ allows the existence of unintentional conflicts and users may specify a hierarchical path via casts for disambiguation, as discussed in Section~\ref{sec:overview}. 
 With virtual methods, dynamic dispatch is used and 
-method lookup algorithm will find the most specific method definition.
+method lookup algorithm will find the most specific method definition. 
 A contribution of our work is to provide a minimal formal model of
 hierarchical dispatching, whereas C++ can be viewed as a real-world
-implementation. As far as we know there is no any formal model that
+implementation. There are several formalizations~\cite{Wasserrab2006,ramananandro2012mechanized,Ramalingam1997} in the literature modeling C++ various features and give us some inspiration, however, as far as we know, there is no any formal model that
 captures this aspect of the C++ method dispatching model. Apart from this, as discussed in Section~\ref{subsec:loosen}, \name{} conservatively rejects some interface/class definitions that C++ accepts, and upcasts are never rejected since they are used for ambiguity resolution.
 \bruno{The discussion points out further differences. We need to refer
 to that discussion here too.}\yanlin{added.}
