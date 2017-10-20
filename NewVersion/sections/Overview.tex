@@ -301,9 +301,8 @@ In the second reduction step, when
 \lstinline|(DrawableSafeDeck) new DrawableSafeDeck()|
 replaces the special variable \lstinline|this| by 
 \lstinline|(Deck) new DrawableSafeDeck()|. Here, the static type used
-in the cast denotes the origin of the \lstinline|shuffleAndDraw|
-method (discovered during method lookup) used
-for method dispatching, and the static type is changed to that. 
+in the cast (\lstinline|Deck|) denotes the origin of the \lstinline|shuffleAndDraw|
+method, which is discovered during method lookup. 
 %The static type information about the origin
 %of the method is helpful for future disambiguation. 
 Later, in the fourth step,
