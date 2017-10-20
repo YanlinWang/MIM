@@ -62,7 +62,7 @@ reject interface definitions and/or method calls statically.
 
 \subsection{Resolving Unintentional Method Conflicts}\label{subsec:middleman}
 A few language implementations have realized the problem of
-unintentional conflicts and provided some support for it.
+unintentional conflicts and provide some support for it.
 
 \begin{comment} %C++ related work with code explaination
 \noindent {\bf C++ model.}
@@ -113,8 +113,7 @@ model, C++ does not support hierarchical overriding.
 
 
 \noindent {\bf C++ model.}
-C++ supports a very flexible inheritance model (including basic and
-virtual inheritance). \bruno{what is ``normal'' inheritance?}\yanlin{changed "normal" to "basic", is this ok?}
+C++ supports a very flexible inheritance model.
 C++ allows the existence of unintentional conflicts and users may specify a hierarchical path via casts for disambiguation, as discussed in Section~\ref{sec:overview}. 
 With virtual methods, dynamic dispatch is used and 
 method lookup algorithm will find the most specific method definition.
