@@ -49,7 +49,7 @@ interface Deck {
 }
 
 interface Drawable {
-  void draw() { // draws something on the screen
+  void draw() { // create a blank canvas
     JFrame frame = new JFrame();
     frame.setVisible(true);
   }
@@ -83,7 +83,7 @@ deck using multiple inheritance:
 \vspace{3pt}\begin{lstlisting}
 interface DrawableDeck extends Drawable, Deck {} 
 \end{lstlisting}\vspace{3pt}
-The point of using multiple inheritance is for composing the features from various 
+The point of using multiple inheritance is to compose the features from various 
 components and to achieve code reuse, as supported by many mainstream OO
 languages. Nevertheless, at this point, languages like Java simply treat the two \lstinline|draw| methods
 as the same, and hence the compiler throws an error
@@ -92,30 +92,29 @@ on \lstinline|DrawableDeck| about the conflict.
 This case is an example of a so-called \textit{unintentional method conflict}. It arises when two inherited methods happen to have
 the same name and parameter types, but they are designed for different functionalities with different semantics.
 Now one may quickly come up with a workaround, which is to manually
-merge the two methods, by
-creating a new \lstinline|draw| method in \lstinline|DrawableDeck| to
+merge the two methods by creating a new \lstinline|draw| method in \lstinline|DrawableDeck| to
 override the old ones. However, merging two methods with totally different functionalities does not make any sense.
-This non-solution will hide the
+This non-solution would hide the
 old methods and break independent extensibility.
 
 \paragraph{Problem and Possible Workarounds:} The essential problem is
 how to resolve unintentional method conflicts and invoke the
-conflicting methods separately without ambiguity. To this problem, there are several other workarounds
+conflicting methods separately without ambiguity. To tackle this problem, there are several other workarounds
 that come to our mind. We briefly discuss those potential fixes and
 workarounds next:
 \begin{itemize}
   \item \textit{I. Delegation.} As an alternative to multiple inheritance,
-  delegation can be used by introducing two fields (or field methods) with
+  delegation can be used by introducing two fields (or field methods) with the \yanlin{"field methods"?}
   \lstinline|Drawable| type and \lstinline|Deck| type,
-  respectively. This avoids method conflicts. Nevertheless, it is known
+  respectively. Although it avoids method conflicts, it is known
   that using delegation makes it hard to correctly maintain
   self-references in an extensible system and also
   introduces a lot of boilerplate code.
-  \item \textit{II. Refactor Drawable and/or Deck to rename the methods.} If
+  \item \textit{II. Refactor \lstinline|Drawable| and/or \lstinline|Deck| to rename the methods.} If
   the source code for \lstinline|Drawable| or \lstinline|Deck| is available
   then it may be possible to rename one of the \lstinline|draw|
   methods. However this approach is non-modular, as it requires 
-  modifying existing code, and may not be possible if the code is unavailable.
+  modifying existing code and becomes impossible if the code is unavailable.
   \item \textit{III. Method exclusion/renaming in traits.} Some trait models
   support method exclusion/renaming. Those features
    can eliminate conflicts, although most
@@ -229,7 +228,8 @@ new DrawableSafeDeck().shuffleAndDraw()
 \vspace{3pt}\begin{lstlisting}[style=reduction, escapechar=\%]
    %\underline{new DrawableSafeDeck()}%.shuffleAndDraw()
 -> %\underline{new DrawableSafeDeck().shuffle()}%, new DrawableSafeDeck().draw()
--> ..., %\underline{new DrawableSafeDeck().draw()}%
+-> ... -> (some steps omitted here)
+-> 
 -> ..., ambiguous call!!!
 \end{lstlisting}\vspace{3pt}
 

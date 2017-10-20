@@ -8,28 +8,6 @@ the key components that implement our algorithm for method lookup.
 \subsection{Method Lookup Algorithm in \mbody{}}\label{subsec:mbodydef}
 
 
-\begin{figure*}[t]
-\saveSpaceFig
-\begin{mathpar}
-	\framebox{$ I <: J $} \hspace{.5in} \subid \\
-	\subtrans \hspace{.5in} \subextends \\
-	
-	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
-	\tvar \\
-	\tinvk \\
-	% \tpathinvk \\
-	% \tsuperinvk \\
-	% \tstaticinvk  \\
-	\tnew \\
-	\tanno \\
-	\tmethod \\
-	\tabsmethod \\
-	\tintf
-\end{mathpar}
-\saveSpaceFig
-\caption{Typing and subtyping of \name{}.}
-\label{fig:typingrules}
-\end{figure*}
 
 
 $\mbody(m, I_d, I_s)$ denotes the method body lookup function.
@@ -51,6 +29,27 @@ for the earlier examples in Figure~\ref{fig:examplesmbody}.
 	& \hspace{.77in} J[m\ \kwoverride\ I] = \absmethod{I_e}{m}{I_x}{x}{I} & \\
 \end{flalign*}
 To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
+
+\begin{figure*}[t]
+\saveSpaceFig
+\begin{mathpar}
+	% \sinvk \\
+	\spathinvk \\
+	% \ssuperinvk \\
+	% \sstaticinvk \\
+	\creceiver \hspace{.5in}
+	% \cpathreceiver \\
+	\cargs \\
+	% \cpathargs \\
+	% \csuperargs \\
+	% \cstaticargs \\
+	\cstatictype \\
+	\cfreduce \\
+	\cannoreduce
+\end{mathpar}
+\caption{Small-step semantics.}\label{fig:smallstep}
+\saveSpaceFig
+\end{figure*}
 
 \subsection{Finding the Most Specific Origin: \mostSpecific}\label{sec:mostSpecific}
 We proceed to give the definitions of two core functions that support method lookup, namely \mostSpecific{} and \mostSpecificOverride. Generally,
