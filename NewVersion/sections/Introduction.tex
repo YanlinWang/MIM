@@ -60,7 +60,7 @@ have also been discussed quite extensively~\cite{classless,malayeri2009cz,strous
 
 In contrast to diamond inheritance, the second case of ambiguity
 is \textit{unintentional method conflicts}~\cite{scharli03traits}. In
-such a case conflicting 
+this case, conflicting 
 methods do not actually refer to the same feature. 
 In a nominal system, methods can be designed for different
 functionality, but happen to have the same names (and signatures).
@@ -115,7 +115,7 @@ such conflicting methods to be further overridden.
 % with unintentional method conflicts seems to require a combination of
 % both. 
 Some other workarounds or approaches include delegation and
-renaming/exclusion in the trait model. However renaming/exclusion 
+renaming/exclusion in the trait model. However, renaming/exclusion 
 can break the subtyping relation between a subclass and its parent.
 This is not adequate for the class model commonly used in mainstream 
 OOP languages, where the subclass is always expected to be a subtype 
@@ -184,7 +184,7 @@ Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
 proofs for type soundness. 
 In summary, our contributions are:
 \begin{itemize}
-	\item \textbf{A formalization of a hierarchical dispatching algorithm} that integrates both the static type and dynamic type for method dispatch, and 
+	\item \textbf{A formalization of the hierarchical dispatching algorithm} that integrates both the static type and dynamic type for method dispatch, and 
 	ensures unambiguity as well as extensibility in the presence
         of unintentional method conflicts.
 	\item \textbf{Hierarchical overriding:} a novel notion that allows

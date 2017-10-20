@@ -1,7 +1,7 @@
 % \section{Method Lookup Algorithm and Auxiliary Definitions}\label{sec:auxdefs}
 \section{Key Algorithms and Type-Soundness}\label{sec:auxdefs}
 In this section, we present the fundamental algorithms and auxiliary
-definitions used in our formalization, and show that the resulting
+definitions used in our formalization and show that the resulting
 calculus is type sound. The functions presented in this section are
 the key components that implement our algorithm for method lookup.
 
@@ -69,8 +69,8 @@ the overridden interfaces will be filtered out.
 By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only if:
 \begin{itemize}
 	\item It originally defines $m$;
-	\item It is a super type of $I$ (including $I$);
-	\item It is either a super type or a subtype of $J$ (including $J$);
+	\item It is a supertype of $I$ (including $I$);
+	\item It is either a supertype or a subtype of $J$ (including $J$);
 	\item Any subtype of it does not belong to the same result set because of $\prune$.
 \end{itemize}
 \saveSpaceFig
@@ -125,7 +125,7 @@ by our syntax, $I[m\ \kwoverride\ I]$ is looking for the originally-defined meth
 
 The $\prune$ function takes a set of
 types, and filters out those that have subtypes in the same set. In the returned set,
-none of them has subtyping relation to one another, since all super types have been removed.
+none of them has subtyping relation to one another, since all supertypes have been removed.
 %%%%============================ prune(set) end ================%%%%%%%%
 
 %%%%============================ canOverride ================%%%%%%%%

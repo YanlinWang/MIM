@@ -120,7 +120,7 @@ Naturally, the receiver and the arguments are required to be well-typed.
 $\mbody$ is our key function for method lookup that implements the
 hierarchical dispatching algorithm. The formal definition will be introduced in Section~\ref{sec:auxdefs}.
 Here $\mbody(m, I_0, I_0)$ finds the most specific $m$ above $I_0$. ``Above $I_0$'' specifies
-the search space, namely the super types of $I_0$ including itself.
+the search space, namely the supertypes of $I_0$ including itself.
 For the general case, however, the hierarchical invocation $\mbody(m, I, J)$ finds ``the most specific $m$
 above $I$ and along path/branch $J$''. ``Along path $J$'' additionally requires the result to relate to $J$, that is to say,
 the most specific interface that has a subtyping relationship with $J$.
@@ -143,12 +143,12 @@ used to find ``the most specific interfaces that are above $I$ and
 along path $J$, and originally defines $m$'' (see
 Section~\ref{sec:auxdefs} for full definition).
 By ``most specific interfaces'',
-it implies that the inherited super types are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates a characteristic of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original method $m$ in between.
+it implies that the inherited supertypes are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates a characteristic of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original method $m$ in between.
 Then $\mbody(m, J, J)$ provides the type of the original method, so hierarchical overriding has to preserve the type. Finally the return expression
 is type-checked to be subtype of the declared return type. For the definition of an original method, $I$ equals $J$ and the rule is straightforward. \textsc{(T-AbsMethod)} is a similar rule but works on abstract method declarations.
 
 \textsc{(T-Intf)} defines the typing rule on interfaces. The first condition is obvious, namely its methods need to be well checked. The third
-condition checks whether the overriding between original methods preserves typing. In this condition we again use some helper functions defined in  Section~\ref{sec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any super type $J$ and any method $m$.
+condition checks whether the overriding between original methods preserves typing. In this condition we again use some helper functions defined in  Section~\ref{sec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any supertype $J$ and any method $m$.
 
 The second condition of \textsc{(T-Intf)} is more complex and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
 \MIM{} rejects on the definition of interfaces when they form a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
@@ -188,7 +188,7 @@ the types, the return expression $e_0$ and the interface $I_0$ which provides th
 Here we use $e_0$ to imply that the return expression is forced to be non-empty because it requires a concrete implementation. Now the
 rule reduces method invocation to $e_0$ with substitution.
 Parameters are substituted with arguments, and the \lstinline|this| reference is substituted by the receiver,
-and in the meanwhile the static types are recorded via annotations. Finally the return type $I_e$ is put in the front as an annotation.
+and in the meanwhile the static types are recorded via annotations. Finally, the return type $I_e$ is put in the front as an annotation.
 \paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
 on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
 object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
