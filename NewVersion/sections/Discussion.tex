@@ -14,13 +14,12 @@ Abstract methods provide a way to
 delay the implementations to future subtypes. Using overriding, they also help to ``exclude'' existing implementations.
 
 In our formalized calculus, however, abstract methods are not a completely orthogonal feature. The $\canInstantiate$ function
-has to check whether an interface can be instantiated, by looking at all the inherited branches and seeing if each most specific method
-is abstract or not.
+has to check whether an interface can be instantiated by looking at all the inherited branches and checking if each most specific method is abstract or not.
 
 Our formalization has a simple form of abstract methods, which behave similarly to conventional methods with respect to conflicts.
-Other languages may support different behaviors.
+Other languages may behave differently. 
 For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. In Figure~\ref{fig:abstractdiamond}, we use italic $\emph{m}$ to denote abstract methods. In both cases, the Java compiler accepts the definition of $C$ and automatically merges the two inherited methods $m$ into a single one. \MIM{} behaves differently from Java in both cases.
-In the triangle inheritance case (left) $C$ will have two distinct abstract methods corresponding to $A.m$ and $B.m$. 
+In the triangle inheritance case (left), $C$ will have two distinct abstract methods corresponding to $A.m$ and $B.m$. 
 In the diamond inheritance case, the definition of $C$ is rejected. 
 There are two reasons for this difference in behaviour. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
 the rules and proofs a lot. Secondly, and more importantly, we distinguish and treat differently conflicting methods, since they may represent different operations, even if they are abstract. Thus our model adopts a very conservative behavior rather than automatically merging 
@@ -36,20 +35,20 @@ orthogonal change to our work, that should not affect the essence of the model p
     \centering
     \begin{minipage}[t]{0.45\textwidth}
         \centering
-        \includegraphics[width=1.4cm]{pics/P7.pdf}
+        \includegraphics[width=1.6cm]{pics/P7.pdf}
     \end{minipage}
     \centering
     \hspace*{2pt}
     \begin{minipage}[t]{0.45\textwidth}
         \centering
-        \includegraphics[width=1.2cm]{pics/P8.pdf}
+        \includegraphics[width=1.4cm]{pics/P8.pdf}
     \end{minipage}  
     \caption{Triangle inheritance (left) and diamond inheritance (right) on abstract methods.}\label{fig:abstractdiamond}
 \saveSpaceFig
 \end{figure*}
 
 \subsection{Orthogonal \& Non-Orthogonal Extensions}\label{sec:orthoext}
-Our model is designed as a minimal calculus for focusing only on resolving unintentional conflicts. Therefore, we have omitted a number of
+Our model is designed as a minimal calculus that focuses on resolving unintentional conflicts. Therefore, we have omitted a number of
 common orthogonal features including primitive types, assignments, method overloading, covariant method return types, static dispatch, and so on.
 Those features can, in principle, be modularly added to the model without breaking type soundness. For example, we present the additional syntax, typing and semantic rules of static invocation below as an extension:
 

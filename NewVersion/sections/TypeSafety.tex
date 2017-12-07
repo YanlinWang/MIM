@@ -257,6 +257,6 @@ By \textsc{(T-Intf)}, $\mbody(m, I, J)$ is also defined, and the type checker en
 
 On the other hand, since $I \subtype J$, by the definition of $\mostSpecific$, $$\mostSpecific(m, I, J) \subseteq \mostSpecific(m, I, I)$$
 
-By \textsc{(T-New)}, $\canOverride(I) = True$. By the definition of $\canOverride$, any $J_0\in\mostSpecific(m, I, I)$ satisfies that
+By \textsc{(T-New)}, $\canInstantiate(I) = True$. By the definition of $\canInstantiate$, any $J_0\in\mostSpecific(m, I, I)$ satisfies that
 $\mostSpecificOverride(m, I, J_0)$ contains only one interface, in which the $m$ that overrides $J_0$ is a concrete method. Therefore $\mbody(m, I, J)$ also provides a concrete method, which finishes the proof.
 \end{proof}
