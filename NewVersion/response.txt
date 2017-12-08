@@ -2,40 +2,33 @@ We thank the reviewers for the valuable comments. We try to address the reviews 
 
 Reviewer A.
 - generalize the method overriding semantics
-We think this suggestion is useful and valueble, we didn't think about this before. It does produce a
+
+We think this suggestion is useful and valuable, we didn't think about this before. It does produce a
 simpler method overriding semantics and definitely can be a future work.
 
 - "renaming can break the subtyping relation"
-Naturally renaming can break the subtyping relation, of course, there might be techniques as you said 
-that tracks the rename mapping and keeps the subtyping relation, but that's the special case and we 
-didn't discuss it in the paper.
+
+We are curious to know if the reviewer has a reference to some work
+that tracks the name remapping to preserve the subtyping relation.
+It is not obvious to us that this would work smoothly. A reference
+would be highly appreciatted.
 
 - "you do not mention the more direct way in which C++ allows disambiguating methods by qualification..."
 In Section 2.1 we have mentioned the C++ qualified name approach, see Sec 2.1 -> Potential Fixes -> 
 Static dispatch.
 
 - "C++ allows both overriding and shadowing ..."
-Since FHJ does not support overloading, it's model is much simpler than C++, so there's no concern 
+Since FHJ does not support overloading, it's model is simpler than C++, so there's no concern 
 of distinguishing overriding and shadowing of inherited methods. But we agree that it could be interesting
 to add this feature.
-
-- "the notion of 'original' method...."
-Sorry that we didn't make it clear. The term "original method" is supposed to be relative to
-"hierarchical overriding method". It does include overrides and maybe a better name (for example
-"own method"?) is needed.
 
 - "abusing override self syntax for non-(hierarchical-)override...can be empty?..."
 Yes, `I { m() }` is a syntactic sugar for `I { m() override I ... }`. In a real language, this should be 
 supported. But in formlization, for simplicity, we union them into one.
 
-- Footnote 4: “new I()()” — macro fail?
-For footnote 4, the version submitted is "In Java the corresponding syntax is new I(){}." Maybe the 
-version you have is not updated?
-
-
 - "Figure 6: The rule C-StaticType renders the reduction relation non-deterministic"
 Without (C-FReduce), (C-StaticType) IS infinite. But in (C-FReduce), the condition `e \neq new J()`
-prevent the infinite loop. 
+prevents the infinite loop. 
 
 
 Reviewer B.
@@ -47,13 +40,11 @@ different approach and actually you can't keep the method with the SAME name.
 The example in "The C++ programming language" and stackoverflow are both similar to the MiddleMan
 approach (they have the same spirit, just MiddleMan approach uses parameter types to distinguish
 different methods, while the others use separate sets of methods to distinguish).
-We agree that this name conflict problem is not quite popular in practice. That's also the reason
-why we do not have a big case study in the paper, because we didn't find a senario that
-unintentional method conflicts are frequently used in one project.   But once this issue is
+We agree that this name conflict problem is not quite popular in practice. But once this issue is
 encountered, the effect could be severe, and that existing workarounds might not help a lot. And
 since the C++ books, the trait paper as well as other papers mentioned this issue, it might be a
-sign that this problem is still an interesting issue in certain cases, which worth exploring and
-taking into consideration.  Finally our work shows that this feature is lightweight, it does not
+sign that this problem is still an interesting issue in certain cases,
+which is worth exploring and taking into consideration.  Finally our work shows that this feature is lightweight, it does not
 complicate the semantics a lot and can be easily added to language models.
 
 
@@ -63,7 +54,6 @@ https://github.com/YanlinWang/MIM/tree/master/Calculus
 
 - "What has been removed from FJ: just downcasts?"
 Also constructors and fields.
-
 
 - "5.2: static invocation confusing..."
 * "the method m in J_0 that hierarchically overrides J_1" means, the method m defined like this:
