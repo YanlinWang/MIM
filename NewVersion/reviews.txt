@@ -46,7 +46,7 @@
 > “override all parents with the same signature”.
 
 I think this suggestion is useful and valueble, we didn't think about this before. It does produce a
-simpler method overriding semantics.
+simpler method overriding semantics. 
 
 > Comments for author 
 > Sec 1:
@@ -72,7 +72,8 @@ Static dispatch.
 methods, which I suppose could be integrated into your semantics as well.
 
 Since FHJ does not support overloading, it's model is much simpler than C++, so there's no concern 
-of distinguishing overriding and shadowing of inherited methods.
+of distinguishing overriding and shadowing of inherited methods. But we agree that it could be interesting
+to add this feature.
 
 > Sec. 2.3:
 
@@ -80,8 +81,9 @@ of distinguishing overriding and shadowing of inherited methods.
 > hierarchical) overrides, which is somewhat counter-intuitive given the term. Perhaps make that a bit
 > clearer?
 
-Yes, the term "original method" is supposed to be relative to "hierarchical overriding method".
-It does include overrides and maybe a better name (for example "own method"?) is needed.
+Sorry that we didn't make it clear. The term "original method" is supposed to be relative to
+"hierarchical overriding method". It does include overrides and maybe a better name (for example
+"own method"?) is needed.
 
 > - I like the diagrams in Figure 3, very helpful!
 
@@ -90,7 +92,7 @@ It does include overrides and maybe a better name (for example "own method"?) is
 > Note sure I am a big fan of abusing override self syntax for non-(hierarchical-)override. Wouldn’t
 > it be just as easy to make this an optional clause that can be empty?
 
-Yes, `I { m() }` is a syntax sugar for `I { m() override I ... }`. In a real language, this should be 
+Yes, `I { m() }` is a syntactic sugar for `I { m() override I ... }`. In a real language, this should be 
 supported. But in formlization, for simplicity, we union them into one.
 
 > Footnote 4: “new I()()” — macro fail?
@@ -194,12 +196,18 @@ different approach and actually you can't keep the method with the SAME name.
 
 
 The example in "The C++ programming language" and stackoverflow are both similar to the MiddleMan
-approach (they have the same spirit, just MiddleMan approach uses parameter types to distinguish different
-methods, while the others use separate sets of methods to distinguish). These discussion might be a sign
-that there are still people curious on this problem, but I agree that maybe it is not quite popular. 
-That's also the reason why we do not have a big case study in the paper, because we didn't find a senario
-that unintentional method conflicts are frequently used in one project. But still, I think as a language
-feature in theory, it is still worth exploring and formalize.
+approach (they have the same spirit, just MiddleMan approach uses parameter types to distinguish
+different methods, while the others use separate sets of methods to distinguish).
+
+We agree that this name conflict problem is not quite popular in practice. That's also the reason
+why we do not have a big case study in the paper, because we didn't find a senario that
+unintentional method conflicts are frequently used in one project.   But once this issue is
+encountered, the effect could be severe, and that existing workarounds might not help a lot. And
+since the C++ books, the trait paper as well as other papers mentioned this issue, it might be a
+sign that this problem is still an interesting issue in certain cases, which worth exploring and
+taking into consideration.  Finally our work shows that this feature is lightweight, it does not
+complicate the semantics a lot and can be easily added to language models.
+
 
 > It would strengthen your paper if you would provide an implementation, or at least discuss
 > implementation aspects. It may not be that hard to provide an implementation, for example by
@@ -230,9 +238,14 @@ Also constructors and fields.
 > subclass method definitions?
 
 - "the method m in J_0 that hierarchically overrides J_1" means, the method m defined like this:
-    interface J_0 { K m() override J_1 { ... } }
-- "e1.J_0@J_1 :: m(e2)" is different from "((J1) e1.m(e2)". The first is a static call while the 
-   second dynamic. The result would be different when the method m gets overridden in an heir of J_0.
+interface J_0 { K m() override J_1 { ... } }
+
+- "e1.J_0@J_1 :: m(e2)" is different from "((J1) e1.m(e2)". The first is a static call while the
+second dynamic. The result would be different when the method m gets overridden in an heir of J_0.
+
+- For the question "whether it should be forbidden", we think it is a design choice. If the user
+makes  a normal e.m() call, for sure it wouldn't access the super methods. But the static invocation
+here gives users the freedom to directly call super methods.
 
 > p.22: "It breaks structural subtyping": this is a weird thing to say in a paper about a variant of
 > Featherweight Java, which is like the posterchild for nominal subtyping. Why is it a problem that
@@ -242,11 +255,14 @@ Also constructors and fields.
 > 
 > p.1: "disguised of interfaces": as interfaces 
 > p.2: "fork-join inheritance": weird that you put this
-> between brackets instead of italic like the other terms. p.2: I'm not a fan of the term "triangle
+> between brackets instead of italic like the other terms. 
+> p.2: I'm not a fan of the term "triangle
 > inheritance" but I don't have a better proposal. Perhaps fork inheritance, since you want to suggest
-> that you inherit the same thing from two directions with no common ancestor? p.5: "it is known that
-> using delegation makes it hard ...": I'm not sure what you mean here. Reference? p.23: "and method
-> lookup algorithm": and [the] method ...? p.23: can't you simplify your MiddleMan example to not use
+> that you inherit the same thing from two directions with no common ancestor? 
+> p.5: "it is known that
+> using delegation makes it hard ...": I'm not sure what you mean here. Reference? 
+> p.23: "and method lookup algorithm": and [the] method ...? 
+> p.23: can't you simplify your MiddleMan example to not use
 > templates (not everyone knows how they work) by using two separate MiddleMan classes?
 > 
 > 
@@ -310,8 +326,8 @@ Also constructors and fields.
 > mean here, but there is a mix of formal/informal that could be avoid here (and not only here).
 > 
 
-Maybe the English is not clear here, we mean that, for a given expression, if the reduction rules similar 
-to FJ is used...
+Sorry for the English, what we mean is that the reduction steps follow the reduction rules in FJ-like
+languages, where no static types are tracked.
 
 > Page 8, towards bottom: you mention for the first time "origin", but you define the concept of
 > "original methods" only on page 10, which is anyway not described very clearly.
