@@ -19,7 +19,6 @@
 > Pro:
 > - Addresses practical problem
 > - Fairly clean semantics and formalisation
-> - Well-written paper
 
 > Con:
 > - Limited novelty
@@ -29,6 +28,7 @@
 > languages with multiple inheritance. Various languages have ad-hoc solutions to this problem, but I
 > am not aware of a nicely isolated formalisation. As added value, the paper adds the ability to
 > selectively override ambiguously inherited methods without requiring renaming.
+> - Well-written paper
 
 > Although nothing here is particularly novel, surprising, or technically difficult, it is presented
 > well and I have very few quibbles.
@@ -116,168 +116,187 @@ prevent the infinite loop.
 > Y.  Knowledgeable
 
 > Paper summary The authors present the formal definitions and meta-theory of Feitherweight
-Hierarchical Java (FHJ), a variant of Feitherweight Java, whose main innovation is support for
-separately inheriting and separately overriding methods with the same name and signature inherited
-from two different parent classes (without a common ancestor). This is intended to deal with
-"unintended method conflicts".
+> Hierarchical Java (FHJ), a variant of Feitherweight Java, whose main innovation is support for
+> separately inheriting and separately overriding methods with the same name and signature inherited
+> from two different parent classes (without a common ancestor). This is intended to deal with
+> "unintended method conflicts".
 
-Comments for author Positive points:
+> Comments for author Positive points:
 
-Formalities appear generally reasonable and solid Tackles a real problem in a principled way
-Formalities have some technical benefits (simpler subject reduction theorem)
+> - Formalities appear generally reasonable and solid 
+> - Tackles a real problem in a principled way
+> - Formalities have some technical benefits (simpler subject reduction theorem)
 
-Negative points:
+> Negative points:
 
-I'm not convinced that the problem considered is common and important enough to be worth a language
-extension Related work appears partial Formalities are generally unsurprising, making the whole
-paper feel like a not-so-interesting exercise in formalising a not-so-interesting feature as in an
-elaborate course project. No implementation or discussion of implementation aspects.
+> - I'm not convinced that the problem considered is common and important enough to be worth a language
+> extension 
+> - Related work appears partial 
+> - Formalities are generally unsurprising, making the whole paper feel like a not-so-interesting 
+> exercise in formalising a not-so-interesting feature as in an elaborate course project. 
+> - No implementation or discussion of implementation aspects.
 
-Assessment:
-
-All in all, I sympathize with the authors who have designed and studied a principled solution for a
-real problem. However, there is nothing to get excited about in the paper: it's a more-or-less
-obvious solution, developed in a decent but standard way, solving a real but minor problem.
-Additionally, related work seems partial. In summary, I think this paper should be rejected.
-
-General comments:
-
-Your related work seems partial and focused on mainstream languages. Some things you should look at:
-
-Eiffel seems to allow renaming AND redefining methods for precisely the scenario of unintended
-method conflicts you discuss:
-https://archive.eiffel.com/doc/online/eiffel50/intro/language/tutorial-10.html#21906 [26] describes
-the problem in section 25.6, discusses a workaround using a pattern called "interface classes" which
-seems the same pattern as what you call the MiddleMan approach. So I believe you should cite it in
-the discussion of the MiddleMan approach.
-
-Interestingly, they then write the following: "For each use of an interface class, one could imagine
-a special-purpose language extension that could perform the desired adjustment a little bit more
-efficiently or a little more elegantly. How- ever, each use of an interface class is infrequent and
-supporting them all with specialized language constructs would impose a prohibitive burden of
-complexity. In particular, name clashes arising from the merging of class hierarchies are not common
-(compared with how often a programmer will write a class) and tend to arise from the merging of
-hierarchies generated from dissimilar cul- tures – such as games and window systems. Merging such
-dissimilar hierarchies is not easy, and resolving name clashes will more often than not be the least
-of the programmer’s problems. Other problems include dissimilar error handling, dissimilar
-initialization, and dissimilar memory- management strategies. The resolution of name clashes is
-discussed here because the technique of introducing an interface class with a forwarding function
-has many other applications. It can be used not only to change names, but also to change argument
-and return types, to introduce run-time checking, etc."
-
-In other words, they considered a feature like what you proposed, but found it not worthwhile. This
-means (first) that you should cite and discuss this. Additionally, this is of course just their
-opinion, but it still indicates that you should still ask yourselves whether this problem is really
-worth a language extension.
-
-Another discussion is in
-
-    Bjarne Stroustrup. 1995. The Design and Evolution of C++. ACM Press/Addison-Wesley Publ. Co.,
-New York, NY, USA.    They discuss a class LotterySimulation (very similar to your example), and say
-things like "We would also like LotterySimulation to have distinct, unambiguous names for the [two
-inherited functions called draw]. This feature came within an inch of being the first non-mandated
-extension to be accepted for C++. The semantics [...] are simple and the implementation is trivial.
-The problem seems to be to find a suitable syntax. [...] During the discussion that followed, we
-agreed that such name clashes were unlikely to be common enough to warrant a separate language
-feature." All very relevant to your paper, so you should discuss it and again, ask yourself whether
-they're right that the problem's not worth a language feature.
-
-(See also https://stackoverflow.com/questions/2004820/inherit-interfaces-which-share-a-method-name)
-
-It would strengthen your paper if you would provide an implementation, or at least discuss
-implementation aspects. It may not be that hard to provide an implementation, for example by
-translating C++ to itself to introduce an additional level of name mangling for methods that
-includes a unique representation of the class name in the method name. If you're not able to do
-that, I think you should at least add a discussion of how your proposed hierarchical dispatch would
-be implemented. I suspect it can be implemented on top of a very standard vtable-based approach like
-in C++, by just taking care to map method names to the right index into the vtable when invoking and
-defining methods, but I would like to hear from you whether this is indeed possible.
-
-What has been removed from FJ: just downcasts?
-
-5.2: I find the discussion of static invocation confusing: what does "the method m in J_0 that
-hierarchically overrides J_1" mean? Is "e1.J_0@J_1 :: m(e2)" supposed to be an alternative for
-"((J1) e1.m(e2)" but somehow use static rather than dynamic dispatch? Can this be used to directly
-invoke superclass methods that have been overridden in a subclass and if so, shouldn't this be
-forbidden? What if the subclass purposely overrides this superclass method to preserve its
-invariants on its additional instance variables (if we suppose for a minute that a real language
-extending FHJ has instance variables)? Then invoking the original superclass methods would allow you
-to break those invariants? Perhaps this static invocation should only be allowed from within
-subclass method definitions?
-
-p.22: "It breaks structural subtyping": this is a weird thing to say in a paper about a variant of
-Featherweight Java, which is like the posterchild for nominal subtyping. Why is it a problem that
-this breaks structural subtyping if you don't have or want structural subtyping?
-
-Detailed comments:
-
-p.1: "disguised of interfaces": as interfaces p.2: "fork-join inheritance": weird that you put this
-between brackets instead of italic like the other terms. p.2: I'm not a fan of the term "triangle
-inheritance" but I don't have a better proposal. Perhaps fork inheritance, since you want to suggest
-that you inherit the same thing from two directions with no common ancestor? p.5: "it is known that
-using delegation makes it hard ...": I'm not sure what you mean here. Reference? p.23: "and method
-lookup algorithm": and [the] method ...? p.23: can't you simplify your MiddleMan example to not use
-templates (not everyone knows how they work) by using two separate MiddleMan classes?
+> Assessment:
+> 
+> All in all, I sympathize with the authors who have designed and studied a principled solution for a
+> real problem. However, there is nothing to get excited about in the paper: it's a more-or-less
+> obvious solution, developed in a decent but standard way, solving a real but minor problem.
+> Additionally, related work seems partial. In summary, I think this paper should be rejected.
+> 
+> General comments:
+> 
+> Your related work seems partial and focused on mainstream languages. Some things you should look at:
+> 
+> Eiffel seems to allow renaming AND redefining methods for precisely the scenario of unintended
+> method conflicts you discuss:
+> https://archive.eiffel.com/doc/online/eiffel50/intro/language/tutorial-10.html#21906 [26] describes
+> the problem in section 25.6, discusses a workaround using a pattern called "interface classes" which
+> seems the same pattern as what you call the MiddleMan approach. So I believe you should cite it in
+> the discussion of the MiddleMan approach.
+> 
+> Interestingly, they then write the following: "For each use of an interface class, one could imagine
+> a special-purpose language extension that could perform the desired adjustment a little bit more
+> efficiently or a little more elegantly. How- ever, each use of an interface class is infrequent and
+> supporting them all with specialized language constructs would impose a prohibitive burden of
+> complexity. In particular, name clashes arising from the merging of class hierarchies are not common
+> (compared with how often a programmer will write a class) and tend to arise from the merging of
+> hierarchies generated from dissimilar cul- tures – such as games and window systems. Merging such
+> dissimilar hierarchies is not easy, and resolving name clashes will more often than not be the least
+> of the programmer’s problems. Other problems include dissimilar error handling, dissimilar
+> initialization, and dissimilar memory- management strategies. The resolution of name clashes is
+> discussed here because the technique of introducing an interface class with a forwarding function
+> has many other applications. It can be used not only to change names, but also to change argument
+> and return types, to introduce run-time checking, etc."
+> 
+> In other words, they considered a feature like what you proposed, but found it not worthwhile. This
+> means (first) that you should cite and discuss this. Additionally, this is of course just their
+> opinion, but it still indicates that you should still ask yourselves whether this problem is really
+> worth a language extension.
+> 
+> Another discussion is in
+> 
+>     Bjarne Stroustrup. 1995. The Design and Evolution of C++. ACM Press/Addison-Wesley Publ. Co.,
+> New York, NY, USA.    They discuss a class LotterySimulation (very similar to your example), and say
+> things like "We would also like LotterySimulation to have distinct, unambiguous names for the [two
+> inherited functions called draw]. This feature came within an inch of being the first non-mandated
+> extension to be accepted for C++. The semantics [...] are simple and the implementation is trivial.
+> The problem seems to be to find a suitable syntax. [...] During the discussion that followed, we
+> agreed that such name clashes were unlikely to be common enough to warrant a separate language
+> feature." All very relevant to your paper, so you should discuss it and again, ask yourself whether
+> they're right that the problem's not worth a language feature.
+> 
+> (See also https://stackoverflow.com/questions/2004820/inherit-interfaces-which-share-a-method-name)
+> 
+> It would strengthen your paper if you would provide an implementation, or at least discuss
+> implementation aspects. It may not be that hard to provide an implementation, for example by
+> translating C++ to itself to introduce an additional level of name mangling for methods that
+> includes a unique representation of the class name in the method name. If you're not able to do
+> that, I think you should at least add a discussion of how your proposed hierarchical dispatch would
+> be implemented. I suspect it can be implemented on top of a very standard vtable-based approach like
+> in C++, by just taking care to map method names to the right index into the vtable when invoking and
+> defining methods, but I would like to hear from you whether this is indeed possible.
+ 
+As mentioned in Section 1, we have a prototype implementation available here: 
+https://github.com/YanlinWang/MIM/tree/master/Calculus
 
 
+> What has been removed from FJ: just downcasts?
+ 
+Also constructors and fields.
 
-Review #31C
-Overall merit
-C.  Weak reject (Weak paper, though I will not fight strongly against it.)
-Reviewer expertise
-X.  Expert
 
-Paper summary This paper presents a formal model for hierarchical method dispatching and overriding
-in the presence of multiple inheritance. In this setting, they propose a mechanism to deal with
-unintentional method conflicts. The dynamic hierarchical dispatching was already present in the
-literature and the contribution of this paper is to formalize it, while the hierarchical override
-(i.e., being able to choose the branch of the sought version of the method to be overridden) is
-introduced and formalized as a new feature. For doing so, they introduce a typed operational
-semantics, that carries along some static and some dynamic type information (under the form of
-explicit upcasts).
+> 5.2: I find the discussion of static invocation confusing: what does "the method m in J_0 that
+> hierarchically overrides J_1" mean? Is "e1.J_0@J_1 :: m(e2)" supposed to be an alternative for
+> "((J1) e1.m(e2)" but somehow use static rather than dynamic dispatch? Can this be used to directly
+> invoke superclass methods that have been overridden in a subclass and if so, shouldn't this be
+> forbidden? What if the subclass purposely overrides this superclass method to preserve its
+> invariants on its additional instance variables (if we suppose for a minute that a real language
+> extending FHJ has instance variables)? Then invoking the original superclass methods would allow you
+> to break those invariants? Perhaps this static invocation should only be allowed from within
+> subclass method definitions?
 
-Comments for author Re-discussing multiple inheritance by tackling some of its problems in a
-classical class-based approach, instead of introducing ad-hoc constructs, is indeed remarkable. I
-personally do not like this idea of polluting interfaces with implemetation details, and this is
-more Java 8's fault than the authors', however the resulting calculus is not as clean as it should
-be to be proposed as something to make multiple inheritance popular among the average programmers
-(which I believe it is one of the goals of this paper).
+- "the method m in J_0 that hierarchically overrides J_1" means, the method m defined like this:
+    interface J_0 { K m() override J_1 { ... } }
+- "e1.J_0@J_1 :: m(e2)" is different from "((J1) e1.m(e2)". The first is a static call while the 
+   second dynamic. The result would be different when the method m gets overridden in an heir of J_0.
 
-The proposal seems unnecessarily complex. In NextGen and MixGen, and in Magda, it is proposed to
-deal with unintentional method conflicts with "hygienicity", which is basicaly giving a method a
-unique name/identifier, by prefixing the name with a un-ambiguous path:
-
-. EAllen, JBannet, and RCartwrightA first-class approach to genericityIn ProcOOPSLA '03, pages
-. 96-114, 2003.
-
-. Viviana Bono, Jarek Kusmierek, Mauro MulateroMagda: A New Language for ModularityIn ProcECOOP
-. 2012, pages 560-588, 2012.
-
-Hygienicity might be seen as tedious if the language is non supported by an IDE, however it is much
-simpler to understand than the mechanism introduced in this paper, because it does not require any
-additional notion in the method dispatching and overriding semantics.
-
-The meta-theory of the paper looks correct and the paper is written in an ok style. Maybe most of
-the examples and informal explanations in Section 1 and Section 2 could go in between/after the
-formalization, as, given the complexity of the semantics, they are more understandable after seeing
-the rules.
-
-Small details -
-
-I would avoid putting capital letters in Object-Oriented Programming.
-
-It seems you use the verb "to allow" in an imprecise way. Generally speaking, I have the impression
-that the English could be improved (as a non-native speaker, I know this observation is somewhat
-annoying, but I also know that it is important to do so).
-
-Page 4: no quotes around "interface" in bold.
-
-Pages 5 and 6 and 7: some method names appear in a smaller font, which does not help readability.
-
-Page 7, in the middle: what do you mean by "reduction model similar to FJ"? I understand what you
-mean here, but there is a mix of formal/informal that could be avoid here (and not only here).
-
-Page 8, towards bottom: you mention for the first time "origin", but you define the concept of
-"original methods" only on page 10, which is anyway not described very clearly.
-
-Section 3.2: subtyping is ANTIsymmetric.
+> p.22: "It breaks structural subtyping": this is a weird thing to say in a paper about a variant of
+> Featherweight Java, which is like the posterchild for nominal subtyping. Why is it a problem that
+> this breaks structural subtyping if you don't have or want structural subtyping?
+> 
+> Detailed comments:
+> 
+> p.1: "disguised of interfaces": as interfaces 
+> p.2: "fork-join inheritance": weird that you put this
+> between brackets instead of italic like the other terms. p.2: I'm not a fan of the term "triangle
+> inheritance" but I don't have a better proposal. Perhaps fork inheritance, since you want to suggest
+> that you inherit the same thing from two directions with no common ancestor? p.5: "it is known that
+> using delegation makes it hard ...": I'm not sure what you mean here. Reference? p.23: "and method
+> lookup algorithm": and [the] method ...? p.23: can't you simplify your MiddleMan example to not use
+> templates (not everyone knows how they work) by using two separate MiddleMan classes?
+> 
+> 
+> 
+> Review #31C
+> Overall merit
+> C.  Weak reject (Weak paper, though I will not fight strongly against it.)
+> Reviewer expertise
+> X.  Expert
+> 
+> Paper summary 
+> This paper presents a formal model for hierarchical method dispatching and overriding
+> in the presence of multiple inheritance. In this setting, they propose a mechanism to deal with
+> unintentional method conflicts. The dynamic hierarchical dispatching was already present in the
+> literature and the contribution of this paper is to formalize it, while the hierarchical override
+> (i.e., being able to choose the branch of the sought version of the method to be overridden) is
+> introduced and formalized as a new feature. For doing so, they introduce a typed operational
+> semantics, that carries along some static and some dynamic type information (under the form of
+> explicit upcasts).
+> 
+> Comments for author 
+> Re-discussing multiple inheritance by tackling some of its problems in a
+> classical class-based approach, instead of introducing ad-hoc constructs, is indeed remarkable. I
+> personally do not like this idea of polluting interfaces with implemetation details, and this is
+> more Java 8's fault than the authors', however the resulting calculus is not as clean as it should
+> be to be proposed as something to make multiple inheritance popular among the average programmers
+> (which I believe it is one of the goals of this paper).
+> 
+> The proposal seems unnecessarily complex. In NextGen and MixGen, and in Magda, it is proposed to
+> deal with unintentional method conflicts with "hygienicity", which is basicaly giving a method a
+> unique name/identifier, by prefixing the name with a un-ambiguous path:
+> 
+> . EAllen, JBannet, and RCartwrightA first-class approach to genericityIn ProcOOPSLA '03, pages
+> . 96-114, 2003.
+> 
+> . Viviana Bono, Jarek Kusmierek, Mauro MulateroMagda: A New Language for ModularityIn ProcECOOP
+> . 2012, pages 560-588, 2012.
+> 
+> Hygienicity might be seen as tedious if the language is non supported by an IDE, however it is much
+> simpler to understand than the mechanism introduced in this paper, because it does not require any
+> additional notion in the method dispatching and overriding semantics.
+> 
+> The meta-theory of the paper looks correct and the paper is written in an ok style. Maybe most of
+> the examples and informal explanations in Section 1 and Section 2 could go in between/after the
+> formalization, as, given the complexity of the semantics, they are more understandable after seeing
+> the rules.
+> 
+> Small details -
+> 
+> I would avoid putting capital letters in Object-Oriented Programming.
+> 
+> It seems you use the verb "to allow" in an imprecise way. Generally speaking, I have the impression
+> that the English could be improved (as a non-native speaker, I know this observation is somewhat
+> annoying, but I also know that it is important to do so).
+> 
+> Page 4: no quotes around "interface" in bold.
+> 
+> Pages 5 and 6 and 7: some method names appear in a smaller font, which does not help readability.
+> 
+> Page 7, in the middle: what do you mean by "reduction model similar to FJ"? I understand what you
+> mean here, but there is a mix of formal/informal that could be avoid here (and not only here).
+> 
+> Page 8, towards bottom: you mention for the first time "origin", but you define the concept of
+> "original methods" only on page 10, which is anyway not described very clearly.
+> 
+> Section 3.2: subtyping is ANTIsymmetric.
+> 
