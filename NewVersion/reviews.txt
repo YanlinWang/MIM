@@ -149,7 +149,12 @@ prevent the infinite loop.
 > 
 > Eiffel seems to allow renaming AND redefining methods for precisely the scenario of unintended
 > method conflicts you discuss:
-> https://archive.eiffel.com/doc/online/eiffel50/intro/language/tutorial-10.html#21906 [26] describes
+> https://archive.eiffel.com/doc/online/eiffel50/intro/language/tutorial-10.html#21906 
+
+In Eiffel, programmers still have to rename methods to resolve the conflicts, so I don't think it is a 
+different approach and actually you can't keep the method with the SAME name.
+
+> [26] describes
 > the problem in section 25.6, discusses a workaround using a pattern called "interface classes" which
 > seems the same pattern as what you call the MiddleMan approach. So I believe you should cite it in
 > the discussion of the MiddleMan approach.
@@ -186,7 +191,16 @@ prevent the infinite loop.
 > they're right that the problem's not worth a language feature.
 > 
 > (See also https://stackoverflow.com/questions/2004820/inherit-interfaces-which-share-a-method-name)
-> 
+
+
+The example in "The C++ programming language" and stackoverflow are both similar to the MiddleMan
+approach (they have the same spirit, just MiddleMan approach uses parameter types to distinguish different
+methods, while the others use separate sets of methods to distinguish). These discussion might be a sign
+that there are still people curious on this problem, but I agree that maybe it is not quite popular. 
+That's also the reason why we do not have a big case study in the paper, because we didn't find a senario
+that unintentional method conflicts are frequently used in one project. But still, I think as a language
+feature in theory, it is still worth exploring and formalize.
+
 > It would strengthen your paper if you would provide an implementation, or at least discuss
 > implementation aspects. It may not be that hard to provide an implementation, for example by
 > translating C++ to itself to introduce an additional level of name mangling for methods that
@@ -295,8 +309,19 @@ Also constructors and fields.
 > Page 7, in the middle: what do you mean by "reduction model similar to FJ"? I understand what you
 > mean here, but there is a mix of formal/informal that could be avoid here (and not only here).
 > 
+
+Maybe the English is not clear here, we mean that, for a given expression, if the reduction rules similar 
+to FJ is used...
+
 > Page 8, towards bottom: you mention for the first time "origin", but you define the concept of
 > "original methods" only on page 10, which is anyway not described very clearly.
 > 
+
+On page 8, "origin" means where the method is defined, we avoid using "original methods" because it
+it not introduced yet on page 8. "original method" is a relative concept to hierarchical overriding 
+methods.
+
 > Section 3.2: subtyping is ANTIsymmetric.
 > 
+
+Yes, it is not symmetric, we will delete it.
