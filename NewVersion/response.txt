@@ -78,7 +78,10 @@ here gives users the freedom to directly call super methods.
 
 Review C.
 - "The proposal seems unnecessarily complex. In NextGen and MixGen ..." 
-
+Thanks for the references, we need to add them. The models in these references also show that the
+static types can be utilized for method dispatch, which is similar to C++. But the complexity of our
+model mainly comes from the feature of hierarchical overriding, which is not introduced by previous
+papers. We believe that such complexity can simplify the client code written by programmers.
 
 - "what do you mean by 'reduction model similar to FJ'?"
 Sorry for the English, what we mean is that the reduction steps follow the reduction rules in FJ-like
