@@ -45,8 +45,8 @@
 > regular overriding present in the paper and simply view regular overrides as a shorthand for
 > “override all parents with the same signature”.
 
-I think this suggestion is useful and valueble, we didn't think about this before. It does produce a
-simpler method overriding semantics. 
+We think this suggestion is useful and valueble, we didn't think about this before. It does produce a
+simpler method overriding semantics and definitely can be a future work.. 
 
 > Comments for author 
 > Sec 1:
