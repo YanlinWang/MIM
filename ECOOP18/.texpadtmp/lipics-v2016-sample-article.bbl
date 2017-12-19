@@ -1,0 +1,10 @@
+\begin{thebibliography}{1}
+
+\bibitem{DBLP:journals/cacm/Knuth74}
+Donald~E. Knuth.
+\newblock {Computer Programming as an Art}.
+\newblock {\em Commun. {ACM}}, 17(12):667--673, 1974.
+\newblock \href {http://dx.doi.org/10.1145/361604.361612}
+  {\path{doi:10.1145/361604.361612}}.
+
+\end{thebibliography}

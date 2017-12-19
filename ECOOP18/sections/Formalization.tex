@@ -1,0 +1,221 @@
+\section{Formalization}~\label{sec:formalization}
+In this section, we present a formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following the similar style of 
+Featherweight Java~\cite{Igarashi01FJ}. \MIM{} is a minimal core calculus that formalizes the core concept of hierarchical dispatching and overriding. The syntax, typing rules and small-step semantics are presented.
+
+% \vspace{-2ex}
+\subsection{Syntax}
+The abstract syntax of \MIM{} interface declarations, method declarations, and expressions is given in Figure~\ref{fig:syntax}. The multiple
+inheritance feature of \MIM{} is inspired by Java 8 interfaces, which supports
+method implementations via default methods. This feature is 
+closely related to \emph{traits}. To demonstrate how
+unintentional method conflicts are untangled in \MIM{}, we only focus on a small subset of the interface model. For example, all methods declared
+in an interface are either default methods or abstract methods. Default methods provide default implementations for methods. Abstract methods do not
+have a method body. Abstract methods can be overridden with future implementations.
+
+\paragraph{Notations}
+The metavariables $I, J$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
+conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in an obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
+
+\paragraph{Interfaces}
+In order to achieve multiple inheritance, an interface can have a set of 
+parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
+
+\paragraph{Methods}
+Original methods and hierarchically overriding methods share the same syntax in our model for simplicity.
+The concrete method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
+method named $m$ with result type $I$, parameters $\overline{x}$ of
+type $\overline{I_x}$ and the overriding target $J$. The body of the
+method simply includes the returned expression $e$. Notably, we have introduced the
+\kwoverride{} keyword for two cases: if the overridden interface is exactly the enclosing
+interface itself, then such a method is seen as originally defined; otherwise it is a hierarchical overriding method. The definition
+of abstract methods is written as $\absmethod{I}{m}{I_x}{x}{J}$, which is
+similar to a concrete method but without the method body. 
+For simplicity, overloading is not modelled for methods, which
+implies that we can uniquely identify a method by its name.
+
+\paragraph{Expressions \& Values}
+Expressions can be standard constructs such as variables, method
+invocation, object creation, together with cast expressions. 
+Object creation is represented by $\new I$\footnote{In Java the corresponding syntax is $\new I\{\}$.}. Fields and primitive types are not modelled in \MIM{}. 
+The casts are merely safe upcasts, and in fact, they can be viewed as
+annotated expressions, where the annotation indicates its static type.
+The coexistence of static and dynamic types is the key to hierarchical dispatch.
+A value
+``$(I)\new{J}$''
+is the final result of multiple reduction steps evaluating an
+expression.
+
+For simplicity, \name{} does not formalize statements like assignments and so on because they are orthogonal features to the hierarchical dispatching and overriding feature.
+A program in \name{} consists of a list of interface declarations, plus a single expression.
+
+\begin{figure*}[t]
+\saveSpaceFig
+\begin{displaymath}
+\begin{array}{l}
+\begin{array}{llrl}
+\text{Interfaces}   & IL & \Coloneqq & \interface{I}{I}{M} \\
+\text{Methods}      & M  & \Coloneqq & \method{I}{m}{I_x}{x}{J}{e}  \mid
+									   \absmethod{I}{m}{I_x}{x}{J} \\
+\text{Expressions}  & e  & \Coloneqq & x \mid
+e.m(\overline{e}) \mid
+\new{I} \mid \; (I)e \\
+\text{Context}      & \Gamma & \Coloneqq & \overline{x}:\overline{I} \\
+\text{Values}       & v & \Coloneqq & (I) \new{J} \\
+%%\\
+%%\text{Interface names} & I, J, K & & \\
+%%\text{Method names} & m & & \\
+%%\text{Variable names} & x & &
+\end{array}
+\end{array}
+\end{displaymath}
+\caption{Syntax of \name{}.}\label{fig:syntax}
+\saveSpaceFig
+\end{figure*}
+
+
+\begin{figure*}[t]
+\saveSpaceFig
+\begin{mathpar}
+	\framebox{$ I <: J $} \hspace{.5in} \subid \\
+	\subtrans \hspace{.5in} \subextends \\
+	
+	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
+	\tvar \\
+	\tinvk \\
+	% \tpathinvk \\
+	% \tsuperinvk \\
+	% \tstaticinvk  \\
+	\tnew \\
+	\tanno \\
+	\tmethod \\
+	\tabsmethod \\
+	\tintf
+\end{mathpar}
+\saveSpaceFig
+\caption{Subtyping and Typing Rules of \name{}.}
+\label{fig:typingrules}
+\end{figure*}
+
+\subsection{Subtyping and Typing Rules}\label{subsec:typingrules}
+\paragraph{Subtyping}
+The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
+In short, subtyping relations are built from the inheritance in interface
+declarations. Subtyping is both symmetric, reflexive and transitive.
+
+\paragraph{Type-checking}
+Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
+typing, well-formedness of methods and interfaces. As a convention, an environment
+$\Gamma$ is maintained to store the types of variables, together with
+the self-reference $\kwthis$.
+% The three rules for method invocation, \textsc{(T-Invk)}, \textsc{(T-PathInvk)} and \textsc{(T-SuperInvk)}
+% are very similar, in the sense that they all check the type of the specific method, by using
+% an auxiliary function \mtype. \mtype{} is the function for looking up method types, which we will
+% illustrate later in Section~\ref{subsec:auxdefs}. After the method
+% type is obtained, they all check that the arguments and the receiver
+% have compatible types. Additionally, \textsc{(T-PathInvk)} requires the receiver to be the subtype of the specified
+% path type, and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
+
+\textsc{(T-Invk)} is the typing rule for method invocation.
+Naturally, the receiver and the arguments are required to be well-typed.
+$\mbody$ is our key function for method lookup that implements the
+hierarchical dispatching algorithm. The formal definition will be introduced in Section~\ref{sec:auxdefs}.
+Here $\mbody(m, I_0, I_0)$ finds the most specific $m$ above $I_0$. ``Above $I_0$'' specifies
+the search space, namely the supertypes of $I_0$ including itself.
+For the general case, however, the hierarchical invocation $\mbody(m, I, J)$ finds ``the most specific $m$
+above $I$ and along path/branch $J$''. ``Along path $J$'' additionally requires the result to relate to $J$, that is to say,
+the most specific interface that has a subtyping relationship with $J$.
+
+In \textsc{(T-Invk)}, as the compilation should not be aware
+of the dynamic type, it only requires that invoking $m$ is valid for the static type of the
+receiver. The result of $\mbody$ contains the interface that provides the most specific implementation,
+the parameters and the return type. We use underscore for the return expression, implying that an empty return expression
+from an abstract method is acceptable.
+% \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
+% and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
+
+\textsc{(T-New)} is the typing rule for object creation $\new{I}$. The
+auxiliary function $\canInstantiate(I)$ (see definition in Section~\ref{sec:otherdefs}) checks whether an interface $I$ 
+can be instantiated or not. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
+
+\textsc{(T-Method)} is more interesting since a method can either be an original method or a hierarchical overriding, though
+they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a fundamental function,
+used to find ``the most specific interfaces that are above $I$ and
+along path $J$, and originally defines $m$'' (see
+Section~\ref{sec:auxdefs} for full definition).
+By ``most specific interfaces'',
+it implies that the inherited supertypes are excluded. Thus the condition $\mostSpecific(m, I, J) = \{J\}$ indicates a characteristic of a hierarchical overriding: it must override an original method; the overriding is direct and there does not exist any other original method $m$ in between.
+Then $\mbody(m, J, J)$ provides the type of the original method, so hierarchical overriding has to preserve the type. Finally the return expression
+is type-checked to be subtype of the declared return type. For the definition of an original method, $I$ equals $J$ and the rule is straightforward. \textsc{(T-AbsMethod)} is a similar rule but works on abstract method declarations.
+
+\textsc{(T-Intf)} defines the typing rule on interfaces. The first condition is obvious, namely its methods need to be well checked. The third
+condition checks whether the overriding between original methods preserves typing. In this condition we again use some helper functions defined in  Section~\ref{sec:auxdefs}. $I[m\ \kwoverride\ I]$ is defined if $I$ originally defines $m$, and $\canOverride(m, I, J)$ checks whether $I.m$ has the same type as $J.m$. Generally the preservation of method type is required for any supertype $J$ and any method $m$.
+
+The second condition of \textsc{(T-Intf)} is more complex and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
+\MIM{} rejects on the definition of interfaces when they form a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
+is defined but $\mbody(m, I, J)$ is undefined for some $J$ and $m$. This indicates that $m$ is available and unambiguous from the perspective of $J$,
+but is ambiguous to $I$ on branch $J$. It means that there are multiple overriding paths of $m$ from $J$ to $I$, which forms a diamond. Hence rejecting
+that case meets our expectation. Below is an example (Figure~\ref{fig:examplesmbody} (e)) that illustrates the reason why this condition is needed:
+%\bruno{what is the purpose of this example:
+%  state-it upfront please. Is this example meant to ilustrate T-Inf?
+%  Then it's better to have the example together with the text
+%  explaining T-inf.} \yanlin{revised.please check whether you're happy with it.}
+\begin{lstlisting}
+interface T                 { T m() override T { return new T(); } }
+interface A extends T       { T m() override T { return new A(); } }
+interface B extends T       { T m() override T { return new B(); } }
+interface C extends A, B {}
+((T) new C()).m()
+\end{lstlisting}
+This program does not compile on interface $C$, because of the second condition in \textsc{(T-Intf)}, where $I$ equals $C$ and $J$ equals $T$.
+By the algorithm, $\mbody(m, T, T)$ will refer to $T.m$, but $\mbody(m, C, T)$ is undefined, since both $A.m$ and $B.m$ are most specific
+to $C$ along path $T$, which forms a diamond. The expression \lstinline|((A) new D()).m()| is one example of triggering ambiguity, but \MIM{}
+simply rejects the definition of $C$. To resolve the issue, the programmer need to have an overriding method in $C$, to explicitly merge
+the conflicting ones.
+
+Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
+
+\subsection{Small-step Semantics and Congruence}
+Figure~\ref{fig:smallstep} defines the small-step semantics and
+congruence rules of \MIM{}. When evaluating an expression, they
+are invoked and produce a single value in
+the end. %\haoyuan{we need to be consistent on paragraph upper/lower case.}
+
+\paragraph{Semantic Rules} \textsc{(S-Invk)} is the only computation rule we need for method invocation.
+As a small-step rule and by congruence, it assumes that the receiver and the arguments are already values.
+Specifically, the receiver $(J)\new{I}$ indicates the dynamic type $I$
+together with the static type $J$. Therefore $\mbody(m, I, J)$ carries out hierarchical dispatching, acquires
+the types, the return expression $e_0$ and the interface $I_0$ which provides the most specific method.
+Here we use $e_0$ to imply that the return expression is forced to be non-empty because it requires a concrete implementation. Now the
+rule reduces method invocation to $e_0$ with substitution.
+Parameters are substituted with arguments, and the \lstinline|this| reference is substituted by the receiver,
+and in the meanwhile the static types are recorded via annotations. Finally, the return type $I_e$ is put in the front as an annotation.
+\paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
+on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
+object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
+
+
+
+\begin{comment}
+\paragraph{Example} In contrast with the counter-example in Section~\ref{subsec:typingrules}, it is better to understand semantics by
+well-compiled examples. Here we abstract a variant of the \lstinline|DrawableDeck| example:
+
+\vspace{3pt}\begin{lstlisting}
+interface Void       {}
+interface JFrame     {}
+interface Deck       { Void draw() override Deck { return new Void(); } }
+interface Drawable { JFrame draw() override Drawable; }
+interface DrawableDeck extends Drawable, Deck {
+  JFrame draw() override Drawable {
+    return new JFrame();
+  }
+}
+
+((Drawable) new DrawableDeck()).draw()
+\end{lstlisting}\vspace{3pt}
+We put \lstinline|Drawable.draw| as an abstract method instead, but hierarchically override it in \lstinline|DrawableDeck|.
+By typing rules, the code is well-compiled. And during runtime,
+\begin{align*}
+	& ((Drawable) new DrawableDeck()).draw() \\
+\rightarrow & (JFrame) new JFrame()
+\end{align*}
+\end{comment}

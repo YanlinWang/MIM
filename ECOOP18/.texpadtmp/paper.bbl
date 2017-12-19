@@ -1,0 +1,168 @@
+\begin{thebibliography}{10}
+
+\bibitem{Ancona2003}
+Davide Ancona, Giovanni Lagorio, and Elena Zucca.
+\newblock Jam---designing a java extension with mixins.
+\newblock {\em ACM Trans. Program. Lang. Syst.}, 25(5):641--712, 2003.
+
+\bibitem{bono14}
+Viviana Bono, Enrico Mensa, and Marco Naddeo.
+\newblock Trait-oriented programming in java 8.
+\newblock In {\em PPPJ '14}, 2014.
+
+\bibitem{bracha90mixin}
+Gilad Bracha and William Cook.
+\newblock Mixin-based inheritance.
+\newblock In {\em OOPSLA/ECOOP '90}, 1990.
+
+\bibitem{Chambers1991}
+Craig Chambers, David Ungar, Bay-Wei Chang, and Urs H\"{o}lzle.
+\newblock Parents are shared parts of objects: Inheritance and encapsulation in
+  self.
+\newblock {\em Lisp Symb. Comput.}, 4(3), July 1991.
+
+\bibitem{Cook1987}
+S.~COOK.
+\newblock Oopsla '87 panel p2: Varieties of inheritance.
+\newblock In {\em OOPSLA '87 Addendum To The Proceedings}, 1987.
+
+\bibitem{Cremet2006}
+Vincent Cremet, Fran\c{c}ois Garillot, Sergue\"{\i} Lenglet, and Martin
+  Odersky.
+\newblock A core calculus for scala type checking.
+\newblock In {\em MFCS '06}, 2006.
+
+\bibitem{Ducasse:2006:TMF:1119479.1119483}
+St{\'e}phane Ducasse, Oscar Nierstrasz, Nathanael Sch\"{a}rli, Roel Wuyts, and
+  Andrew~P. Black.
+\newblock Traits: A mechanism for fine-grained reuse.
+\newblock {\em ACM Trans. Program. Lang. Syst.}, 28(2):331--388, 2006.
+
+\bibitem{ellis1990annotated}
+Margaret~A Ellis and Bjarne Stroustrup.
+\newblock {\em The annotated C++ reference manual}.
+\newblock Addison-Wesley, 1990.
+
+\bibitem{Flatt1998}
+Matthew Flatt, Shriram Krishnamurthi, and Matthias Felleisen.
+\newblock Classes and mixins.
+\newblock In {\em POPL '98}, 1998.
+
+\bibitem{goetz12fdefenders}
+Brian Goetz and Robert Field.
+\newblock Featherweight defenders: A formal model for virtual extension methods
+  in java.
+\newblock
+  \url{http://cr.openjdk.java.net/~briangoetz/lambda/featherweight-defenders.pdf},
+  2012.
+
+\bibitem{Hendler86}
+James Hendler.
+\newblock Enhancement for multiple-inheritance.
+\newblock In {\em OOPWORK '86}, 1986.
+
+\bibitem{Igarashi01FJ}
+Atsushi Igarashi, Benjamin~C. Pierce, and Philip Wadler.
+\newblock Featherweight java: A minimal core calculus for java and gj.
+\newblock {\em ACM Trans. Program. Lang. Syst.}, 23(3):396--450, 2001.
+
+\bibitem{Liquori08ftj}
+Luigi Liquori and Arnaud Spiwack.
+\newblock Feathertrait: A modest extension of featherweight java.
+\newblock {\em ACM Trans. Program. Lang. Syst.}, 30(2):11, 2008.
+
+\bibitem{malayeri2009cz}
+Donna Malayeri and Jonathan Aldrich.
+\newblock Cz: Multiple inheritance without diamonds.
+\newblock In {\em OOPSLA '09}, 2009.
+
+\bibitem{csharpdoc}
+Microsoft.
+\newblock Csharp explicit interface member implementations document.
+\newblock
+  \url{https://msdn.microsoft.com/en-us/library/aa664591(v=vs.71).aspx}, 2003.
+
+\bibitem{Moon1986}
+David~A. Moon.
+\newblock Object-oriented programming with flavors.
+\newblock In {\em OOPSLA '86}, 1986.
+
+\bibitem{Nystrom2004}
+Nathaniel Nystrom, Stephen Chong, and Andrew~C. Myers.
+\newblock Scalable extensibility via nested inheritance.
+\newblock In {\em OOPSLA '04}, 2004.
+
+\bibitem{scala-overview}
+Martin Odersky and al.
+\newblock An overview of the scala programming language.
+\newblock Technical Report IC/2004/64, EPFL Lausanne, Switzerland, 2004.
+
+\bibitem{Ramalingam1997}
+G.~Ramalingam and Harini Srinivasan.
+\newblock A member lookup algorithm for c++.
+\newblock In {\em PLDI '97}, 1997.
+
+\bibitem{ramananandro2012mechanized}
+Tahina Ramananandro.
+\newblock {\em Mechanized Formal Semantics and Verified Compilation for C++
+  Objects}.
+\newblock PhD thesis, Universit{\'e} Paris-Diderot-Paris VII, 2012.
+
+\bibitem{reppy2006foundation}
+John Reppy and Aaron Turon.
+\newblock A foundation for trait-based metaprogramming.
+\newblock In {\em FOOL/WOOD '06}, 2006.
+
+\bibitem{Reppy:2007:MT:2394758.2394784}
+John Reppy and Aaron Turon.
+\newblock Metaprogramming with traits.
+\newblock In {\em ECOOP '07}, 2007.
+
+\bibitem{Sak89dis}
+Markku Sakkinen.
+\newblock Disciplined inheritance.
+\newblock In {\em ECOOP '89}, 1989.
+
+\bibitem{scharli03traits}
+Nathanael Scharli, Stéphane Ducasse, Oscar Nierstrasz, and Andrew~P. Black.
+\newblock Traits: Composable units of behaviour.
+\newblock In {\em ECOOP '03}, 2003.
+
+\bibitem{Singh1995}
+Ghan~Bir Singh.
+\newblock Single versus multiple inheritance in object oriented programming.
+\newblock {\em SIGPLAN OOPS Mess.}, 1995.
+
+\bibitem{stroustrup1995}
+Bjarne Stroustrup.
+\newblock {\em The C++ programming language}.
+\newblock Pearson Education India, 1995.
+
+\bibitem{van1996encapsulation}
+Marc Van~Limberghen and Tom Mens.
+\newblock Encapsulation and composition as orthogonal operators on mixins: A
+  solution to multiple inheritance problems.
+\newblock {\em Object Oriented Systems}, 3(1):1--30, 1996.
+
+\bibitem{classless}
+Yanlin Wang, Haoyuan Zhang, Bruno C. d.~S. Oliveira, and Marco Servetto.
+\newblock Classless java.
+\newblock In {\em GPCE '16}, 2016.
+
+\bibitem{Wasserrab2006}
+Daniel Wasserrab, Tobias Nipkow, Gregor Snelting, and Frank Tip.
+\newblock An operational semantics and type safety prooffor multiple
+  inheritance in c++.
+\newblock In {\em OOPSLA '06}, 2006.
+
+\bibitem{Wright1994}
+A.K. Wright and M.~Felleisen.
+\newblock A syntactic approach to type soundness.
+\newblock {\em Inf. Comput.}, 115(1):38--94, 1994.
+
+\bibitem{zenger05independentlyextensible}
+Matthias Zenger and Martin Odersky.
+\newblock Independently extensible solutions to the expression problem.
+\newblock In {\em FOOL '05}, 2005.
+
+\end{thebibliography}
