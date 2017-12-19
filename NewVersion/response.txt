@@ -1,6 +1,7 @@
 We thank the reviewers for the valuable comments. We try to address the reviews one by one.
 
 Reviewer A.
+
 - generalize the method overriding semantics
 
 We think this suggestion is useful and valuable, we didn't think about this before. It does produce a
@@ -14,29 +15,36 @@ It is not obvious to us that this would work smoothly. A reference
 would be highly appreciatted.
 
 - "you do not mention the more direct way in which C++ allows disambiguating methods by qualification..."
+
 In Section 2.1 we have mentioned the C++ qualified name approach, see Sec 2.1 -> Potential Fixes -> 
 Static dispatch.
 
 - "C++ allows both overriding and shadowing ..."
+
 Since FHJ does not support overloading, it's model is simpler than C++, so there's no concern 
 of distinguishing overriding and shadowing of inherited methods. But we agree that it could be interesting
 to add this feature.
 
 - "abusing override self syntax for non-(hierarchical-)override...can be empty?..."
+
 Yes, `I { m() }` is a syntactic sugar for `I { m() override I ... }`. In a real language, this should be 
 supported. But in formlization, for simplicity, we union them into one.
 
 - "Figure 6: The rule C-StaticType renders the reduction relation non-deterministic"
+
 Without (C-FReduce), (C-StaticType) IS infinite. But in (C-FReduce), the condition `e \neq new J()`
 prevents the infinite loop. 
 
 
 Reviewer B.
+
 - "Eiffel seems to allow renaming ..."
+
 In Eiffel, programmers still have to rename methods to resolve the conflicts, so I don't think it is a 
 different approach and actually you can't keep the method with the SAME name.
 
-> MiddleMan approach, "whether this problem is really worth a language extension..."
+- MiddleMan approach, "whether this problem is really worth a language extension..."
+
 The example in "The C++ programming language" and stackoverflow are both similar to the MiddleMan
 approach (they have the same spirit, just MiddleMan approach uses parameter types to distinguish
 different methods, while the others use separate sets of methods to distinguish).
@@ -47,15 +55,17 @@ sign that this problem is still an interesting issue in certain cases,
 which is worth exploring and taking into consideration.  Finally our work shows that this feature is lightweight, it does not
 complicate the semantics a lot and can be easily added to language models.
 
-
 - "It would strengthen your paper if you would provide an implementation..."
+
 As mentioned in Section 1, we have a prototype implementation available here: 
 https://github.com/YanlinWang/MIM/tree/master/Calculus
 
 - "What has been removed from FJ: just downcasts?"
+
 Also constructors and fields.
 
 - "5.2: static invocation confusing..."
+
 * "the method m in J_0 that hierarchically overrides J_1" means, the method m defined like this:
 interface J_0 { K m() override J_1 { ... } }
 * "e1.J_0@J_1 :: m(e2)" is different from "((J1) e1.m(e2)". The first is a static call while the
@@ -64,23 +74,26 @@ second dynamic. The result would be different when the method m gets overridden 
 makes  a normal e.m() call, for sure it wouldn't access the super methods. But the static invocation
 here gives users the freedom to directly call super methods.
 
-- "p.22: "It breaks structural subtyping.."
-
 Review C.
+
 - "The proposal seems unnecessarily complex. In NextGen and MixGen ..." 
+
 Thanks for the references, we need to add them. The models in these references also show that the
 static types can be utilized for method dispatch, which is similar to C++. But the complexity of our
 model mainly comes from the feature of hierarchical overriding, which is not introduced by previous
 papers. We believe that such complexity can simplify the client code written by programmers.
 
 - "what do you mean by 'reduction model similar to FJ'?"
+
 Sorry for the English, what we mean is that the reduction steps follow the reduction rules in FJ-like
 languages, where no static types are tracked.
 
 - "you mention for the first time 'origin'..."
+
 On page 8, "origin" means where the method is defined, we avoid using "original methods" because it
 it not introduced yet on page 8. "original method" is a relative concept to hierarchical overriding 
 methods.
 
 - "Section 3.2: subtyping is ANTIsymmetric."
+
 Yes, it is not symmetric, we will delete it.
