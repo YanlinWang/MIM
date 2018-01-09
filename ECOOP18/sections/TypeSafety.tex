@@ -249,7 +249,6 @@ So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
 
 \subsubsection{Proof for Theorem~\ref{theorem_progress}}
 \begin{proof}
-	
 Since $e$ is well-typed, by \textsc{(T-Invk)} and \textsc{(T-Anno)} we know that
 $$I \subtype J\textrm{, and }\mbody(m, J, J) \textrm{ is defined}$$
 
@@ -260,3 +259,25 @@ On the other hand, since $I \subtype J$, by the definition of $\mostSpecific$, $
 By \textsc{(T-New)}, $\canInstantiate(I) = True$. By the definition of $\canInstantiate$, any $J_0\in\mostSpecific(m, I, I)$ satisfies that
 $\mostSpecificOverride(m, I, J_0)$ contains only one interface, in which the $m$ that overrides $J_0$ is a concrete method. Therefore $\mbody(m, I, J)$ also provides a concrete method, which finishes the proof.
 \end{proof}
+
+\subsubsection{Proof for Theorem~\ref{theorem_determinacy}}
+\begin{proof}	
+The Proof is done by induction on a derivation of $t \to t'$, following the book  \emph{TAPL}.
+\begin{itemize}
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(S-Invk)}, then we know that $t$ has the form $\left((J)\new{I}\right).m(\overline{v})$ with $I, J, m$ determined. Now it is obvious that the last rule in the derivation of $t \to t''$ should also be \textsc{(S-Invk)} with the same $I, J, m$. Since $\mbody(m, I, J)$ is a \emph{function} that given the same input will calculate the same result, we know the two induction results are the same, thus $t' = t''$ is immediately proved.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-Receiver)}, then $t$ has the form $e_0.m(\overline{e})$ and $e_0 \to e_0'$. Since $e_0$ is not a value, the last rule used in $t \to t''$ has to be \textsc{(C-Receiver)} (other rules do not match) too. Assume in the reduction $t \to t''$, $e_0 \to e_0''$, thus $e_0'.m(\overline{e}) = e_0''.m(\overline{e})$. Thus, $t' = t''$ proved.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-StaticType)}, then $t$ is fixed to be $\new{I}$. The last rule used in $t \to t''$  has to be \textsc{(C-StaticType)}, and obviously, $t' = t'' = (I)\new{I}$.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-FReduce)}, then $t$ has the form $(I)e$ and $e \to e'$. The last rule used in $t \to t''$ cannot be \textsc{(C-StaticType)} because it requires $t$ to be $\new{I}$; it can neither be \textsc{(C-AnnoReduce)} because it requires $t$ to be $(I)((J)\new{K})$ where $(J)\new{K}$ is already a value. So the last rule used in $t \to t''$ can only be \textsc{(C-FReduce)} (other rules do not match). Assume in the reduction $t \to t''$, $e \to e''$, and $(I)e \to (I)e''$. By induction hypothesis, $e' = e''$, thus $t' = t''$ proved.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-AnnoReduce)}, then the form of $t$ is fixed to be $(I)((J)\new{K})$. Since $(I)((J)\new{K})$ is not reducible, the rule \textsc{(C-FReduce)} does not apply. The only rule applies in $t \to t''$ is \textsc{(C-AnnoReduce)}. Thus $t' = t'' = (I)\new{K}$ proved.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-Args)}, then $t$ has the form $v.m(..., e, ...)$ and $e \to e'$. The last rule used in $t \to t''$ cannot be \textsc{(S-Invk)} because it requires all arguments to be values. Thus only \textsc{(C-Args)} applies to $t \to t''$. Assume in the reduction $t \to t''$, $e \to e''$. By induction hypothesis, $e' = e''$, thus $v.m(..., e', ...) = v.m(..., e'', ...)$, thus $t' = t''$ proved.
+\end{itemize}
+\end{proof}
+
+\begin{comment}
+If the last rule used in the derivation of t  → t′ is E-IfTrue, then we know that t has the form if t1 then t2 else t3, where t1 = true. But now it is obvious that the last rule in the derivation of t  → t′′ cannot be E-IfFalse, since we cannot have both t1 = true and t1 = false. Moreover, the last rule in the second derivation cannot be E-If either, since the premise of this rule demands that t1  → t′1 for some t′1, but we have already observed that true does not evaluate to anything. So the last rule in the second derivation can only be E-IfTrue, and it immediately follows that t′ = t′′.
+\end{comment}
