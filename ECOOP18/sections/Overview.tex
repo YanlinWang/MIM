@@ -109,13 +109,14 @@ workarounds next:
   that using delegation makes it hard to correctly maintain
   self-references in an extensible system and also
   introduces a lot of boilerplate code.
+  
   \item \textit{II. Refactor \lstinline|Drawable| and/or \lstinline|Deck| to rename the methods.} If
   the source code for \lstinline|Drawable| or \lstinline|Deck| is available
   then it may be possible to rename one of the \lstinline|draw|
   methods. However this approach is non-modular, as it requires 
   modifying existing code and becomes impossible if the code is unavailable.
-  \item \textit{III. Method exclusion/renaming in traits.} Some trait models
-  support method exclusion/renaming. Those features
+  
+  \item \textit{III. Method exclusion/renaming.} Eiffel~\cite{Meyer:1987:EPR:24686.24694} and some trait models support method exclusion/renaming. Those features
    can eliminate conflicts, although most
   programming languages do not support them. In a traditional OO system,
   they can break the subtyping relationship. Moreover, in
