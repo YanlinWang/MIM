@@ -15,7 +15,7 @@ in existing languages, thus what we propose is a novel feature (hierarchical
 overriding) with the corresponding formalization of that feature.
 
 In the rest of the paper, we use a Java-like syntax for programs. All types are defined with the keyword
-``\lstinline|interface|''; the concept is closely related to Java 8
+\lstinline|interface|; the concept is closely related to Java 8
 interfaces with default methods~\cite{bono14} and traits. In short, 
 an interface in our model has the following characteristics:
 \begin{itemize}
@@ -214,7 +214,7 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {}
 new DrawableSafeDeck().shuffleAndDraw()
 \end{lstlisting}
 
-\noindent Indeed, using a reduction model similar to FJ~\cite{Igarashi01FJ} (without static types tracked), the reduction steps would roughly be:
+\noindent Indeed, using reduction steps following the reduction rules in FJ~\cite{Igarashi01FJ}-like languages, where no static types are tracked, the reduction steps would roughly be:
 
 % \begin{equation}\label{}
 % \begin{split}

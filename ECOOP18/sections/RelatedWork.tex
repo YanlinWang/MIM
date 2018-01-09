@@ -1,6 +1,6 @@
 \section{Related Work}~\label{sec:relatedwork}
 We describe related work in four parts. We first discuss mainstream popular multiple 
-inheritance models and the specific models (C++ and \csharp) which are closest to our work. Then we 
+inheritance models and then some specific models (e.g., C++ and \csharp) which are closest to our work. Then we 
 discuss related techniques used in \self. Finally, we discuss the foundation and related work of our formalization.
 
 \subsection{Mainstream Multiple Inheritance Models}
@@ -113,7 +113,7 @@ model, C++ does not support hierarchical overriding.
 \noindent {\bf C++ model.}
 C++ supports a very flexible inheritance model.
 C++ allows the existence of unintentional conflicts and users may specify a hierarchical path via casts for disambiguation, as discussed in Section~\ref{sec:overview}. 
-With virtual methods, dynamic dispatch is used and 
+With virtual methods, dynamic dispatch is used and the 
 method lookup algorithm will find the most specific method definition. 
 A contribution of our work is to provide a minimal formal model of
 hierarchical dispatching, whereas C++ can be viewed as a real-world
@@ -125,15 +125,15 @@ captures this aspect of the C++ method dispatching model. Apart from this, as di
 to that discussion here too.}\yanlin{added.}
 
 Although C++ supports hierarchical dispatching, it does not support
-hierarchical overriding.  However, there is a possible
-workaround\footnote{https://stackoverflow.com/questions/44632250/can-i-do-mimic-things-likes-this-partial-override-in-c} that mimicks hierarchical
-overriding.  We call it the \emph{MiddleMan} approach, as shown in
+hierarchical overriding.  However, there are some possible
+workarounds that can mimick hierarchical
+overriding, including the \emph{MiddleMan} approach\footnote{\url{https://stackoverflow.com/questions/44632250/can-i-do-mimic-things-likes-this-partial-override-in-c}}, the \emph{interface classes} pattern as described in Section 25.6 of~\cite{stroustrup1995}, the \emph{LotterySimulation} discussion in~\cite{stroustrup1994design}. Since these workarounds share the same spirit, we will discuss in detail the \emph{MiddleMan} approach, with code shown in 
 Figure~\ref{fig:middleman}. In this example, classes \texttt{A} and
 \texttt{B} are two classes that both define a method with the same
 name \texttt{m}
 unintentionally.
 
-Class \texttt{MiddleMan}, as its name suggests, acts as a middle man between its class \texttt{C} and its parents \texttt{A, B}. \texttt{MiddleMan} defines a virtual method \texttt{m} that overrides a parent method \texttt{m} and delegates the implementation to another method \texttt{m\_impl} that takes $\kwthis$ as a parameter. C++ supports method overloading, so that multiple \texttt{m\_impl} methods with different parameter types can coexist. When defining class \texttt{C}, we specify the parents to be \texttt{MiddleMan<A>, MiddleMan<B>} instead of \texttt{A, B}. In this way, programmers may define new versions of \texttt{A.m} and \texttt{B.m} in class \texttt{C} by providing the corresponding \texttt{m\_impl} methods. Then in the client code, the method call \texttt{((A*)c)->m()} will print out string \texttt{"MA2"}, as expected. Although this workaround can help us defining partial method overrides to a certain extent, the drawbacks are obvious. Firstly, the approach is complex and requires the pre-knowledge of the programmer to this approach. Moreover, the lack of direct syntax support makes MiddleMan code cumbersome to write. Finally, the approach is ad-hoc, meaning that the class \texttt{MiddleMan} shown in Figure~\ref{fig:middleman} is not general enough to be used in other cases: more middle-mans are needed if partial method overrides happens in other classes; and it is even worse when return types differ.
+Class \texttt{MiddleMan}, as its name suggests, acts as a middle man between its class \texttt{C} and its parents \texttt{A, B}. \texttt{MiddleMan} defines a virtual method \texttt{m} that overrides a parent method \texttt{m} and delegates the implementation to another method \texttt{m\_impl} that takes $\kwthis$ as a parameter. C++ supports method overloading, so that multiple \texttt{m\_impl} methods with different parameter types can coexist. When defining class \texttt{C}, we specify the parents to be \texttt{MiddleMan<A>, MiddleMan<B>} instead of \texttt{A, B}. In this way, programmers may define new versions of \texttt{A.m} and \texttt{B.m} in class \texttt{C} by providing the corresponding \texttt{m\_impl} methods. Then in the client code, the method call \texttt{((A*)c)->m()} will print out string \texttt{"MA2"}, as expected. Although this workaround can help us defining partial method overrides to a certain extent, the drawbacks are obvious. Firstly, the approach is complex and requires the pre-knowledge of the programmer to this approach. Moreover, the lack of direct syntax support makes MiddleMan code cumbersome to write. Finally, the approach is ad-hoc, meaning that the class \texttt{MiddleMan} shown in Figure~\ref{fig:middleman} is not general enough to be used in other cases: more middle-mans are needed if partial method overrides happens in other classes; and it is even worse when return types differ. 
 
 \begin{figure*}[t]
 \saveSpaceFig
@@ -163,7 +163,7 @@ int main()
 \saveSpaceFig
 \end{figure*}
 
-\noindent  {\bf \csharp{} Explicit method implementations.}
+\noindent  {\bf \csharp{} explicit method implementations.}
 Explicit method implementations is a special feature supported by
 \csharp{}. As described in \csharp{} documentation~\cite{csharpdoc}, a
 class that implements an interface can explicitly implement a member
@@ -183,6 +183,9 @@ same signature. However, there are two critical differences to \MIM{}:
 (2) there is only one level of conflicting method implementations at the
 class that implements the multiple parent interfaces. Further
 overriding of those methods is not possible in subclasses.
+
+\noindent  {\bf Languages using hygienicity.}
+In NextGen/MixGen~\cite{Allen:2003:FAG:949305.949316}, HygJava~\cite{kusmierek2007hygienic} and Magda~\cite{Bono:2012:MNL:2367163.2367198}, \emph{hygienicity} is proposed to deal with unintentional method conflicts, which is basically giving a method a unique identifier by prefixing the name with an unambiguous path. The advantage of this approach, compared to ours, is that it does not require additional notion in the method dispatching. However, the disadvantage is that conflicting methods from different branches cannot be merged as in our model. Moreover, writing programs in these languages is tedious if not supported by an ad-hoc IDE and the path prefix is mandatory even if it is not needed in some scenarios.
 
 \subsection{Hierarchical Dispatch in \self{}}
 As we have discussed before, although the mix of static and dynamic dispatch is 

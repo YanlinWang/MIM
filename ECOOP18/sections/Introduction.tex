@@ -40,14 +40,15 @@ inheritance. Nevertheless, different flavours of multiple inheritance
 have been adopted in some popular OOP languages. C++ has had 
 multiple inheritance from the start. Scala adapts the ideas from traits~\cite{scharli03traits,Ducasse:2006:TMF:1119479.1119483,Liquori08ftj}
 and mixins~\cite{bracha90mixin,Flatt1998,van1996encapsulation,Ancona2003,Hendler86} to offer a disciplined form of multiple inheritance. Java 8 
-offers a simple variant of traits, disguised of interfaces with default methods~\cite{goetz12fdefenders}.
+offers a simple variant of traits, disguised as interfaces with default methods~\cite{goetz12fdefenders}.
 
 A reason why programming languages have resisted to multiple
 inheritance in the past is that, as Cook~\cite{Cook1987} puts it, 
 ``\emph{multiple inheritance is good but there is no good way to do it}''.
 One of the most sensitive and critical issues is perhaps the ambiguity
 introduced by multiple inheritance. One case is the famous
-\textit{diamond problem}~\cite{Sak89dis,Singh1995} (also known as ``fork-join inheritance''~\cite{Sak89dis}). 
+\textit{diamond problem}~\cite{Sak89dis,Singh1995} (also known as 
+\emph{fork-join inheritance}~\cite{Sak89dis}). 
 In the diamond problem, inheritance allows
 one feature to be inherited from multiple parent classes that share a
 common ancestor. Hence

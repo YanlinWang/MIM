@@ -27,7 +27,9 @@ method named $m$ with result type $I$, parameters $\overline{x}$ of
 type $\overline{I_x}$ and the overriding target $J$. The body of the
 method simply includes the returned expression $e$. Notably, we have introduced the
 \kwoverride{} keyword for two cases: if the overridden interface is exactly the enclosing
-interface itself, then such a method is seen as originally defined; otherwise it is a hierarchical overriding method. The definition
+interface itself, then such a method is seen as originally defined; otherwise it is a hierarchical overriding method. 
+Note that in an interface $J$, $\method{I}{m}{I_x}{x}{J}{e} $ is a syntactic sugar for $
+I \; m(\overline{I_x} \; \overline{x}) \; {\{} \kwreturn \; e ; {\}} $, which is the standard way of method definition in Java-like languages. The definition
 of abstract methods is written as $\absmethod{I}{m}{I_x}{x}{J}$, which is
 similar to a concrete method but without the method body. 
 For simplicity, overloading is not modelled for methods, which
@@ -100,7 +102,7 @@ e.m(\overline{e}) \mid
 \paragraph{Subtyping}
 The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
 In short, subtyping relations are built from the inheritance in interface
-declarations. Subtyping is both symmetric, reflexive and transitive.
+declarations. Subtyping is both reflexive and transitive.
 
 \paragraph{Type-checking}
 Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
