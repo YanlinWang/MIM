@@ -12,15 +12,15 @@ unintentional method conflicts are untangled in \MIM{}, we only focus on a small
 in an interface are either default methods or abstract methods. Default methods provide default implementations for methods. Abstract methods do not
 have a method body. Abstract methods can be overridden with future implementations.
 
-\paragraph{Notations}
+\subsubsection{Notations}
 The metavariables $I, J$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
 conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 .. M_n$ (with no commas). We also abbreviate operations on pairs of sequences in an obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
 
-\paragraph{Interfaces}
+\subsubsection{Interfaces}
 In order to achieve multiple inheritance, an interface can have a set of 
 parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
-\paragraph{Methods}
+\subsubsection{Methods}
 Original methods and hierarchically overriding methods share the same syntax in our model for simplicity.
 The concrete method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
 method named $m$ with result type $I$, parameters $\overline{x}$ of
@@ -35,7 +35,7 @@ similar to a concrete method but without the method body.
 For simplicity, overloading is not modelled for methods, which
 implies that we can uniquely identify a method by its name.
 
-\paragraph{Expressions \& Values}
+\subsubsection{Expressions \& Values}
 Expressions can be standard constructs such as variables, method
 invocation, object creation, together with cast expressions. 
 Object creation is represented by $\new I$\footnote{In Java the corresponding syntax is $\new I\{\}$.}. Fields and primitive types are not modelled in \MIM{}. 
@@ -99,12 +99,12 @@ e.m(\overline{e}) \mid
 \end{figure*}
 
 \subsection{Subtyping and Typing Rules}\label{subsec:typingrules}
-\paragraph{Subtyping}
+\subsubsection{Subtyping}
 The subtyping of \MIM{} consists of only a few rules shown at the top of Figure~\ref{fig:typingrules}.
 In short, subtyping relations are built from the inheritance in interface
 declarations. Subtyping is both reflexive and transitive.
 
-\paragraph{Type-checking}
+\subsubsection{Type-checking}
 Details of type-checking rules are displayed at the bottom of Figure~\ref{fig:typingrules}, including expression
 typing, well-formedness of methods and interfaces. As a convention, an environment
 $\Gamma$ is maintained to store the types of variables, together with
@@ -182,7 +182,7 @@ congruence rules of \MIM{}. When evaluating an expression, they
 are invoked and produce a single value in
 the end. %\haoyuan{we need to be consistent on paragraph upper/lower case.}
 
-\paragraph{Semantic Rules} \textsc{(S-Invk)} is the only computation rule we need for method invocation.
+\subsubsection{Semantic Rules} \textsc{(S-Invk)} is the only computation rule we need for method invocation.
 As a small-step rule and by congruence, it assumes that the receiver and the arguments are already values.
 Specifically, the receiver $(J)\new{I}$ indicates the dynamic type $I$
 together with the static type $J$. Therefore $\mbody(m, I, J)$ carries out hierarchical dispatching, acquires
@@ -191,7 +191,7 @@ Here we use $e_0$ to imply that the return expression is forced to be non-empty 
 rule reduces method invocation to $e_0$ with substitution.
 Parameters are substituted with arguments, and the \lstinline|this| reference is substituted by the receiver,
 and in the meanwhile the static types are recorded via annotations. Finally, the return type $I_e$ is put in the front as an annotation.
-\paragraph{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
+\subsubsection{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
 on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
 object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
 
