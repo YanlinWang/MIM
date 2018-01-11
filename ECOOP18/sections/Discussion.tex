@@ -61,7 +61,29 @@ Those features can, in principle, be modularly added to the model without breaki
 \end{mathpar}
 A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ in $J_0$ that hierarchically overrides $J_1$, thus $J_0[m\ \kwoverride\ J_1]$ is invoked. As shown in \textsc{(S-StaticInvk)}, static dispatch needs a receiver for the substitution of the ``$\kwthis$'' reference, so as to provide the latest implementations. In fact, static dispatch is common in OO programming, as it provides a shortcut to the reuse of old implementation easily, and super calls can also rely on this feature. For convenience we just make it simple above, whereas in languages like C++ or Java, the static or super invocations are more flexible, as they can climb the class hierarchy. 
 
-One typical non-orthogonal extension to \MIM{} could be to have fields.
+One non-orthogonal extension to \MIM{} could be to generalize the model to allow multiple hierarchical method overrding, meaning that, we allow overriding methods to update multiple branches instead of only one branch. We present the modification of syntax, typing and semantic rules below (abstract methods omitted):
+
+\begin{mathpar}
+	\begin{array}{llrl}
+		    \text{Methods}      & M  & \Coloneqq & \ldots \;   \mid
+       \momethod{I}{m}{I_x}{x}{J}{e}  
+	\end{array} \\
+	\tmomethod 
+\end{mathpar}
+
+Semantic rules themselves remain unchanged, however, we need to change slightly the definition of \mostSpecificOverride in \mbody: 
+
+\saveSpaceFig
+\begin{flalign*}
+& \rhd \textit{Definition of } \mostSpecificOverride(m, I, J): & \\
+& \bullet \mostSpecificOverride(m, I, J) = \prune(overrides) & \\
+& \indent\indent \textrm{with: } overrides = \{K \mid \subt{I}{K}, \; \subt{K}{J} \textrm{ and } K[m\ \kwoverride\ \overline{J}] \textrm{ where } J \in \overline{J} 
+\end{flalign*}
+\saveSpaceFig
+
+\noindent This \emph{multiple overriding} non-othogonal extension shows that our model is friendly to different kinds of language extensions.
+
+Other typical non-orthogonal extensions to \MIM{} could be to have fields.
 The design of \MIM{} can be viewed as a variant of Java 8 with default methods which allows for unintentional method conflicts.
 Like Java interfaces and traits, state is forbidden in \MIM{}. There are some inheritance models that also account for fields, such as C++ that uses virtual inheritance~\cite{ellis1990annotated}. In our model, however, we can perhaps borrow the idea of \textit{interface-based programming}~\cite{classless}, which models state with abstract state operations. This can be realized by extending our current model with static methods and anonymous classes from Java. However such an extension requires more thought, so we leave it to future work.
 

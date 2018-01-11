@@ -65,6 +65,12 @@
 \newcommand{\absmethod}[5]{
   #1 \; #2 (\overline{#3} \; \overline{#4}) \; \kwoverride \; #5 \; ;
 }
+\newcommand{\momethod}[6]{
+  #1 \; #2 (\overline{#3} \; \overline{#4}) \; \kwoverride \; \overline{#5} \; {\{} \kwreturn \; #6 ; {\}}
+}
+\newcommand{\moabsmethod}[5]{
+  #1 \; #2 (\overline{#3} \; \overline{#4}) \; \kwoverride \; \overline{#5} \; ;
+}
 
 \newcommand{\subid} {
 \inferrule* [right=]
@@ -147,6 +153,18 @@
     %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
     }
     {\method{I_e}{m}{I_x}{x}{J}{e_0} \text{ OK IN } I}
+}
+
+\newcommand{\tmomethod} {
+\inferrule* [left=(T-MoMethod)]
+    {  \forall J_i \in \overline{J}, I <: J_i \\
+    \mostSpecific(m, I, J_i) = \{J_i\} \\
+    \mbody(m, J_i, J_i) = (K, \overline{I_x} \; \overline{x}, I_e \; \_) \\
+        \judgeewf {\overline{x}:\overline{I_x}, this:I  } {e_0:I_0} \\
+        I_0 \subtype I_e
+    %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
+    }
+    {\momethod{I_e}{m}{I_x}{x}{J}{e_0} \text{ OK IN } I}
 }
 
 \newcommand{\tabsmethod} {
