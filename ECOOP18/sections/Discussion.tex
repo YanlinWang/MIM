@@ -19,7 +19,7 @@ has to check whether an interface can be instantiated by looking at all the inhe
 Our formalization has a simple form of abstract methods, which behave similarly to conventional methods with respect to conflicts.
 Other languages may behave differently. 
 For instance, in Java 8 when putting two identical abstract methods together by multiple inheritance, there is no conflict error. In Figure~\ref{fig:abstractdiamond}, we use italic $\emph{m}$ to denote abstract methods. In both cases, the Java compiler accepts the definition of $C$ and automatically merges the two inherited methods $m$ into a single one. \MIM{} behaves differently from Java in both cases.
-In the triangle inheritance case (left), $C$ will have two distinct abstract methods corresponding to $A.m$ and $B.m$. 
+In the \wordfork{} inheritance case (left), $C$ will have two distinct abstract methods corresponding to $A.m$ and $B.m$. 
 In the diamond inheritance case, the definition of $C$ is rejected. 
 There are two reasons for this difference in behaviour. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
 the rules and proofs a lot. Secondly, and more importantly, we distinguish and treat differently conflicting methods, since they may represent different operations, even if they are abstract. Thus our model adopts a very conservative behavior rather than automatically merging 
@@ -43,7 +43,7 @@ orthogonal change to our work, that should not affect the essence of the model p
         \centering
         \includegraphics[width=1.4cm]{pics/P8.pdf}
     \end{minipage}  
-    \caption{Triangle inheritance (left) and diamond inheritance (right) on abstract methods.}\label{fig:abstractdiamond}
+    \caption{\wordFork{} inheritance (left) and diamond inheritance (right) on abstract methods.}\label{fig:abstractdiamond}
 \saveSpaceFig
 \end{figure*}
 

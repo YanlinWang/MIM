@@ -155,7 +155,7 @@ to call the \lstinline|draw| method from \lstinline|Drawable|.
 Without the cast, the call would be ambiguous and
 \MIM{}'s type system would reject it. 
 
-This example illustrates the basic form of triangle inheritance, where two unintentionally conflicting methods
+This example illustrates the basic form of \wordfork{} inheritance, where two unintentionally conflicting methods
 are accepted by multiple inheritance. Note that C++ supports this feature and also addresses the
 ambiguity by upcasts. The code for the above example in C++ is similar. 
 
@@ -383,7 +383,7 @@ interface DrawableSafeDeck extends DrawableRect, SafeDeck {}
 This workaround seems to work, but there are severe issues:
 \begin{itemize}
 	\item It changes the hierarchy and existing code, hence breaks the modularity.
-	\item Separate overriding is required to come after the triangle
+	\item Separate overriding is required to come after the \wordfork{} 
           inheritance, especially when the implementation needs functionality from both parents. In the above code, we have assumed
 	that the overriding is unrelated to \lstinline|Deck|. But when the drawing relies on some information of the \lstinline|Deck|
 	object, we have to either introduce field methods for delegation or change the signature of \lstinline|draw| to take a parameter.
@@ -446,7 +446,7 @@ A special rule for hierarchical overriding is: it can only refine \textit{origin
 	%\saveSpaceFig
 \end{figure*}
 
-\subsubsection{A peek at the hierarchical dispatching algorithm:} In \MIM{}, triangle inheritance allows several original methods (branches)
+\subsubsection{A peek at the hierarchical dispatching algorithm:} In \MIM{}, \wordfork{}  inheritance allows several original methods (branches)
 to coexist, and hierarchical dispatch first finds the most specific
 original method (branch), then it finds the most specific hierarchical
 overriding on that branch.
@@ -458,6 +458,6 @@ In (d) and (e), a cross mark indicates that the interface fails to type-check. G
 during compilation if it reaches a diamond with ambiguity. $\mbody$ is the method lookup function for hierarchical
 dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody(m, X, Y) = (Z, ...)$ reflects that the source code \lstinline|((Y) new X()).m()| calls \lstinline|Z.m| in the runtime. It is undefined when method dispatch is ambiguous.
 
-In  Figure~\ref{fig:examplesmbody}, (a) is the base case for unintentional conflicts, namely the triangle inheritance. (b) uses overriding to explicitly merge the conflicting methods. (c) represents hierarchical overriding. (d) and (e) are two base cases of diamond inheritance in \MIM{} and the definition of each $C$ is rejected because $T$ is an ambiguous parent to $C$. (f) gives a common solution to the diamond as in Java or traits, which is to explicitly override $A.m$ and $B.m$ in $C$. In the last three examples, conflicting methods $A.m$ and $B.m$ should be viewed as
+In  Figure~\ref{fig:examplesmbody}, (a) is the base case for unintentional conflicts, namely the \wordfork{} inheritance. (b) uses overriding to explicitly merge the conflicting methods. (c) represents hierarchical overriding. (d) and (e) are two base cases of diamond inheritance in \MIM{} and the definition of each $C$ is rejected because $T$ is an ambiguous parent to $C$. (f) gives a common solution to the diamond as in Java or traits, which is to explicitly override $A.m$ and $B.m$ in $C$. In the last three examples, conflicting methods $A.m$ and $B.m$ should be viewed as
 intentional conflicts, as they come from the same source $T$.
 % Similar to many OO languages, the model also allows \textit{super method invocation} in a method body. The invocation \lstinline|super.T::m()| will ignore all the subtypes of \lstinline|T|, and only look at \lstinline|T| together with its super interfaces. It should behave the same as \lstinline|new T().m()| in principle.

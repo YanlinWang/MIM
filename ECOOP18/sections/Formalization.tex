@@ -137,7 +137,7 @@ from an abstract method is acceptable.
 
 \textsc{(T-New)} is the typing rule for object creation $\new{I}$. The
 auxiliary function $\canInstantiate(I)$ (see definition in Section~\ref{sec:otherdefs}) checks whether an interface $I$ 
-can be instantiated or not. Since triangle inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
+can be instantiated or not. Since \wordfork{} inheritance accepts conflicting branches to coexist, the check requires that the most specific method is concrete for each method on each branch.
 
 \textsc{(T-Method)} is more interesting since a method can either be an original method or a hierarchical overriding, though
 they share the same syntax and method typing rule. $\mostSpecific(m, I, J)$ is a fundamental function,

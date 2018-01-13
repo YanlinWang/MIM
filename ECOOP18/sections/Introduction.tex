@@ -73,7 +73,7 @@ but they happen to share the same name.
 When inheritance is used to compose these methods, a compilation 
 error happens due to conflicts. However, unlike the diamond problem,
 the conflicting methods have very different meanings and do not share a
-common parent. We call such a case \textit{triangle inheritance}, in
+common parent. We call such a case \textit{\wordfork{} inheritance}, in
 analogy to diamond inheritance.
 
 %Unintentional method conflicts are perhaps less common than the diamond
@@ -103,7 +103,7 @@ this by interface multiple inheritance and explicit method
 implementations. But since C\# is a single inheritance language, 
 it is only possible to \emph{implement} multiple interfaces (but not
 multiple classes). %We will have more detailed discussion on this in Section~\ref{sec:relatedwork}.
-C++ accepts triangle inheritance and
+C++ accepts \wordfork{} inheritance and
 resolves the ambiguity by specifying the expected path by
 \emph{upcasts}. However, neither the C\# or C++ approaches allow
 such conflicting methods to be further overridden. 
