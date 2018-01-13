@@ -185,7 +185,24 @@ class that implements the multiple parent interfaces. Further
 overriding of those methods is not possible in subclasses.
 
 \noindent  {\bf Languages using hygienicity.}
-In NextGen/MixGen~\cite{Allen:2003:FAG:949305.949316}, HygJava~\cite{kusmierek2007hygienic} and Magda~\cite{Bono:2012:MNL:2367163.2367198}, \emph{hygienicity} is proposed to deal with unintentional method conflicts, which is basically giving a method a unique identifier by prefixing the name with an unambiguous path. The advantage of this approach, compared to ours, is that it does not require additional notion in the method dispatching. However, the disadvantage is that these approaches depend on name appending. As shown in Figure~\ref{fig:magda_code}, two methods \lstinline|m| from different branches \lstinline|A| and \lstinline|B| cannot be overridden by the method \lstinline|m| in \lstinline|C| because they are regarded as unrelated methods, since in these hygienic approaches, path names are used to distinguish different methods.  Moreover, writing programs in these languages is tedious if not supported by an ad-hoc IDE and the path prefix is mandatory even if it is not needed in some scenarios. Finally, the multiple inheritance model in Magda is based on Mixins, whereas \MIM{} is based on traits. Thus, Magda inherits all limitations of Mixins (such as the linearization problem, etc).
+In NextGen/MixGen~\cite{Allen:2003:FAG:949305.949316}, HygJava~\cite{kusmierek2007hygienic} and Magda~\cite{Bono:2012:MNL:2367163.2367198}, \emph{hygienicity} is proposed to deal with unintentional method conflicts, which is basically giving a method a unique identifier by prefixing the name with an unambiguous path. As shown in Figure~\ref{fig:magda_prefix}, the prefix \lstinline|HelloWorld| in method call \lstinline|(new HelloWorld []).HelloWorld.MainMatter()| is mandatory, although it is not necessarily needed. So writing programs in these languages is tedious if not supported by an ad-hoc IDEs.
+The advantage of this approach, compared to ours, is that it does not require additional notion in the method dispatching. However, the disadvantage is that the compilation strategy is simple: generating conventional code with method names attached with prefixes. Unfortunatelly this is problematic, as shown in Figure~\ref{fig:magda_code}, two methods \lstinline|m| from different branches \lstinline|A| and \lstinline|B| cannot be overridden by the method \lstinline|m| in \lstinline|C| because they are regarded as unrelated methods, and \lstinline|m| in \lstinline|C| is just another new method that has nothing to do with \lstinline|A.m| or \lstinline|B.m|. The reason is that in these hygienic approaches, path names are used to distinguish different methods. In contrast, our model can deal with unentential conflicts, as well as merged methods because our semantics is not simply based on prefixing. Instead, our direct operational semantics takes static and dynamic type information into account at runtime when doing method selection.Finally, the multiple inheritance model in Magda is based on Mixins, whereas \MIM{} is based on traits. Thus, Magda inherits all limitations of Mixins (such as the linearization problem, etc).
+
+\begin{figure}[t]
+	\saveSpaceFig
+	\begin{lstlisting}
+mixin HelloWorld of Object =
+	new Object MainMatter()
+	begin
+		"Hello world".String.print();
+	end;
+end;
+(new HelloWorld []).HelloWorld.MainMatter();
+	\end{lstlisting}
+	\caption{Full-qualified name of method call in Magda.}
+	\label{fig:magda_prefix}
+	\saveSpaceFig
+\end{figure}
 
 \begin{figure*}[t]
 	\saveSpaceFig
