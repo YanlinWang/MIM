@@ -181,7 +181,15 @@ a value $v$ with $\judgeewf \o {v:I}$.
 Immediate from Theorem~\ref{theorem_subject} and Theorem~\ref{theorem_progress}.
 \end{proof}
 
-Additionally we show that one-step evaluation is deterministic. This
+Note that in Theorem~\ref{theorem_progress}, ``$\#(\overline{x})$'' denotes the length of
+$\overline{x}$.
+
+Our theorems are stricter than those of Featherweight Java~\cite{Igarashi01FJ}. In FJ, the subject reduction theorem states that 
+after a step of reduction, the type of an expression may change to a subtype due to subtyping. However, in \MIM{}, 
+the type remains unchanged because we keep track of the static types and use them for casting during
+reduction. 
+
+Finally we show that one-step evaluation is deterministic. This
 theorem is helpful to show that our model of multiple inheritance is
 not ambiguous (or non-deterministic).
 
@@ -191,14 +199,6 @@ not ambiguous (or non-deterministic).
 \begin{proof}
 See Appendix~\ref{appendix_proof}.
 \end{proof}
-
-Note that in Theorem~\ref{theorem_progress}, ``$\#(\overline{x})$'' denotes the length of
-$\overline{x}$.
-
-Our theorems are stricter than those of Featherweight Java~\cite{Igarashi01FJ}. In FJ, the subject reduction theorem states that 
-after a step of reduction, the type of an expression may change to a subtype due to subtyping. However, in \MIM{}, 
-the type remains unchanged because we keep track of the static types and use them for casting during
-reduction. 
 
 %the annotations in the
 %substitution actually ensures the type to be unchanged.
