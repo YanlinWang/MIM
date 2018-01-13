@@ -218,7 +218,7 @@ dispatching. Finally, the multiple inheritance model in Magda is based on
 Mixins, whereas \MIM{} is based on traits. Thus, Magda inherits all
 limitations of Mixins (such as the linearization problem, etc).
 
-\begin{figure}[t]
+\begin{figure*}[t]
 	\saveSpaceFig
 	\begin{lstlisting}
 mixin HelloWorld of Object =
@@ -232,7 +232,7 @@ end;
 	\caption{Full-qualified name of method calls in Magda.}
 	\label{fig:magda_prefix}
 	\saveSpaceFig
-\end{figure}
+\end{figure*}
 
 \begin{figure*}[t]
 	\saveSpaceFig
@@ -243,14 +243,12 @@ mixin A of Object =
 		return "A";
 	end;
 end; 
-
 mixin B of Object = 
 	new String m()
 	begin
 		return "B";
 	end;
 end;
-
 mixin C of A, B = 
 	new String m()
 	begin
