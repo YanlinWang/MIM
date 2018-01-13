@@ -96,7 +96,7 @@ override the old ones. However, merging two methods with totally different funct
 This non-solution would hide the
 old methods and break independent extensibility.
 
-\subsubsection{Problem and Possible Workarounds:} The essential problem is
+\subsubsection{Problem and Possible Workarounds} The essential problem is
 how to resolve unintentional method conflicts and invoke the
 conflicting methods separately without ambiguity. To tackle this problem, there are several other workarounds
 that come to our mind. We briefly discuss those potential fixes and
@@ -132,7 +132,7 @@ workarounds next:
 %inspired by C++), but finish it saying that there are other problems
 %that C++ does not address.}
 
-\subsubsection{\MIM{}'s solution:} To solve this problem it is important to preserve both conflicting methods
+\subsubsection{\MIM{}'s solution} To solve this problem it is important to preserve both conflicting methods
 during inheritance instead of merging them into a single
 method. Therefore \MIM{} accepts the definition of
 \lstinline|DrawableDeck|. To disambiguate method calls, 
@@ -174,7 +174,7 @@ interface Deck {
   void shuffleAndDraw() { this.shuffle(); this.draw(); }
 }
 \end{lstlisting}
-Here \lstinline|shuffleAndDraw| \emph{invokes \lstinline|draw| from its own enclosing type}. In \MIM{}, this invocation is dynamically dispatched. This is important, because a programmer may define a subtype
+Here \lstinline|shuffleAndDraw| invokes \lstinline|draw| from its own enclosing type. In \MIM{}, this invocation is dynamically dispatched. This is important, because a programmer may define a subtype
 of \lstinline|Deck| and override the method \lstinline|draw|:
 
 \begin{lstlisting}
@@ -252,7 +252,7 @@ information, since the type of this-reference (\lstinline|Deck|)
 specifies the branch to use unambiguously.
 \end{comment}
 
-\subsubsection{\MIM's solution:} 
+\subsubsection{\MIM's solution} 
 The essential problem is how to ensure that the correct method is
 invoked. To solve this problem, \MIM{} uses a variant of method
 dispatching that we call \textit{hierarchical dispatching}. In
@@ -292,10 +292,9 @@ new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}
 
 Notably, we track the static types by adding upcasts during reduction. In contrast to FJ,
-where \lstinline|new C()| is a value, in \MIM{} such expression is not 
+where \lstinline|new C()| is a value, in \MIM{} such an expression is not 
 a value. Instead, an expression of the form \lstinline|new C()| is reduced to
-\lstinline|(C) new C()|, which is a value in \MIM{} and where the type
-in the cast denotes the static type of the expression. This rule is
+\lstinline|(C) new C()|, which is a value in \MIM{} and the cast denotes the static type of the expression. This rule is
 applied in the first reduction step. 
 In the second reduction step, when 
 \lstinline|shuffleAndDraw| is dispatched, the receiver
@@ -360,13 +359,12 @@ override the individual conflicting methods, rather than overriding all
 conflicting methods into a single merged one. We illustrate the
 problem and the need for a more refined overriding mechanism with 
 an example.
-
 Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck| (based on the code in Section~\ref{subsec:problem2} without the old \lstinline|DrawableSafeDeck|), but he needs to override
 \lstinline|Drawable.draw| and give a new implementation of drawing so that the deck can indeed be visualized on the canvas.
 
 %\paragraph{Problem:} how to update the conflicting methods separately, after the triangle inheritance.
 
-\subsubsection{Potential solutions/workarounds in existing languages:} Unfortunately in all languages we have known
+\subsubsection{Potential solutions/workarounds in existing languages} Unfortunately in all languages we have known
 (including C++), the existing approaches are unsatisfactory.
 One direction is to simply avoid this issue, by putting overriding before inheritance. For example, as shown in Figure~\ref{fig:drawablesafedeck}(middle), we define a new component \lstinline|DrawableRect| that extends \lstinline|Drawable|, which simply draws the deck as a rectangle, and modifies the hierarchy:
 \begin{lstlisting}
@@ -394,7 +392,7 @@ There are more involved workarounds in C++ using templates and complex
 patterns, but such patterns are complex to use and there are still issues. A more detailed discussion of
 such an approach is presented in Section~\ref{subsec:middleman}.
 
-\subsubsection{\MIM{}'s solution:} An additional feature of our model is \textit{hierarchical overriding}. It allows conflicting methods
+\subsubsection{\MIM{}'s solution} An additional feature of our model is \textit{hierarchical overriding}. It allows conflicting methods
 to be overridden on individual branches, hence offers independent extensibility. The above example can be easily realized by:
 \begin{lstlisting}
 interface DrawableSafeDeck extends Drawable, SafeDeck {
@@ -419,7 +417,7 @@ The individual overriding allows us to make use of the methods from \lstinline|S
 hierarchical overriding feature is also an important feature, involved in the algorithm of hierarchical dispatch.
 %\bruno{the last two sentences are a bit unclear. I think it is related to ``interaction''.}
 
-\subsubsection{Terminology:} In \lstinline|Drawable|, \lstinline|Deck|, and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
+\subsubsection{Terminology} In \lstinline|Drawable|, \lstinline|Deck|, and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
 
 A special rule for hierarchical overriding is: it can only refine \textit{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
@@ -446,7 +444,7 @@ A special rule for hierarchical overriding is: it can only refine \textit{origin
 	%\saveSpaceFig
 \end{figure*}
 
-\subsubsection{A peek at the hierarchical dispatching algorithm:} In \MIM{}, \wordfork{}  inheritance allows several original methods (branches)
+\subsubsection{A peek at the hierarchical dispatching algorithm} In \MIM{}, \wordfork{}  inheritance allows several original methods (branches)
 to coexist, and hierarchical dispatch first finds the most specific
 original method (branch), then it finds the most specific hierarchical
 overriding on that branch.

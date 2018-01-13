@@ -66,7 +66,7 @@ methods do not actually refer to the same feature.
 In a nominal system, methods can be designed for different
 functionality, but happen to have the same names (and signatures).
 A simple example of this situation is two \lstinline{draw} methods that
-are inherited from a deck of cards and a drawable widget. 
+are inherited from a deck of cards and a drawable widget, respectively. 
 In such context, the two \lstinline{draw} methods have very different meanings, 
 but they happen to share the same name.
 %%This issue was proposed by the trait paper, so-called
@@ -105,7 +105,7 @@ it is only possible to \emph{implement} multiple interfaces (but not
 multiple classes). %We will have more detailed discussion on this in Section~\ref{sec:relatedwork}.
 C++ accepts \wordfork{} inheritance and
 resolves the ambiguity by specifying the expected path by
-\emph{upcasts}. However, neither the C\# or C++ approaches allow
+\emph{upcasts}. However, neither the C\# nor C++ approaches allow
 such conflicting methods to be further overridden. 
 % However, C++ has
 % limited support for virtual methods with unintentional conflicts, and
@@ -165,11 +165,11 @@ Figure~\ref{fig:main}. In this example, there are 4 classes/interfaces.
 Two classes \lstinline|Deck| and \lstinline|Drawable| model a deck of cards
  and a drawable widget, respectively. 
 The class \lstinline|SafeDeck| adds functionality to check whether the
-deck is empty and to prevent drawing a card from an empty deck. 
+deck is empty so as to prevent drawing a card from an empty deck. 
 The interesting class is \lstinline|DrawableSafeDeck|, which inherits 
 from both \lstinline|SafeDeck| and \lstinline|Drawable|. Hierarchical
 overriding is used in \lstinline|DrawableSafeDeck| to keep two separate \lstinline|draw|
-methods for each parent, but overriding \emph{only} the \lstinline|draw|
+methods for each parent, but override \emph{only} the \lstinline|draw|
 method coming from \lstinline|Drawable|, in order to draw a widget
 with a deck of cards. Note that hierarchical overriding is denoted in the UML
 diagram with the notation
