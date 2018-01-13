@@ -181,6 +181,9 @@ a value $v$ with $\judgeewf \o {v:I}$.
 Immediate from Theorem~\ref{theorem_subject} and Theorem~\ref{theorem_progress}.
 \end{proof}
 
+Additionally we show that one-step evaluation is deterministic. This
+theorem is helpful to show that our model of multiple inheritance is
+not ambiguous (or non-deterministic).
 
 \begin{theorem}[Determinacy of One-Step Evaluation]~\label{theorem_determinacy}
 	If $t \to t'$ and $t \to t''$, then $t' = t''$.
