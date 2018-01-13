@@ -185,7 +185,36 @@ class that implements the multiple parent interfaces. Further
 overriding of those methods is not possible in subclasses.
 
 \noindent  {\bf Languages using hygienicity.}
-In NextGen/MixGen~\cite{Allen:2003:FAG:949305.949316}, HygJava~\cite{kusmierek2007hygienic} and Magda~\cite{Bono:2012:MNL:2367163.2367198}, \emph{hygienicity} is proposed to deal with unintentional method conflicts, which is basically giving a method a unique identifier by prefixing the name with an unambiguous path. The advantage of this approach, compared to ours, is that it does not require additional notion in the method dispatching. However, the disadvantage is that these approaches depend on name appending, where conflicting methods from different branches cannot be merged because they are regarded as unrelated method, since they have different paths and the path names are appended in method names. Moreover, writing programs in these languages is tedious if not supported by an ad-hoc IDE and the path prefix is mandatory even if it is not needed in some scenarios.
+In NextGen/MixGen~\cite{Allen:2003:FAG:949305.949316}, HygJava~\cite{kusmierek2007hygienic} and Magda~\cite{Bono:2012:MNL:2367163.2367198}, \emph{hygienicity} is proposed to deal with unintentional method conflicts, which is basically giving a method a unique identifier by prefixing the name with an unambiguous path. The advantage of this approach, compared to ours, is that it does not require additional notion in the method dispatching. However, the disadvantage is that these approaches depend on name appending. As shown in Figure~\ref{fig:magda_code}, two methods \lstinline|m| from different branches \lstinline|A| and \lstinline|B| cannot be overridden by the method \lstinline|m| in \lstinline|C| because they are regarded as unrelated methods, since in these hygienic approaches, path names are used to distinguish different methods.  Moreover, writing programs in these languages is tedious if not supported by an ad-hoc IDE and the path prefix is mandatory even if it is not needed in some scenarios. Finally, the multiple inheritance model in Magda is based on Mixins, whereas \MIM{} is based on traits. Thus, Magda inherits all limitations of Mixins (such as the linearization problem, etc).
+
+\begin{figure*}[t]
+	\saveSpaceFig
+\begin{lstlisting}
+mixin A of Object =
+	new String m()
+	begin
+		return "A";
+	end;
+end; 
+
+mixin B of Object = 
+	new String m()
+	begin
+		return "B";
+	end;
+end;
+
+mixin C of A, B = 
+	new String m()
+	begin
+		return "C";
+	end;
+end;
+\end{lstlisting}
+	\caption{Code in Magda.}
+	\label{fig:magda_code}
+	\saveSpaceFig
+\end{figure*}
 
 \subsection{Hierarchical Dispatch in \self{}}
 As we have discussed before, although the mix of static and dynamic dispatch is 
