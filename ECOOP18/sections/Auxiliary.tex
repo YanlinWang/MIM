@@ -27,7 +27,7 @@ for the earlier examples in Figure~\ref{fig:examplesmbody}.
 \end{flalign*}
 \saveSpaceFig
 
-To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to avoid unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique (unambiguous) most specific hierarchical override. And finally the target method is returned.
+To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to achieve unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique and most specific hierarchical override. And finally the target method is returned.
 
 \begin{figure*}[t]
 \saveSpaceFig
@@ -73,7 +73,7 @@ By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only 
 
 \subsection{Finding the Most Specific Overriding: \mostSpecificOverride}\label{sec:mostSpecificOverride}
 The $\mostSpecific$ function only focuses on original method
-implementations, all the hierarchical overriding methods are omitted
+implementations, where all the hierarchical overriding methods are omitted
 during that step. On the other hand, $\mostSpecificOverride(m, I, J)$
 has the assumption that $J$ defines an original $m$, and this function
 tries to find the interfaces with the most specific implementations that hierarchically overrides such an $m$. Formally,

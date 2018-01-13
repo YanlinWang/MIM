@@ -155,7 +155,7 @@ condition checks whether the overriding between original methods preserves typin
 The second condition of \textsc{(T-Intf)} is more complex and is the key to type soundness. Unlike C++ which rejects on ambiguous calls,
 \MIM{} rejects on the definition of interfaces when they form a diamond. Consider the case when the second condition is broken: $\mbody(m, J, J)$
 is defined but $\mbody(m, I, J)$ is undefined for some $J$ and $m$. This indicates that $m$ is available and unambiguous from the perspective of $J$,
-but is ambiguous to $I$ on branch $J$. It means that there are multiple overriding paths of $m$ from $J$ to $I$, which forms a diamond. Hence rejecting
+but is ambiguous to $I$ on branch $J$. It means that there are multiple overriding paths of $m$ from $J$ to $I$, which form a diamond. Hence rejecting
 that case meets our expectation. Below is an example (Figure~\ref{fig:examplesmbody} (e)) that illustrates the reason why this condition is needed:
 %\bruno{what is the purpose of this example:
 %  state-it upfront please. Is this example meant to ilustrate T-Inf?
@@ -171,7 +171,7 @@ interface C extends A, B {}
 This program does not compile on interface $C$, because of the second condition in \textsc{(T-Intf)}, where $I$ equals $C$ and $J$ equals $T$.
 By the algorithm, $\mbody(m, T, T)$ will refer to $T.m$, but $\mbody(m, C, T)$ is undefined, since both $A.m$ and $B.m$ are most specific
 to $C$ along path $T$, which forms a diamond. The expression \lstinline|((A) new D()).m()| is one example of triggering ambiguity, but \MIM{}
-simply rejects the definition of $C$. To resolve the issue, the programmer need to have an overriding method in $C$, to explicitly merge
+simply rejects the definition of $C$. To resolve the issue, the programmer needs to have an overriding method in $C$, to explicitly merge
 the conflicting ones.
 
 Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
@@ -189,7 +189,7 @@ together with the static type $J$. Therefore $\mbody(m, I, J)$ carries out hiera
 the types, the return expression $e_0$ and the interface $I_0$ which provides the most specific method.
 Here we use $e_0$ to imply that the return expression is forced to be non-empty because it requires a concrete implementation. Now the
 rule reduces method invocation to $e_0$ with substitution.
-Parameters are substituted with arguments, and the \lstinline|this| reference is substituted by the receiver,
+Parameters are substituted with arguments, and the \lstinline|this| reference is substituted with the receiver,
 and in the meanwhile the static types are recorded via annotations. Finally, the return type $I_e$ is put in the front as an annotation.
 \subsubsection{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
 on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
