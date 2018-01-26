@@ -1,0 +1,19 @@
+interface A {
+  A m() override A {
+    return new A();
+  }
+}
+
+interface B {
+  B m() override B {
+    return new B();
+  }
+}
+
+interface C extends A, B {
+  A m() override A {
+    return new C();
+  }
+}
+
+((A) new C()).m()

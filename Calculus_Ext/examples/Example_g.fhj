@@ -1,0 +1,31 @@
+interface T {}
+interface FromA extends T {}
+interface FromB extends T {}
+interface FromC extends T {}
+interface FromAB extends T {}
+
+interface A {
+  T m() override A {
+    return new FromA();
+  }
+}
+
+interface B {
+  T m() override B {
+    return new FromB();
+  }
+}
+
+interface C {
+  T m() override C {
+    return new FromC();
+  }
+}
+
+interface D extends A, B, C {
+  T m() override A, B {
+    return new FromAB();
+  }
+}
+
+((A) new D()).m()
