@@ -1,6 +1,7 @@
 package framework
 
 import scala.io.Source
+import AST._
 
 object Main {
   def run(fileName: String): Unit = {
@@ -8,33 +9,37 @@ object Main {
     val parsed = FHJParser.parse(program)
     if (parsed.isLeft) println(parsed.left.get)
     else {
-      val pretty = parsed.right.get.toString
-      println(pretty + "\n")
-      val eval = parsed.right.get.run
-      if (eval.isLeft) println("Type-check: " + eval.left.get)
-      else println("==> " + eval.right.get.toString)
+      val p: Program = parsed.right.get
+      println(Pretty.pretty(p) + "\n")
+      try {
+        val info = Preprocessor.createInfo(p)
+        val typeCheck = p.programCheck(info)
+        val eval = new Semantics(info, p.e).eval
+      } catch {
+        case _ => println("ERROR")
+      }
     }
   }               
   
   def main(args : Array[String]) = {
     println("----------------------------------\nExample (a):\n")
-    run("Example_a")
+    run("Example_a") // <A> new A()
     println("----------------------------------\nExample (b):\n")
-    run("Example_b")
+    run("Example_b") // <A> new C()
     println("----------------------------------\nExample (c):\n")
-    run("Example_c")
+    run("Example_c") // <A> new C()
     println("----------------------------------\nExample (d):\n")
-    run("Example_d")
+    run("Example_d") // Type-check: Interface check failed
     println("----------------------------------\nExample (e):\n")
-    run("Example_e")
+    run("Example_e") // Type-check: Interface check failed
     println("----------------------------------\nExample (f):\n")
-    run("Example_f")
+    run("Example_f") // <T> new C()
     println("----------------------------------\nExample (Problem 1):\n")
-    run("Example_p1")
+    run("Example_p1") // <Void> new FromDeck()
     println("----------------------------------\nExample (Problem 2):\n")
-    run("Example_p2")
+    run("Example_p2") // <Void> new FromSafeDeck()
     println("----------------------------------\nExample (Problem 3):\n")
-    run("Example_p3")
+    run("Example_p3") // <Void> new FromDrawableSafeDeck()
     println("----------------------------------")
   }
   
