@@ -1,0 +1,29 @@
+#Review 60A
+
+"I think multiple overriding needs to be part of the core calculus."
+
+Can we please get this done so that we can reply to him by saying that
+we have already done it?
+
+We need to have the extended proofs in a pdf document ofcourse, not just
+pen&paper.
+
+#Review 60B
+
+"how it can coexist with solutions for the diamond problem."
+
+Although our model has some differences to the trait model (see discussions in ...),
+it is heavily inspired by it! As a result it can pretty much deal with the diamond problem
+in the way that traits deal with this problem, although there are a couple of important
+differences. In fact, our paper does show examples of the diamond problem and discusses
+new issues that arise when hierarchical dispatching/overriding are added.
+
+#Review 60C
+
+Did you learn anything from the prototype?
+
+Helpful to have a prototype when we defined earlier versions of the semantics;
+also we could double-check that all the examples presented in the paper do
+indeed type-check as stated in the last point of the contributions (page 3).
+
+Yanlin/Haoyuan any other things?
