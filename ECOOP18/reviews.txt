@@ -1,0 +1,169 @@
+> Review #60A
+> Overall merit
+> A.  Accept
+> Reviewer expertise
+> Y.  I am knowledgeable in this area, but not an expert
+> Paper summary
+> This paper formalises two language features for dealing with multiple inheritance of methods in object-oriented programming languages: hierarchical dispatch (which is supported in C++, but hasn't previously been investigated formally), and hierarchical overriding (which is a novel concept).
+> 
+> The former means that a class can inherit conflicting definitions of a method as long as the static type of the receiver at each potential call site makes it clear which of the two definitions is meant. The latter complements this with the ability to selectively override just one among two or more inherited method definitions, contrasting with, for example, Java, where overrides always apply to all inherited definitions.
+> 
+> Both features are explained on examples and formalised and proved sound in an extension of Featherweight Java.
+> 
+> Points For and Against
+> This paper is well-written and cleanly presented. While the technical contributions are not earth-shattering, having a simple definition and a soundness proof of hierarchical dispatch is nice, and hierarchical overriding fills an (at least with hindsight) obvious blank spot on the map.
+> 
+> My main criticism is that the paper is a bit too pure in parts. Some more practical motivation, especially of hierarchical overriding, would have been nice, and not much is said about implementation concerns. Presumably C++ compilers already have figured out how to efficiently implement hierarchical dispatch; does hierarchical overriding pose any challenges in that regard?
+> 
+> Comments for author
+> I have one question for the author response, and a few further suggestions and questions for later.
+> 
+> For the author response
+> Section 5.2 talks about generalising FHJ to allow multiple hierarchical method overriding. But given that in FHJ all overriding is hierarchical, isn't multiple overriding essential to resolving diamond inheritance conflicts? If that is so, I think multiple overriding needs to be part of the core calculus.
+> 
+> For later
+> The motivating example in Section 2 is quite artificial; I think it would be worth trying to come up with something a little more realistic.
+> Section 2, listing of interface characteristics: Please clarify whether statelessness is essential or not.
+> Section 3.1.3: presumably a method is uniquely identified by its name and arity, not just the name?
+> Section 3: The helper functions (mbody and friends) are so important to understanding the semantics that I would suggest defining them first. Otherwise the rules in Figure 5 don't make much sense on first reading.
+> End of Section 5.3: I don't understand what you mean by "Then such a case is still a diamond."
+> Section 6.4: The sentence starting with "In terms of formalization" is very vague, and I don't understand what the "various terms" refers to.
+> Typos and minor issues:
+> 
+> Section 2.3.3: "because the existing two branches"
+> Section 2.3.4: "in the runtime" should be "at runtime"
+> Section 3: "following a similar style as Featherweight Java"
+> Section 3.1.3: "a syntactic sugar" should just be "syntactic sugar"; also, it seems strange to describe the more complicated version as syntactic sugar for the simpler one; I'd suggest swapping the two
+> pg. 11, Footnote 2: The Java equivalent you give isn't really quite equivalent, since it creates a new anonymous subtype of II.
+> pg. 13: ((A)new D()).m() should presumably be ((A)new C()).m()
+> Section 5.1: "In traits, a similar idea is (...)"
+> Section 5.1: you are actually checking whether each most specific method is concrete, not whether it's abstract
+> Section 6.2: "middle-mans" should be "middle-men"
+> Section 6.3: "arizing" should be "arising"
+> Section 6.4: "somehow similar" should be "somewhat similar"
+> Reference [7]: this reference has a different format from the others
+> Reference [15]: character encoding mishap?
+> Reference [22]: "and al" should be "et al." (but you don't use that elsewhere, so perhaps just list all authors?)
+> Reference [28]: "Scharli" is "Schärli" in Reference [9]
+> Review #60B
+> Overall merit
+> B.  Weak accept
+> Reviewer expertise
+> X.  I am an expert in this area
+> Paper summary
+> The paper develops a variant of Featherweight Java with multiple inheritance in order to study what the author(s) call hierarchical dispatching and overriding. (Aside from overloading) the language allows one subclass to inherit two methods, which happen to have the same name. As in C++, a programmer can specify which variant to call by upcasting the receiver to a supertype that gives the original definition of the method -- this is called hierarchical dispatching.
+> 
+> Another feature of hierarchical overriding refers to an ability to override only one of such coexisting methods. It is made possible by annotating an overriding method definition with the type name where the overridden definition is originally defined.
+> 
+> The formal calculus FHJ removes fields and downcasts from FJ and replace classes with interfaces to make the resulting language look more like Java (or, more precisely, Java 8, where default methods for interfaces are allowed).
+> 
+> After introducing hiearchical dispatching and overriding informally, the paper defines FHJ and state a type soundness theorem.
+> 
+> Points For and Against
+> Points for:
+> 
+> Hierarchical overriding seems like a new idea.
+> Concice formalization of the core ides of hierarchical dispatching and overriding
+> Correctness (namely type soundness) is proved (in Appendix).
+> Points against:
+> 
+> The present idea addresses only one aspect of multiple inheritance, namely unintentional method conflicts, and it's not clear how it can coexist with solutions for the diamond problem.
+> Comments for author
+> The present calculus concisely captures the core ideas behind the new method dispatching and overriding mechanism. Although I haven't checked all the details of the proof, its correctness is plausible. Indeed the second condition of T-Intf is important to type soundness. The present example to explain why this is needed is convincing. It would be even nicer if you could give some discussion on in which lemma it plays a key role.
+> 
+> Omission of fields is somewhat surprising but it makes sense. Although multiple inheritance and fields have bad interaction, it is a separate (and difficult!) issue beyond the scope of the paper. Given this premise, it's a good idea (and perhaps an unavoidable choice) not to include fields at all.
+> 
+> One thing I'm not very convinced is how the whole idea addresses problems around multiple inheritance. If I understand correctly, diamond inheritance is considered a separate issue in this paper, but I cannot help wondering how the present idea can coexist with solutions to diamond inheritance studied in the literature.
+> 
+> I'm wondering if the idea presented here can be considered a special kind of overloaded method resolution. To me, unintentional method conflicts look like overloaded methods for which standard resolution isn't possible. Then, the idea here can be considered as a way to let a programmer give additional information for disambiguation.
+> 
+> Minor comments:
+> 
+> To me, "fork inheritance" should be rather called "join inheritance", because "fork" reminds me of fork in UNIX, where one thing splits into two. (Of course, it depends on how you view the subclassing hierarchy.)
+> 
+> In (T-Intf), should ">:" be written ":>"?
+> 
+> I don't think it's a good idea to present typing rules without much explanation on mbody (and a few other predicates defined in Section 4). It was not easy for me to understand what "along path/branch J" really means until I see the definition of mbody. Examples may be helpful.
+> 
+> In Section 5.3, fonts for class names are not consistent: some are in the typewriter font and some are in a different font.
+> 
+> Also in Section 5.3, "are hierarchical overrides" doesn't sound like correct English. Do you use "override" as a countable noun?
+> 
+> In the paragraph on "Languages using hygienicity", it is argued that "writing programs in these languages is tedious" but an FHJ-based language would also require upcasts and override clauses. I'm not sure it's a fair comparison.
+> 
+> arizing -> arising
+> 
+> Review #60C
+> Overall merit
+> A.  Accept
+> Reviewer expertise
+> Y.  I am knowledgeable in this area, but not an expert
+> Paper summary
+> Multiple inheritance is a useful feature for object-oriented languages. However, the ability to inherit from multiple interfaces/classes can lead to ambiguity when two parent interfaces/classes define the same method. This is the so-called diamond problem, which has been extensively studied.
+> 
+> However, the paper observes, there is a another problem with multiple inheritance. Two interfaces/classes could accidentally define completely unrelated methods, but with similar names and signatures. For example, the paper proposes, a draw method could be defined both for a deck of cards and for a drawable widget. The two methods have no functionality in common and are unrelated, but just happens to share the same name and signature. The paper calls this the unintentional method inheritance problem.
+> 
+> In such cases, we would still like to be able to inherit from classes with similarly named methods, but in a principled way that avoids ambiguity. To this end, the paper proposes hierarchical dispatching[*] and hierarchical overriding. The latter, a mechanism to enable overriding in the presence of multiple inherited methods with overlapping names and signatures.
+> 
+> The paper presents Featherweight Hierarchical Java (FHJ), a minimal calculus with an operational semantics and type system to describe hierarchical dispatch and hierarchical overriding for a minimal OO language. The paper proves soundness of the type system.
+> 
+> The key idea behind hierarchical dispatch is to use a combination of static and runtime types to select the invoked method. Specifically, static information is used to avoid ambiguity at compile-time, i.e. to select the branch of the inheritance hierarchy from where the method should be resolved at runtime. Then, at runtime, the dynamic type of the object is used to select the most specific method in that part of the inheritance hierarchy.
+> 
+> The key idea behind hierarchical overriding is that once we have hierarchical dispatch we would like a mechanism to override (specialize) a specific method from one branch of the inheritance hierarchy. To do so, the paper introduces additional syntax whereby an overriding method is annotated with the branch (interface/class) from where it intends to override. That way, e.g. the draw method can be overridden, but for e.g. the deck of cards or from the drawable widget.
+> 
+> Points For and Against
+> The paper presents a new (to me) interesting problem related to multiple inheritance, which is not the diamond problem. On the hand, this suggests that multiple inheritance is even more complicated to use. On the other hand, the paper presents good solutions to this problem.
+> 
+> The paper gives many illustrative examples of the problem and shows convincingly that existing methods cannot really deal with it. Essentially we are left with ugly hacks or having to rewrite our code. The paper formalizes the notion of hierarchical dispatch and shows how it can be used to overcome the problem.
+> 
+> The paper is clear, well-written, and well-motivated. I found the descriptions on pages 2 to 9 to be very useful. The paper very briefly mentions a prototype implementation, but does not discuss it at all.
+> 
+> I want to suggest a small experiment, which is probably outside the scope of the paper: It would be interesting to count how many methods in e.g. the Java Standard Library have the same name and signature, and so could potentially cause the unintentional method inheritance problem. This could provide some evidence that this is a practical problem real programmers might run into.
+> 
+> Points For:
+> 
+> interesting and well-motivated problem.
+> clear and well-written paper.
+> Points Against:
+> 
+> the prototype is mentioned, but never discussed.
+> [*] As the paper makes clear, the concept of hierarchical dispatching is not new, but rather its formalization is the main contribution.
+> 
+> Comments for author
+> Major comments (for the author-response).
+> You list, as a contribution, a prototype implementation of the system, but there is no discussion of it in the paper. Did you learn anything from the prototype?
+> 
+> Minor comments (not for the author-response).
+> Page 1, mid, elaborate on how default methods in Java interfaces is a form of multiple inheritance.
+> 
+> Page 2, top, what does it mean to compose two methods? Do you mean classes?
+> 
+> Page 2, top, the second paragraph is a bit muddled/vague. What does it mean "severe effects"? Is it a severe effect that you program cannot compile?
+> 
+> Page 2, mid, perhaps you could provide a table of how different languages handle the unintentional method inheritance? E.g. for the languages, C#, C++, Java, Scala, ...?
+> 
+> Page 4, top, when can an interface be instantiated?
+> 
+> Page 4, mid, "the compiler throws an error" -> "the compiler fails to compile the program and reports an error" (or similar, to make it clear that the program is rejected.)
+> 
+> Page 8, mid, "in all languages we have known" -> "in all languages we know of"? But probably better to just list the languages you investigated.
+> 
+> Page 8, mid, section 2.3.1 I found this section to be a little less clear than other parts of the paper. Perhaps improve the wording?
+> 
+> Page 8, mid, "calls the latest draw" -> reformulate. What does it mean "latest"?
+> 
+> Page 9, bot, what is meant by the sentence "... is also an important feature, ..."?
+> 
+> Page 9, bot, "because existing two branches" grammar.
+> 
+> Page 9, bot, clarify "old branch".
+> 
+> Page 10, mid, space before "In this section".
+> 
+> Page 10, bot, M1 ... Mn?
+> 
+> Page 14, bot, could you provide the formal signature of mbody? In fact, please discuss mbody in greater detail earlier in the paper.
+> 
+> Page 15, top, presumably, somewhere, you need to state that the class hierarchy is acyclic?
+> 
+> Page 22, mid, "requires pre-knowledge" what does that mean?
