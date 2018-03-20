@@ -1,0 +1,19 @@
+interface Void {}
+interface FromDeck extends Void {}
+interface FromDrawable extends Void {}
+
+interface Deck {
+  Void draw() override Deck {
+    return new FromDeck();
+  }
+}
+
+interface Drawable {
+  Void draw() override Drawable {
+    return new FromDrawable();
+  }
+}
+
+interface DrawableDeck extends Drawable, Deck {}
+
+((Deck) new DrawableDeck()).draw()
