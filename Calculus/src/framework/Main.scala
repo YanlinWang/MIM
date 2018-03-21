@@ -2,6 +2,7 @@ package framework
 
 import scala.io.Source
 import AST._
+import CompilationError._
 
 object Main {
   def run(fileName: String): Unit = {
@@ -15,9 +16,7 @@ object Main {
         val info = Preprocessor.createInfo(p)
         val typeCheck = p.programCheck(info)
         val eval = new Semantics(info, p.e).eval
-      } catch {
-        case _ => println("ERROR")
-      }
+      } catch {case error: Throwable => printError(error)}
     }
   }               
   
