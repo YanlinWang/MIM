@@ -6,7 +6,7 @@ of the core calculus."
 
 Multiple overriding isn't essential to resolving diamond inheritance
 conflicts, and the paper does have a few examples that show how to deal
-with diamond inheritance conflicts.
+with such conflicts.
 
 One important feature for diamond inheritance is the ability to
 *merge* methods coming from different parents. Our calculus
