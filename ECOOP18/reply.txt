@@ -23,6 +23,9 @@ in the way that traits deal with this problem, although there are a couple of im
 differences. In fact, our paper does show examples of the diamond problem and discusses
 new issues that arise when hierarchical dispatching/overriding are added.
 
+In C++, diamond problems occur when using normal inheritance. With virtual inheritance, the problem is solved. 
+In our model, "virtual" is assumed, thus our solution does solve diamond problem.
+
 > "fork inheritance" should be rather called "join inheritance"
 
 
@@ -32,6 +35,37 @@ new issues that arise when hierarchical dispatching/overriding are added.
 > There is no discussion of the implementation in the paper.
 
 todo: add a paragraph of implementation description.
+
+    Our prototype is implemented as a standard Scala project on Scala Eclipse IDE.
+    The compiler uses Scala 2.11 bundle. In the project, we have realized a simple
+    interpreter based on our FHJ formalization. The structure of our prototype is
+    as follows:
+
+    - AST.scala: the abstract syntax of FHJ, including a number of case classes, together
+    with the type checking rules, defined as methods of those classes.
+
+    - Parser.scala: a simple Packrat parser that parses source programs by concrete syntax.
+
+    - Info.scala: a class that collects global information of a program, including the interface
+    table and all method definitions. It also includes the definitions of our auxiliary functions
+    in FHJ.
+
+    - Preprocesssor.scala: pre-processing of compiling a program, collects the information and
+    checks some basic properties, for example, class or method names do not have conflicts,
+    no method overloading, etc.
+
+    - Pretty.scala: pretty-printing for the abstract syntax.
+
+    - Semantics.scala: small-step semantic rules encoded as a function, which pattern-matches on
+    an expression.
+
+    - CompilationError.scala: captures different kinds of compiling errors.
+
+    - Main.scala: testing program of FHJ interpreter.
+
+    Our implementation makes the compilation and evaluation convenient for users, so that users
+    can easily write source programs in files, and can see detailed information of compiling
+    errors, together with the step-by-step evaluation.
 
 
 > Did you learn anything from the prototype?
