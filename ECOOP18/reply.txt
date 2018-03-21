@@ -1,6 +1,6 @@
 #Review 60A
 
-- "isn't multiple overriding essential to resolving diamond inheritance
+> "isn't multiple overriding essential to resolving diamond inheritance
 conflicts? If that is so, I think multiple overriding needs to be part
 of the core calculus."
 
@@ -52,7 +52,7 @@ to support the approach natively.
 As a final note we do have a formalization/implementation of multiple
 overriding, but the proofs are still in progress. 
 
-- "Presumably C++ compilers already have figured out how to efficiently
+> "Presumably C++ compilers already have figured out how to efficiently
   implement hierarchical dispatch; does hierarchical overriding pose
   any challenges in that regard?"
 
@@ -74,14 +74,14 @@ and performance experiements, this is just speculation at this point.
 > how it can coexist with solutions for the diamond problem.
 
 Although our model has some differences to the trait model
-it is heavily inspired by it (see discussions in *FILL ME*)!
+it is heavily inspired by it (see discussions in Section 2.1.1.III page 5, Section 5.1)!
 
 As a result it can deal with the diamond problem in a very similar way
 to the trait approach or the Java approach with default methods.
 Nevertheless there are some differences to both of these models.
-Our paper show examples of the diamond problem (see FILL ME) and discusses
+Our paper show examples of the diamond problem and discusses
 new issues that arise when hierarchical dispatching/overriding are
-added (see FILL ME).
+added (see page 9 Figure (d)(e)(f)).
 
 See also the first reply to #Review 60A.
 
@@ -100,39 +100,3 @@ as stated in the last point of the contributions (page 3). The
 implementation is done in Scala and one nice feature is that it can
 show the detailed step-by-step evaluation of the program, which
 is great for understanding and debugging programs&semantics.
-
-
-REMOVE WHAT FOLLOWS
-
-todo: add a paragraph of implementation description.
-
-    Our prototype is implemented as a standard Scala project on Scala Eclipse IDE.
-    The compiler uses Scala 2.11 bundle. In the project, we have realized a simple
-    interpreter based on our FHJ formalization. The structure of our prototype is
-    as follows:
-
-    - AST.scala: the abstract syntax of FHJ, including a number of case classes, together
-    with the type checking rules, defined as methods of those classes.
-
-    - Parser.scala: a simple Packrat parser that parses source programs by concrete syntax.
-
-    - Info.scala: a class that collects global information of a program, including the interface
-    table and all method definitions. It also includes the definitions of our auxiliary functions
-    in FHJ.
-
-    - Preprocesssor.scala: pre-processing of compiling a program, collects the information and
-    checks some basic properties, for example, class or method names do not have conflicts,
-    no method overloading, etc.
-
-    - Pretty.scala: pretty-printing for the abstract syntax.
-
-    - Semantics.scala: small-step semantic rules encoded as a function, which pattern-matches on
-    an expression.
-
-    - CompilationError.scala: captures different kinds of compiling errors.
-
-    - Main.scala: testing program of FHJ interpreter.
-
-    Our implementation makes the compilation and evaluation convenient for users, so that users
-    can easily write source programs in files, and can see detailed information of compiling
-    errors, together with the step-by-step evaluation.
