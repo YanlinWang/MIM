@@ -2,9 +2,9 @@ package framework
 
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.syntactical._
+import AST._
 
 object FHJParser extends StandardTokenParsers with PackratParsers {
-  import FHJ._
   
   lexical.reserved += ("interface", "extends", "return", "new", "override", "super")
   lexical.delimiters += ("(", ")", "{", "}", ",", ".", "::", ";")

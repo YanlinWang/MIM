@@ -14,9 +14,18 @@ object Preprocessor {
       for (y <- x.sups) assert(table.contains(y), TypeNotFound(y))
       x.name -> x.sups}).toMap
     val methodMap = is.map(x => {
-      val methods = x.methods.map(y => (y.name, y.update))
-      assert(methods.distinct.size == methods.size, Message("Pre-processor: methods of " + x.name + " conflict."))
-      x.name -> x.methods}).toMap
+      var updateMap: Map[String, List[String]] = Map()
+      for (eachMethod <- x.methods) {
+        val mName = eachMethod.name
+        val mUpdate = eachMethod.update
+        updateMap += mName -> (updateMap.getOrElse(mName, List()) ++ mUpdate)
+      }
+      for (value <- updateMap.values) {
+        assert(value.distinct.size == value.size, Message("Pre-processor: multiple updates conflict in " + x.name + "."))
+        assert(value.size <= 1 || !value.contains(x.name),
+            Message("Pre-processor: multiple updates of " + x.name + " containing itself."))
+      }
+    x.name -> x.methods}).toMap
     new Info(table, typeMap, methodMap, is.map(x => x.name -> x).toMap)
   }
 }
