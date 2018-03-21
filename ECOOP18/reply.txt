@@ -1,38 +1,108 @@
 #Review 60A
 
-> I think multiple overriding needs to be part of the core calculus.
+- "isn't multiple overriding essential to resolving diamond inheritance
+conflicts? If that is so, I think multiple overriding needs to be part
+of the core calculus."
 
-Can we please get this done so that we can reply to him by saying that
-we have already done it?
+Multiple overriding isn't essential to resolving diamond inheritance
+conflicts, and the paper does have a few examples that show how to deal
+with diamond inheritance conflicts.
 
-We need to have the extended proofs in a pdf document ofcourse, not just
-pen&paper.
+One important feature for diamond inheritance is the ability to
+*merge* methods coming from different parents. Our calculus
+supports merging methods, so it can deal with common instances of the
+diamond problem. For example, here is a typical scenario
+for diamond inheritance:
 
-> Presumably C++ compilers already have figured out how to efficiently implement hierarchical dispatch; does hierarchical overriding pose any challenges in that regard?
+interface A {void m() {}}
+interface B extends A {void m() {}}
+interface C extends A {void m() {}}
 
-C++ method lookup of static calls and non-virtual calls are determined at compile-time and optimized to be very efficient. For hierarchical dispatch that uses c++ virtual call, the resolution is done at run-time by making  lookup in virtual tables. Since our implementation is very different from C++ which does not use vtables, we do not know specifically what should be changed if the hierarchical overriding feature were to be add to C++. But a wild guess is that, static and non-virtual calls can remain the same, change the vtables by adding tags (which specify the branch) to functions in vtables and change the vtable lookup algorithm accordingly. Actually function lookup (including the use of virtual functions) has a very slight effect on performance (which is unlikely to affact the overall performance of your application), better places to look for performance improvements are algorithms and I/O.
+interface D extends B, C {void m() {}}  // D.m overrides&merges B.m and  C.m
 
+*This program is accepted* in our calculus and indeed it is presented
+in diagram form in Figure 3 (case f).
+
+*Importantly*, note that the definition of D, after desugaring, is:
+
+interface D extends B, C {
+  void m() overrides D {}
+}
+
+*Overriding the class itself* in our calculus is how we enable merging
+of methods. We will make this clearer in the paper!
+
+Multiple overriding would be useful in the following situation:
+
+interface A {void m() {}}
+interface B {void m() {}}
+interface C {void m() {}}
+
+interface D extends A, B, C {
+  void m() overrides A,B {}   // overrides and merges A.m and B.m only
+  void m() overrides C {}
+}
+
+In this case we would like to inherit from 3 interfaces with
+conflicting methods, but only merge 2 of those methods.
+While we can largely simulate D without multiple overriding in our calculus
+(by introducing an intermediate class), a better approach would be
+to support the approach natively.
+
+As a final note we do have a formalization/implementation of multiple
+overriding, but the proofs are still in progress. 
+
+- "Presumably C++ compilers already have figured out how to efficiently
+  implement hierarchical dispatch; does hierarchical overriding pose
+  any challenges in that regard?"
+
+C++ method lookup of static calls and non-virtual calls are determined
+at compile-time and optimized to be very efficient. For hierarchical
+dispatch that uses C++ virtual calls, the resolution is done at
+run-time by looking up the virtual tables. We haven't yet carefully
+thought about changes to current implementations, but we believe that
+static and non-virtual calls can remain the same, and we can change
+the vtables by adding tags (which specify the branch) to functions in
+vtables and change the vtable lookup algorithm accordingly.
+
+We believe that such approach would not have a very signicant impact
+on the performance of method lookup, but without an implementation
+and performance experiements, this is just speculation at this point.
 
 #Review 60B
 
 > how it can coexist with solutions for the diamond problem.
 
-Although our model has some differences to the trait model (see discussions in ...),
-it is heavily inspired by it! As a result it can pretty much deal with the diamond problem
-in the way that traits deal with this problem, although there are a couple of important
-differences. In fact, our paper does show examples of the diamond problem and discusses
-new issues that arise when hierarchical dispatching/overriding are added.
+Although our model has some differences to the trait model
+it is heavily inspired by it (see discussions in *FILL ME*)!
+
+As a result it can deal with the diamond problem in a very similar way
+to the trait approach or the Java approach with default methods.
+Nevertheless there are some differences to both of these models.
+Our paper show examples of the diamond problem (see FILL ME) and discusses
+new issues that arise when hierarchical dispatching/overriding are
+added (see FILL ME).
+
+See also the first reply to #Review 60A.
 
 In C++, diamond problems occur when using normal inheritance. With virtual inheritance, the problem is solved. 
 In our model, "virtual" is assumed, thus our solution does solve diamond problem.
 
-> "fork inheritance" should be rather called "join inheritance"
-
-
-
 #Review 60C
 
-> There is no discussion of the implementation in the paper.
+> There is no discussion of the implementation in the paper. ...
+> Did you learn anything from the prototype?
+
+We will add a discussion about the implementation to the paper.
+
+The implementation was used to encode all the examples presented in the paper, 
+as stated in the last point of the contributions (page 3). The
+implementation is done in Scala and one nice feature is that it can
+show the detailed step-by-step evaluation of the program, which
+is great for understanding and debugging programs&semantics.
+
+
+REMOVE WHAT FOLLOWS
 
 todo: add a paragraph of implementation description.
 
@@ -66,12 +136,3 @@ todo: add a paragraph of implementation description.
     Our implementation makes the compilation and evaluation convenient for users, so that users
     can easily write source programs in files, and can see detailed information of compiling
     errors, together with the step-by-step evaluation.
-
-
-> Did you learn anything from the prototype?
-
-Helpful to have a prototype when we defined earlier versions of the semantics;
-also we could double-check that all the examples presented in the paper do
-indeed type-check as stated in the last point of the contributions (page 3).
-
-Yanlin/Haoyuan any other things?
