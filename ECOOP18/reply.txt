@@ -1,6 +1,6 @@
 #Review 60A
 
-"I think multiple overriding needs to be part of the core calculus."
+> I think multiple overriding needs to be part of the core calculus.
 
 Can we please get this done so that we can reply to him by saying that
 we have already done it?
@@ -8,9 +8,14 @@ we have already done it?
 We need to have the extended proofs in a pdf document ofcourse, not just
 pen&paper.
 
+> Presumably C++ compilers already have figured out how to efficiently implement hierarchical dispatch; does hierarchical overriding pose any challenges in that regard?
+
+C++ method lookup of static calls and non-virtual calls are determined at compile-time and optimized to be very efficient. For hierarchical dispatch that uses c++ virtual call, the resolution is done at run-time by making  lookup in virtual tables. Since our implementation is very different from C++ which does not use vtables, we do not know specifically what should be changed if the hierarchical overriding feature were to be add to C++. But a wild guess is that, static and non-virtual calls can remain the same, change the vtables by adding tags (which specify the branch) to functions in vtables and change the vtable lookup algorithm accordingly. Actually function lookup (including the use of virtual functions) has a very slight effect on performance (which is unlikely to affact the overall performance of your application), better places to look for performance improvements are algorithms and I/O.
+
+
 #Review 60B
 
-"how it can coexist with solutions for the diamond problem."
+> how it can coexist with solutions for the diamond problem.
 
 Although our model has some differences to the trait model (see discussions in ...),
 it is heavily inspired by it! As a result it can pretty much deal with the diamond problem
@@ -18,9 +23,18 @@ in the way that traits deal with this problem, although there are a couple of im
 differences. In fact, our paper does show examples of the diamond problem and discusses
 new issues that arise when hierarchical dispatching/overriding are added.
 
+> "fork inheritance" should be rather called "join inheritance"
+
+
+
 #Review 60C
 
-Did you learn anything from the prototype?
+> There is no discussion of the implementation in the paper.
+
+todo: add a paragraph of implementation description.
+
+
+> Did you learn anything from the prototype?
 
 Helpful to have a prototype when we defined earlier versions of the semantics;
 also we could double-check that all the examples presented in the paper do
