@@ -1,4 +1,5 @@
 #Review 60A
+========
 
 > "isn't multiple overriding essential to resolving diamond inheritance
 conflicts? If that is so, I think multiple overriding needs to be part
@@ -14,11 +15,11 @@ supports merging methods, so it can deal with common instances of the
 diamond problem. For example, here is a typical scenario
 for diamond inheritance:
 
-interface A {void m() {}}
-interface B extends A {void m() {}}
-interface C extends A {void m() {}}
+interface A {void m() {...}}
+interface B extends A {void m() {...}}
+interface C extends A {void m() {...}}
 
-interface D extends B, C {void m() {}}  // D.m overrides&merges B.m and  C.m
+interface D extends B, C {void m() {...}}  // D.m overrides&merges B.m and  C.m
 
 *This program is accepted* in our calculus and indeed it is presented
 in diagram form in Figure 3 (case f).
@@ -26,31 +27,34 @@ in diagram form in Figure 3 (case f).
 *Importantly*, note that the definition of D, after desugaring, is:
 
 interface D extends B, C {
-  void m() overrides D {}
+  void m() overrides D {...}
 }
 
 *Overriding the class itself* in our calculus is how we enable merging
 of methods. We will make this clearer in the paper!
 
-Multiple overriding would be useful in the following situation:
+Multiple overriding offers a more fine-grained mechanism for merging,
+and can be helpful to deal with some more complex cases of diamond
+inheritance, but it is non-essential to deal with such problems.
+Multiple overriding would be useful in the following situation, for example:
 
-interface A {void m() {}}
-interface B {void m() {}}
-interface C {void m() {}}
+interface A {void m() {...}}
+interface B {void m() {...}}
+interface C {void m() {...}}
 
 interface D extends A, B, C {
-  void m() overrides A,B {}   // overrides and merges A.m and B.m only
-  void m() overrides C {}
+  void m() overrides A,B {...}   // overrides and merges A.m and B.m only
+  void m() overrides C {...}
 }
 
 In this case we would like to inherit from 3 interfaces with
 conflicting methods, but only merge 2 of those methods.
 While we can largely simulate D without multiple overriding in our calculus
 (by introducing an intermediate class), a better approach would be
-to support the approach natively.
+to support multiple overriding natively.
 
 As a final note we do have a formalization/implementation of multiple
-overriding, but the proofs are still in progress. 
+overriding. 
 
 > "Presumably C++ compilers already have figured out how to efficiently
   implement hierarchical dispatch; does hierarchical overriding pose
@@ -73,20 +77,23 @@ and performance experiements, this is just speculation at this point.
 
 > how it can coexist with solutions for the diamond problem.
 
-Although our model has some differences to the trait model
-it is heavily inspired by it (see discussions in Section 2.1.1.III page 5, Section 5.1)!
+Our model does support diamond inheritance and can deal with
+diamond problems!
 
-As a result it can deal with the diamond problem in a very similar way
-to the trait approach or the Java approach with default methods.
-Nevertheless there are some differences to both of these models.
-Our paper show examples of the diamond problem and discusses
-new issues that arise when hierarchical dispatching/overriding are
-added (see page 9 Figure (d)(e)(f)).
+We can deal with the diamond problem in a very similar way to the
+trait approach or the Java 8 approach with default methods, although
+there are some minor differences to both of these models.  Our paper
+shows examples of the diamond problem (see page 9 Figure 3 (d)(e)(f))
+and discusses new issues that arise when hierarchical
+dispatching/overriding are added (see the discussions in Sections 5.1
+and 5.3).
 
 See also the first reply to #Review 60A.
 
-In C++, diamond problems occur when using normal inheritance. With virtual inheritance, the problem is solved. 
-In our model, "virtual" is assumed, thus our solution does solve diamond problem.
+As a final note, in C++, diamond problems occur when using normal
+inheritance. With virtual inheritance, the problem is solved.  In our
+model, "virtual" is assumed, thus our solution does solve diamond
+problem.
 
 #Review 60C
 
