@@ -108,8 +108,10 @@ problem.
 
 We will add a discussion about the implementation to the paper.
 
-The implementation was used to encode all the examples presented in the paper, 
-as stated in the last point of the contributions (page 3). The
-implementation is done in Scala and one nice feature is that it can
-show the detailed step-by-step evaluation of the program, which
-is great for understanding and debugging programs&semantics.
+The implementation was used to encode all the examples presented in
+the paper, as stated in the last point of the contributions (page
+3). The implementation is done in Scala, and strictly follows the
+small-step and type-checking rules presented in the paper. One nice
+feature of the implementation is that it can show the detailed
+step-by-step evaluation of the program, which is great for
+understanding and debugging programs&semantics.
