@@ -1,3 +1,5 @@
+We thank the reviewers for the constructive and valuable comments. Here we try to answer the main questions:
+
 #Review 60A
 ========
 
@@ -83,7 +85,7 @@ and performance experiements, this is just speculation at this point.
 #Review 60B
 ========
 
-> how it can coexist with solutions for the diamond problem.
+> “how it can coexist with solutions for the diamond problem.”
 
 Our model does support diamond inheritance and can deal with
 diamond problems!
@@ -98,23 +100,20 @@ and 5.3).
 
 See also the first reply to #Review 60A.
 
-As a final note, in C++, diamond problems occur when using normal
-inheritance. With virtual inheritance, the problem is solved.  In our
-model, "virtual" is assumed, thus our solution does solve diamond
-problem.
 
 #Review 60C
 ========
 
-> There is no discussion of the implementation in the paper. ...
-> Did you learn anything from the prototype?
+> "There is no discussion of the implementation in the paper.... Did you learn anything from the prototype?"
 
-We will add a discussion about the implementation to the paper.
+Thanks for pointing out this! We agree this should be discussed, we will add a paragraph about the implementation to the paper. BTW, the supplementary material contains the implementation, it will be visible to you after the review process.
 
-The implementation was used to encode all the examples presented in
+The implementation validates all the examples presented in
 the paper, as stated in the last point of the contributions (page
-3). The implementation is done in Scala, and strictly follows the
-small-step and type-checking rules presented in the paper. One nice
+3). The implementation is done in Scala, and strictly follows the type-checking rules and small-step semantics presented in the paper. One nice
 feature of the implementation is that it can show the detailed
 step-by-step evaluation of the program, which is great for
-understanding and debugging programs&semantics.
+understanding and debugging programs & semantics. The current model you see is actually a bit different from the beginning, the reason is in the process of implementation and proving theorems we find errors and modify the model, which is a positive circle. 
+
+> Minor issues.
+We are very grateful to all the reviewers for pointing out the typos or other minor issues. We will revise the paper accordingly.
