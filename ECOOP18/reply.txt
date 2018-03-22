@@ -26,7 +26,8 @@ interface D extends B, C {void m() {...}}  // D.m overrides&merges B.m and  C.m
 *This program is accepted* in our calculus and indeed it is presented
 in diagram form in Figure 3 (case f).
 
-*Importantly*, note that the definition of D, after desugaring, is:
+*Importantly*, note that the definition of D, after desugaring
+(the desugaring is mentioned in S3.1.3, page 11), is:
 
 ```
 interface D extends B, C {
@@ -80,6 +81,7 @@ on the performance of method lookup, but without an implementation
 and performance experiements, this is just speculation at this point.
 
 #Review 60B
+========
 
 > how it can coexist with solutions for the diamond problem.
 
@@ -102,6 +104,7 @@ model, "virtual" is assumed, thus our solution does solve diamond
 problem.
 
 #Review 60C
+========
 
 > There is no discussion of the implementation in the paper. ...
 > Did you learn anything from the prototype?
