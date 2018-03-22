@@ -15,20 +15,24 @@ supports merging methods, so it can deal with common instances of the
 diamond problem. For example, here is a typical scenario
 for diamond inheritance:
 
+```
 interface A {void m() {...}}
 interface B extends A {void m() {...}}
 interface C extends A {void m() {...}}
 
 interface D extends B, C {void m() {...}}  // D.m overrides&merges B.m and  C.m
+```
 
 *This program is accepted* in our calculus and indeed it is presented
 in diagram form in Figure 3 (case f).
 
 *Importantly*, note that the definition of D, after desugaring, is:
 
+```
 interface D extends B, C {
   void m() overrides D {...}
 }
+```
 
 *Overriding the class itself* in our calculus is how we enable merging
 of methods. We will make this clearer in the paper!
@@ -38,6 +42,7 @@ and can be helpful to deal with some more complex cases of diamond
 inheritance, but it is non-essential to deal with such problems.
 Multiple overriding would be useful in the following situation, for example:
 
+```
 interface A {void m() {...}}
 interface B {void m() {...}}
 interface C {void m() {...}}
@@ -46,6 +51,7 @@ interface D extends A, B, C {
   void m() overrides A,B {...}   // overrides and merges A.m and B.m only
   void m() overrides C {...}
 }
+```
 
 In this case we would like to inherit from 3 interfaces with
 conflicting methods, but only merge 2 of those methods.
