@@ -88,12 +88,11 @@ and performance experiements, this is just speculation at this point.
 
 > “how it can coexist with solutions for the diamond problem.”
 
-Thanks for the question. Our model does support diamond inheritance and can deal
-with diamond problems.
+Our model does support diamond inheritance and can deal with diamond problems.
 
 We can deal with the diamond problem in a very similar way to the trait approach
 or the Java 8 approach with default methods, although there are some minor
-differences to both of these models.  Our paper shows examples of the diamond
+differences to both of these models. Our paper shows examples of the diamond
 problem (see page 9 Figure 3 (d)(e)(f)) and discusses new issues that arise when
 hierarchical dispatching/overriding are added (see the discussions in Sections
 5.1 and 5.3).
@@ -113,13 +112,13 @@ contains the implementation, it will be visible to you after the review process.
 
 The implementation validates all the examples presented in the paper, as stated
 in the last point of the contributions (page 3). The implementation is done in
-Scala, and strictly follows the type- checking rules and small-step semantics
+Scala, and strictly follows the type-checking rules and small-step semantics
 presented in the paper. One nice feature of the implementation is that it can
 show the detailed step-by-step evaluation of the program, which is great for
-understanding and debugging programs & semantics. The current model you see is
-actually a bit different from the beginning, the reason is in the process of
-implementation and proving theorems we find errors and modify the model, which
-is a positive circle.
+understanding and debugging programs & semantics. The final model of the paper
+is actually a bit different from our initial models. This is partly because in
+the process of implementing and proving theorems we found errors and modified
+the earlier models, creating a positive feedback circle.
 
 > Minor issues. 
 
