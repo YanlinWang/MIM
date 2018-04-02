@@ -1,0 +1,4 @@
+interface A {
+  static A of();
+}
+A.of()

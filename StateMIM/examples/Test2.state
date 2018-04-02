@@ -1,0 +1,9 @@
+interface Int {}
+interface I3 extends Int {
+	static I3 of();
+}
+interface A {
+ 	static A of(Int A.x);
+	Int x() override A;
+}
+A.of(I3.of()).x()

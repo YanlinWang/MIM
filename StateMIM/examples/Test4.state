@@ -1,0 +1,13 @@
+interface Int {}
+interface I2 extends Int {
+ static I2 of();
+}
+interface I3 extends Int {
+ static I3 of();
+}
+interface A {
+ static A of(Int A.x);
+ Int x() override A;
+ Int m() override A { return x(); }
+}
+A.of(I3.of()).SET_x(I2.of()).m()
