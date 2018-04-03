@@ -18,7 +18,26 @@ object Semantics {
           if (!args(index).isValue)
             return Config(h, vs, args(index), fs.addFrame(Invk_Arg(e, m, args, index)))
         }
-        throw TODO // v.m(vs)
+        
+        val eValue = e match { case v : Value => v } //cast e to value
+        val j = eValue.t
+        val obj = h.lookup(eValue.id).get
+        val i = obj.t
+        
+        
+        val isField = info.isField(i, j, m)
+        if (args.length == 0 && isField.isDefined) { //Getters
+          val resId = obj.fields(isField.get._1)
+          Config(h, vs, Value(isField.get._2, resId), fs)
+        } else { //Normal invocations
+          val mbody = info.mbody(m, i, j).get
+          val paramsMap: Map[String, Value] = mbody._2.zip(args).map(p => {
+            val argValueId = p._2 match { case Value(_, vid) => vid }
+            (p._1.name, Value(p._1.paramType, argValueId))
+          }).toMap
+          val newScope = vs.addMap(Map("this" -> eValue) ++ paramsMap)
+          Config(h, newScope, AnnoExpr(mbody._3._1, mbody._3._2.get), fs.addFrame(ReturnExpr()))
+        }
       }
       case InvkStatic(t, m, args) => {
         for (index <- 0 to args.length - 1) {
@@ -31,7 +50,12 @@ object Semantics {
       }
       case AnnoExpr(i, Value(t, id)) => Config(h, vs, Value(i, id), fs)
       case AnnoExpr(i, e) => Config(h, vs, e, fs.addFrame(AnnoExpr_E(i)))
-      case InvkSetter(e : Value, fieldName, para : Value) => throw TODO // v.set_f(v)
+      case InvkSetter(Value(i0, o0), fieldName, Value(i1, o1)) => {
+        val obj = h.lookup(o0).get
+        val field = info.isField(obj.t, i0, fieldName).get
+        val newH = h.update(o0, field._1, o1)
+        Config(newH, vs, Value(obj.t, o0), fs)
+      }
       case InvkSetter(e : Value, fieldName, para) => Config(h, vs, para, fs.addFrame(InvkSetter_Arg(e, fieldName)))
       case InvkSetter(e, fieldName, para) => Config(h, vs, e, fs.addFrame(InvkSetter_E(fieldName, para)))
       case LetExpr(t, x, Value(_, id), e2) => Config(h, vs.addMap(Map(x -> Value(t, id))), e2, fs.addFrame(ReturnExpr()))
