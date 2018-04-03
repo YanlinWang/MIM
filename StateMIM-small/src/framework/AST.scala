@@ -22,7 +22,7 @@ object AST {
         }
       }
     }
-    def eval(): (String, Obj) = {
+    def eval(): (String, String) = {
       val init = Config(H(Map(), 1), VS(List(BS(Map()))), e, FS(List()))
       Semantics.eval(collectInfo.get, init)
     }

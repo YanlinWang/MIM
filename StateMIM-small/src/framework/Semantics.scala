@@ -25,7 +25,9 @@ object Semantics {
           if (!args(index).isValue)
             return Config(h, vs, args(index), fs.addFrame(InvkStatic_Arg(t, m, args, index)))
         }
-        throw TODO // I.m(vs)
+        val newObj = Obj(t, args.map(arg => arg match {case Value(_, id) => id}))
+        val newHwithId = h.addObj(newObj)
+        Config(newHwithId._1, vs, Value(t, newHwithId._2), fs) // I.m(vs)
       }
       case AnnoExpr(i, Value(t, id)) => Config(h, vs, Value(i, id), fs)
       case AnnoExpr(i, e) => Config(h, vs, e, fs.addFrame(AnnoExpr_E(i)))
@@ -45,9 +47,9 @@ object Semantics {
     }
   }
   
-  def eval(info: Info, config: Config): (String, Obj) = {
+  def eval(info: Info, config: Config): (String, String) = {
     try { val c = eval1(info, config); eval(info, c) } catch {
-      case Done(Config(h, _, Value(t, id), _)) => (t, h.lookup(id).get)
+      case Done(Config(h, _, Value(t, id), _)) => ("type = " + t, "obj = " + h.lookup(id).get.pretty(h))
       case Done(_)                             => throw Buggy
       case e : Throwable                       => throw e
     }
