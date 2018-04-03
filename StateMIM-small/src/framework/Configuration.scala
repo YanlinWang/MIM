@@ -21,18 +21,24 @@ object Configuration {
   }
   
   case class BS(varTable: Map[String, Value]) {
-    def addVar(x: String, v: Value) = BS(varTable + {x -> v})
+//    def addVar(x: String, v: Value) = BS(varTable + {x -> v})
   }
   
   case class VS(scopes: List[BS]) {
-    def addVar(x: String, v: Value) = VS(scopes.head.addVar(x, v) +: scopes.tail)
+    def addMap(m: Map[String, Value]) = VS(BS(m) +: scopes)
+    def remMap() = VS(scopes.tail)
     def getVar(x: String) = scopes.head.varTable.get(x)
-    def addScope(thisValue: (String, Value), argsValue: List[(String, Value)]): VS = {
-      val bs = BS(Map(thisValue._1 -> thisValue._2) ++ argsValue)
-      VS(bs +: scopes)
-    }
+//    def addVar(x: String, v: Value) = VS(scopes.head.addVar(x, v) +: scopes.tail)
+//    def addScope(thisValue: (String, Value), argsValue: List[(String, Value)]): VS = {
+//      val bs = BS(Map(thisValue._1 -> thisValue._2) ++ argsValue)
+//      VS(bs +: scopes)
+//    }
   }
   
-  case class Config(h: H, vs: VS, expr: Option[Expr], stack: List[Either[Expr, OpenExpr]])
+  case class FS(frames: List[Either[Expr, OpenExpr]]) {
+    def addFrame(open: OpenExpr) = FS(Right(open) +: frames)
+  }
+  
+  case class Config(h: H, vs: VS, expr: Expr, frameStack: FS)
   
 }
