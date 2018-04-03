@@ -22,6 +22,10 @@ object AST {
         }
       }
     }
+    def eval(): (String, Obj) = {
+      val init = Config(H(Map(), 1), VS(List(BS(Map()))), e, FS(List()))
+      Semantics.eval(collectInfo.get, init)
+    }
   }
   
   case class TypeDef(name: String, sups: List[String], methods: List[MethDef], constr: Option[Constructor]) {}

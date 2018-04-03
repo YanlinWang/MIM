@@ -1,11 +1,11 @@
 package framework
 
-import AST._
+import Configuration._
 
 object Error {
   
   case object Buggy extends Throwable
   case object TODO extends Throwable
-  case class Done(v: Value) extends Throwable
+  case class Done(c: Config) extends Throwable
   
 }
