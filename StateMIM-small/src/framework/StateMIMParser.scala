@@ -6,7 +6,7 @@ import scala.util.parsing.combinator.syntactical._
 object StateMIMParser extends StandardTokenParsers with PackratParsers {
   import AST._
   
-  lexical.reserved += ("interface", "extends", "return", "override", "super", "static", "let", "in")
+  lexical.reserved += ("interface", "extends", "return", "override", "super", "static", "let")
   lexical.delimiters += ("(", ")", "{", "}", ",", ".", "::", ";", "=")
   
   val lcid = ident ^? { case id if id.charAt(0).isLower => id }

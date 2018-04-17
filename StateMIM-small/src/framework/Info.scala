@@ -7,14 +7,16 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
   def isField(i: String, j: String, m: String): Option[(Int, String)] = {
     // see the of() method in class I.
     // see if argument J.m exists
+    println("Checking isField: i = " + i + " j = " + j + " m = " + m)
     val typeDef = typeDefMap.get(i).get
     val constr = typeDef.constr
-    if (constr.isEmpty) return None
+    if (constr.isEmpty) {println("here"); return None}
     val paras = constr.get.paras
     for (x <- 0 to paras.length - 1) {
       val para = paras(x)
       if (para.path == j && para.name == m) return Some(x, para.fieldType)
     }
+    println("there")
     None
   }
   

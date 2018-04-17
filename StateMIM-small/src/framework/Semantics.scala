@@ -11,8 +11,9 @@ object Semantics {
     val vs = config.vs
     val fs = config.frameStack
     config.expr match {
-      case Var(x) => Config(h, vs, vs.getVar(x).get, fs)
+      case Var(x) => Config(h, vs, vs.getVar(x), fs)
       case Invk(e, m, args) => {
+        println("Evaluating: " + config.expr.toString())
         if (!e.isValue) return Config(h, vs, e, fs.addFrame(Invk_E(m, args)))
         for (index <- 0 to args.length - 1) {
           if (!args(index).isValue)
@@ -23,20 +24,22 @@ object Semantics {
         val j = eValue.t
         val obj = h.lookup(eValue.id).get
         val i = obj.t
+        val mbody = info.mbody(m, i, j).get
+        val j2 = mbody._1
         
-        
-        val isField = info.isField(i, j, m)
+        val isField = info.isField(i, j2, m)
         if (args.length == 0 && isField.isDefined) { //Getters
+          println("Is getter")
           val resId = obj.fields(isField.get._1)
           Config(h, vs, Value(isField.get._2, resId), fs)
         } else { //Normal invocations
-          val mbody = info.mbody(m, i, j).get
-          val paramsMap: Map[String, Value] = mbody._2.zip(args).map(p => {
+          println("Is not getter")
+          val paramsMap: List[(String, Value)] = mbody._2.zip(args).map(p => {
             val argValueId = p._2 match { case Value(_, vid) => vid }
             (p._1.name, Value(p._1.paramType, argValueId))
-          }).toMap
-          val newScope = vs.addMap(Map("this" -> eValue) ++ paramsMap)
-          Config(h, newScope, AnnoExpr(mbody._3._1, mbody._3._2.get), fs.addFrame(ReturnExpr()))
+          }) :+ ("this", eValue)
+          val newScope = vs.addScope(BS(paramsMap))
+          Config(h, newScope, AnnoExpr(mbody._3._1, mbody._3._2.get), fs.addFrame(ReturnExprForInvk()))
         }
       }
       case InvkStatic(t, m, args) => {
@@ -58,13 +61,14 @@ object Semantics {
       }
       case InvkSetter(e : Value, fieldName, para) => Config(h, vs, para, fs.addFrame(InvkSetter_Arg(e, fieldName)))
       case InvkSetter(e, fieldName, para) => Config(h, vs, e, fs.addFrame(InvkSetter_E(fieldName, para)))
-      case LetExpr(t, x, Value(_, id), e2) => Config(h, vs.addMap(Map(x -> Value(t, id))), e2, fs.addFrame(ReturnExpr()))
+      case LetExpr(t, x, Value(_, id), e2) => Config(h, vs.addLet(x, Value(t, id)), e2, fs.addFrame(ReturnExprForLet()))
       case LetExpr(t, x, e1, e2) => Config(h, vs, e1, fs.addFrame(LetExpr_E1(t, x, e2)))
       case v : Value => {
         if (fs.frames.isEmpty) throw Done(config)
         fs.frames.head match {
           case Left(_)  => throw Buggy
-          case Right(ReturnExpr()) => Config(h, vs.remMap(), v, FS(fs.frames.tail))
+          case Right(ReturnExprForLet()) => Config(h, vs.remLet(), v, FS(fs.frames.tail))
+          case Right(ReturnExprForInvk()) => Config(h, vs.remScope(), v, FS(fs.frames.tail))
           case Right(e) => Config(h, vs, e.fill(v), FS(fs.frames.tail))
         }
       }
@@ -72,7 +76,7 @@ object Semantics {
   }
   
   def eval(info: Info, config: Config): (String, String) = {
-    try { val c = eval1(info, config); eval(info, c) } catch {
+    try { println("==> " + config.toString()); val c = eval1(info, config); eval(info, c) } catch {
       case Done(Config(h, _, Value(t, id), _)) => ("type = " + t, "obj = " + h.lookup(id).get.pretty(h))
       case Done(_)                             => throw Buggy
       case e : Throwable                       => throw e

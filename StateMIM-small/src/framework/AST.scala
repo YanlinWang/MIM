@@ -23,7 +23,7 @@ object AST {
       }
     }
     def eval(): (String, String) = {
-      val init = Config(H(Map(), 1), VS(List(BS(Map()))), e, FS(List()))
+      val init = Config(H(Map(), 1), VS(List(BS(List()))), e, FS(List()))
       Semantics.eval(collectInfo.get, init)
     }
   }
@@ -90,7 +90,11 @@ object AST {
     override def fill(v: Value) = LetExpr(t, x, v, e2)
   }
   
-  case class ReturnExpr() extends OpenExpr {
+  case class ReturnExprForLet() extends OpenExpr {
+    override def fill(v: Value) = throw Error.Buggy
+  }
+  
+  case class ReturnExprForInvk() extends OpenExpr {
     override def fill(v: Value) = throw Error.Buggy
   }
   

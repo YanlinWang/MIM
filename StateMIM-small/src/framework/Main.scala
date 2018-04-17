@@ -15,17 +15,18 @@ object Main {
     }
   }     
   def main(args : Array[String]) = {    
-    println("----------------------------------\nTest0:\n")
-    run("Test0")
-    println("----------------------------------\nTest1:\n")
-    run("Test1")
-    println("----------------------------------\nTest2:\n")
-    run("Test2")
-    println("----------------------------------\nTest3:\n")
-    run("Test3")
-    println("----------------------------------\nTest4:\n")
-    run("Test4")
-    println("----------------------------------\nTest5:\n")
-    run("Test5")
+//    println("----------------------------------\nTest0:\n")
+//    run("Test0")
+//    println("----------------------------------\nTest1:\n")
+//    run("Test1")
+//    println("----------------------------------\nTest2:\n")
+//    run("Test2")
+//    println("----------------------------------\nTest3:\n")
+//    run("Test3")
+//    println("----------------------------------\nTest4:\n")
+//    run("Test4")
+//    println("----------------------------------\nTest5:\n")
+//    run("Test5")
+    run("Test6")
   }
 }

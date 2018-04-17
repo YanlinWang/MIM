@@ -1,0 +1,48 @@
+interface Int {}
+interface I1 extends Int { static I1 of(); }
+interface I2 extends Int { static I2 of(); }
+interface I3 extends Int { static I3 of(); }
+interface I4 extends Int { static I4 of(); }
+interface I5 extends Int { static I5 of(); }
+interface I27 extends Int { static I27 of(); }
+interface I45 extends Int { static I45 of(); }
+
+interface String {}
+interface Alice extends String { static Alice of(); }
+interface Bob extends String { static Bob of(); }
+interface Manager extends String { static Manager of(); }
+interface Director extends String { static Director of(); }
+interface Officer extends String { static Officer of(); }
+
+interface Point {
+  static Point of(Int Point.x, Int Point.y);
+  Int x() override Point;
+  Int y() override Point;
+}
+
+interface Located {
+  Point position() override Located;
+}
+
+interface Employee {
+  String position() override Employee;
+  Int age() override Employee;
+  String name() override Employee;
+}
+
+interface OfficeClerk extends Located, Employee {
+  static OfficeClerk of(String Employee.name, Int Employee.age, String Employee.position,
+    Int OfficeClerk.deskNumber, Point Located.position);
+  Int deskNumber() override OfficeClerk;
+  OfficeClerk moveTo(OfficeClerk c) override OfficeClerk {
+    return (
+      let Point p = ((Located)c).position();
+      OfficeClerk.of(name(), age(), ((Employee)this).position(), c.deskNumber(), p)
+    );
+  }
+}
+
+let OfficeClerk alice = OfficeClerk.of(Alice.of(), I27.of(), Manager.of(), I1.of(), let Point p = Point.of(I2.of(), I3.of()); p);
+let OfficeClerk bob = OfficeClerk.of(Bob.of(), I45.of(), Director.of(), I2.of(), let Point p = Point.of(I2.of(), I4.of()); p);
+let Point p = Officer.of();
+((Employee) alice.moveTo(bob)).SET_position(p)
