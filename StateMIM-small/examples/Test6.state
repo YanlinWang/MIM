@@ -10,9 +10,10 @@ interface I45 extends Int { static I45 of(); }
 interface String {}
 interface Alice extends String { static Alice of(); }
 interface Bob extends String { static Bob of(); }
-interface Manager extends String { static Manager of(); }
-interface Director extends String { static Director of(); }
-interface Officer extends String { static Officer of(); }
+interface Title {}
+interface Manager extends Title { static Manager of(); }
+interface Director extends Title { static Director of(); }
+interface Officer extends Title { static Officer of(); }
 
 interface Point {
   static Point of(Int Point.x, Int Point.y);
@@ -37,12 +38,12 @@ interface OfficeClerk extends Located, Employee {
   OfficeClerk moveTo(OfficeClerk c) override OfficeClerk {
     return (
       let Point p = ((Located)c).position();
-      OfficeClerk.of(name(), age(), ((Employee)this).position(), c.deskNumber(), p)
+      ((Located)this).SET_position(p).SET_deskNumber(c.deskNumber())
     );
   }
 }
 
 let OfficeClerk alice = OfficeClerk.of(Alice.of(), I27.of(), Manager.of(), I1.of(), let Point p = Point.of(I2.of(), I3.of()); p);
 let OfficeClerk bob = OfficeClerk.of(Bob.of(), I45.of(), Director.of(), I2.of(), let Point p = Point.of(I2.of(), I4.of()); p);
-let Point p = Officer.of();
+let Title p = Officer.of();
 ((Employee) alice.moveTo(bob)).SET_position(p)
