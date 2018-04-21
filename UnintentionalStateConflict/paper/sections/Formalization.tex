@@ -1,0 +1,536 @@
+\section{Overview}
+\subsection{Motivation}
+Combine the work of FHJ and ClasslessJava.
+\begin{itemize}
+	\item Use abstract state operations to mimic state
+	\item If two fields conflict from triangle inheritance, keep the two fields
+	\item Override and covariant type refine of fields
+\end{itemize}
+
+Example of unintentional fields confliction:
+\begin{lstlisting}
+interface Payment {
+	String Check(); // represnets an entity 'check'
+}
+interface Verify {
+	boolean Check(); // represents a flag of whether the verification is checked or not.
+}
+interface VerifiedPayment extends Payment, Verify {}
+\end{lstlisting}
+
+C++ partly support this, just like unintentional method conflicts. However, c++ cannot handle the case where fields need to be refined or two conflicted fields need to be merged.
+\begin{lstlisting}
+class A {};
+class B:A {};
+class Payment {
+	public:
+	A* check;
+};
+class Verify {
+	public:
+	bool check;
+};
+class VerifiedPayment : public Payment, public Verify {
+	public:
+	B* check;
+};
+
+int main()
+{
+VerifiedPayment* vp = new VerifiedPayment();
+vp->check = new B();
+vp->Verify::check = true;
+vp->check;
+cout << vp->Payment::check << endl;
+cout << vp->check << endl;
+}
+\end{lstlisting}
+
+
+Example program in a desired language:
+\begin{lstlisting}
+interface A { int x(); int y(); }
+interface B { int x(); }
+interface C extends A, B {}
+new B(B.x = 0).GET_x();   // 0
+(A)new C(A.x = 1, A.y = 2, B.x = 3).GET_x();  // 1
+\end{lstlisting}
+
+\section{Formalization}~\label{sec:formalization}
+
+\begin{figure*}
+	\saveSpaceFig
+	\begin{displaymath}
+		\begin{array}{l}
+			\begin{array}{llrl}
+				\text{Program}		& P & \Coloneqq  & \overline{IL} \ e \\
+				\text{Interfaces}   & IL & \Coloneqq & \interfaceMC{I}{I}{MC?}{M} \\
+				\text{Constructors} & MC & \Coloneqq & \methodStatic{I}{m}{I_x}{J.x} \\
+				\text{Methods}      & M  & \Coloneqq & \method{I}{m}{I_x}{x}{J}{e}  \mid
+				\absmethod{I}{m}{I_x}{x}{J} \\
+				\text{Expressions}  & e  & \Coloneqq & 
+				x \mid
+				e.m(\overline{e}) \mid
+				(I)e \mid 
+				I.m(\overline{e}) \mid 
+				\mylet{I}{x}{e_1}{e_2}   \\
+				\text{Context}      & \Gamma & \Coloneqq & \overline{x}:\overline{I} \\
+				\text{Values}       & v & \Coloneqq & (J) I.m(\overline{v}) \\
+			\end{array}
+		\end{array}
+	\end{displaymath}
+	\caption{Syntax}\label{fig:syntax}
+	\saveSpaceFig
+\end{figure*}
+
+%\begin{figure*}[]
+%	\saveSpaceFig
+%	\begin{mathpar}
+%		\framebox{$ I <: J $} \hspace{.5in} \subid \\
+%		\subtrans \hspace{.5in} \subextends \\
+%		
+%		\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
+%		\tvar \\
+%		\tinvk \\
+%		% \tpathinvk \\
+%		% \tsuperinvk \\
+%		% \tstaticinvk  \\
+%		\tnew \\
+%		\tanno \\
+%		\tmethod \\
+%		\tabsmethod \\
+%		\tintf
+%	\end{mathpar}
+%	\saveSpaceFig
+%	\caption{Subtyping and Typing Rules}
+%		\label{fig:typingrules}
+%	\end{figure*}
+	
+\begin{figure}
+	\begin{mathpar}
+		\inferrule* [left=(T-Var)]
+		{\judgeewf {} {\Delta \; OK} \\ \judgeewf \Delta {\Gamma \; OK} }
+		{\judgeewf {\Delta; \Gamma, x:I}{x:I}}
+		
+		\inferrule* [left=(T-Invk)]
+		{  \judgeewf {\Delta; \Gamma} {e_0:I_0}
+			\\ \mbody(m, I_0, I_0) = (K, \overline{I_x} \; \overline{x}, I \; \_) 
+			\\ \judgeewf {\Delta; \Gamma} \overline{e}:\overline{I}
+			\\ \overline{I} \subtype \overline{I_x}
+		}
+		{\judgeewf {\Delta, \Gamma} e_0.m(\overline{e}):I} 
+		
+		\inferrule* [left=(T-StaticInvk)]
+		{  \mbody(m, I_0, I_0) = (K, \overline{I_x} \; \overline{x}, I \; \_) 
+			\\ \judgeewf {\Delta; \Gamma} \overline{e}:\overline{I}
+			\\ \overline{I} \subtype \overline{I_x}
+		}
+		{\judgeewf {\Delta, \Gamma} I_0.m(\overline{e}):I} 
+		
+		\inferrule* [left=(T-Cast)]
+		{  \judgeewf {\Delta, \Gamma}\Gamma e:I  \\
+			I \subtype J  }
+		{ \judgeewf {\Delta, \Gamma} {(J)e : J} }
+		
+		\inferrule* [left=(T-Method)]
+		{  I <: J \\
+				\mostSpecific(m, I, J) = \{J\} \\
+				\mbody(m, J, J) = (K, \overline{I_x} \; \overline{x}, I_e \; \_) \\
+				\judgeewf {\Delta; \Gamma, \overline{x}:\overline{I_x}, this:I  } {e_0:I_0} \\
+				I_0 \subtype I_e
+		}
+		{\method{I_e}{m}{I_x}{x}{J}{e_0} \text{ OK IN } I}
+	
+		\inferrule* [left=(T-AbsMethod)]
+		{  I <: J \quad
+			\mostSpecific(m, I, J) = \{J\} \\
+			\mbody(m, J, J) = (K, \overline{I_x} \; \overline{x}, I_e \; \_)
+		}
+		{\absmethod{I_e}{m}{I_x}{x}{J} \text{ OK IN } I}
+		
+		\inferrule* [left=(T-MC)]
+		{  I_0 \equiv I \\
+			\validMC(I, \overline{I_x}, \overline{J.x}) 
+		}
+		{\methodStatic{I_0}{m}{I_x}{x} \text{ OK IN } I}
+		
+		
+		\inferrule* [left=(T-Intf)]
+		{  MC \text{ OK IN }  I \\
+			\overline{M} \text{ OK IN } I \\
+			\forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined} \\ 
+			\forall J >: I \text{ and } m, I[m \; \kwoverride \; I] \text{ and } J[m \; \kwoverride \; J] \text{ defined}  \Rightarrow \canOverride(m, I, J)
+		}
+		{ \interfaceMC{I}{I}{MC?}{M} \text{ OK }}
+		
+		\inferrule* [left=(T-Prog)]
+		{  \forall I \in \overline{IL}, I \text{ OK} \\
+			\judgeewf {\Delta; \Gamma} {e:J}
+		}
+		{ \prog{IL}{e} \text{ OK }}
+		
+			\inferrule* [left=(T-Let)]
+		{  	\judgeewf {\Delta; \Gamma} {e_1:I_1} \\
+			I_1 \subtype I \\	
+			\judgeewf {\Delta; \Gamma, x:I} {e_2:I_2} 
+		}
+		{ 	\judgeewf {\Delta; \Gamma} {\mylet{I}{x}{e_1}{e_2}:I_2} }
+		
+		\end{mathpar}
+	\caption{Typing Rules.}
+\end{figure}
+
+\begin{figure*}
+	\saveSpaceFig
+	\begin{displaymath}
+		\begin{array}{l}
+			\begin{array}{llrl}
+				\text{Configuration} & Config & \Coloneqq  & (H, VS, e, FS) \\
+				%    VS & \Coloneqq & [MS] \\
+				%    MS & \Coloneqq & [BS] \\
+				\text{Scope} & VS & \Coloneqq & \text{is a finite partial function from variables to pairs of expression types and values} \\
+				\text{Heap} & H & \Coloneqq & \text{is a finite partial function from oids to heap objects} \\
+				\text{Heap Objects} & ho & \Coloneqq & (I, F) \\
+				\text{Map Function} & F & \Coloneqq &  \text{is a finite partial function from field names to values} \\
+				%    FS & \Coloneqq & [F] \\
+				\text{Frame Stack} & FS & \Coloneqq &  \concat{F}{FS} \\
+				\text{Frame} & F & \Coloneqq &  CF | OF \\
+				\text{Closed Frame} & CF & \Coloneqq & x \mid
+				e.m(\overline{e}) \mid
+				(I)e \mid 
+				I.m(\overline{e}) \mid 
+				\mylet{I}{x}{e_1}{e_2}  \text{ expressions} \\
+				\text{Open Frame} & OF & \Coloneqq &  \text{expressions with holes} \\
+			\end{array}
+		\end{array}
+	\end{displaymath}
+	\caption{Configuration}\label{fig:}
+	\saveSpaceFig
+\end{figure*}
+
+%\begin{figure*}
+%	\saveSpaceFig
+%	\begin{displaymath}
+%	\begin{array}{l}
+%	\begin{array}{llrl}
+%    \text{Configuration} & Config & \Coloneqq  & (H, Sc, Fr) \\
+%%    VS & \Coloneqq & [MS] \\
+%%    MS & \Coloneqq & [BS] \\
+%    \text{Scope} & Sc & \Coloneqq & \text{is a finite partial function from variables to pairs of expression types and values} \\
+%    \text{Heap} & H & \Coloneqq & \text{is a finite partial function from oids to heap objects} \\
+%    \text{Heap Objects} & ho & \Coloneqq & (I, F) \\
+%    \text{Map Function} & F & \Coloneqq &  \text{is a finite partial function from field names to values} \\
+%%    FS & \Coloneqq & [F] \\
+%    \text{Frame} & Fr & \Coloneqq &  e\\
+%	\end{array}
+%	\end{array}
+%	\end{displaymath}
+%	\caption{Configuration}\label{fig:}
+%	\saveSpaceFig
+%\end{figure*}
+
+\begin{figure*}
+	\begin{mathpar}
+		\textsc{(E-VarAccess) } 
+		{ (H, Sc, x) \to (H, Sc, v)} \\
+		\text{ where } eval(Sc, x) = (v, I) \\
+		\\
+		\textsc{(E-FieldAcess) } 
+		{ (H, Sc, o.f()) \to (H, Sc, v)} \\
+		\text{ where } o \in dom(H), H(o) = (I, F), F(f) = v \\
+		\\
+		\textsc{(E-FieldWrite) } 
+		{ (H, Sc, o.f(v)) \to (H', Sc, o)} \\
+		\text{ where } o \in dom(H), H(o) = (I, F), f \in dom(F), H' = H[o \to (I, F')] \text{ with } F[f \to v] \\
+		\\
+		\textsc{(E-Cast) } 
+		{ (H, Sc, (I_2)o) \to (H, Sc, o)} \\
+		\text{ where } o \in dom(H), H(o) = (I_1, F), I_1 \subtype I_2 \\
+		\\
+		\textsc{(E-Invk) } 
+		{ (H, Sc, (J)o.m(\overline{v})) \to (H, Sc' \circ Sc, (I_e)e_0)} \\
+		\text{ where } 
+		o \in dom(H), H(o) = (I, F), Sc' = \{ this \to (o, I), \overline{x \to (v, I_x)} \} , \\
+		\mbody(m, I, J) =  (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0) \\
+		\\
+		\textsc{(E-MC) } 
+		(H, Sc, (J)I.m(\overline{v})) \to (H[o \to (I, F)], Sc' \circ Sc, o) \\
+		\text{ where the fresh object } o \notin dom(H), F = \{ f \to v \} \; \forall f \in \fields(I) \\
+	\end{mathpar}
+	\caption{Operational Semantics.}
+\end{figure*}
+
+\begin{figure*}
+	\begin{mathpar}
+		\textsc{(E-VarAccess) } 
+		{ (H, VS, x, FS) \to (H, VS, v, FS)} \\
+		\text{ where } eval(VS, x) = (v, I) \\
+		\\
+		
+		\textsc{(EC-Let)}
+		{(H, VS, \mylet{I}{x}{e_1}{e_2}, FS) \to (H, VS, e_1, \concat{(\mylet{I}{x}{\bullet}{e_2})}{FS})} 
+		\\
+		
+		\textsc{(E-Let)}
+		{(H, VS, \mylet{I}{x}{v}{e}, FS) \to 
+			(H, \concat{\{ x \to v \}}{VS}, \return{e}, FS)			
+		}\\
+	
+	   \textsc{(E-Return)} 
+	   {(H, \concat{BS}{VS}, \return{v}, FS) \to 
+	     (H, VS, v, FS)} \\
+	   
+		\textsc{(EC-Return)}
+		{(H, VS, \return{e}, FS) \to 
+			(H, VS, e, \concat{(\return{\bullet})}{FS})			
+		}\\
+		
+		\textsc{(E-Invk)}
+		{ (H, VS, (J)o.m(\overline{v}), FS) \to
+			(H, VS', \return{(I_e)e_0}, FS)  }\\
+		\text{ where } H(o) = \obj{I}{\overline{o}}, 
+		       VS' = \concat{\{\this \to o, \overline{x \to v} \}}{VS},
+		       \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0)
+		
+		\textsc{(EC-Invk1)}
+		{(H, VS, e.m(\overline{e}), FS) \to
+		  (H, VS, e, \concat{(\bullet.m(\overline{e}))}{FS}) }\\
+		
+		\textsc{(EC-Invk2)}
+		{(H, VS, v.m(v_1, ..., v_{i-1}, e_i, ..., e_n), FS) \to
+			(H, VS, e_i, \concat{(v.m(v_1,...,v_{i-1}, \bullet, ..., e_n))}{FS}) }\\
+		
+		\text{(E-Cast)}
+		{(H, VS, (J)((I)o), FS) \to
+			(H, VS, (J)o, FS) 
+		} \text{ where } I \subtype J \\
+		
+		\text{(EC-Cast)}
+		{(H, VS, (J)e, FS) \to
+			(H, VS, e, \concat{((J)\bullet)}{FS})
+		}
+		
+		\textsc{(EC-of) } 
+		(H, VS, I.of(v_1, ..., v_{i-1}, e_i, ..., e_n), FS) \to 
+		(H, VS, e_i, \concat{I.of(v_1, ..., v_i-1, \bullet, ..., e_n)}{FS}) \\
+		
+		\textsc{(E-of)}
+		{(H, VS, I.of(\overline{v}), FS) \to
+			(H', VS, (I)o, FS)
+		} \\  \text{ where } \overline{v} = \overline{(I)o}, 
+	    H' = H[o \to \obj{I}{\overline{o}}], \text{ fresh } o \notin dom(H) \\
+		
+		\textsc{(E-Set)}
+		{ (H, VS, (I)o.SET\_f((I')o'), FS) \to
+			(H', VS, (K)o, FS)
+		} \\ 
+	    \text{ where } H(o) =\obj{K}{o_1, ..., o_n},
+	       H' = H[o \to \obj{K}{o_1, ..., o_{i-1}, o', o_{i+1}, ... o_n}], 
+	            f \text{ is the } i^{th} \text{ of } K's \text{ constructor.} \\
+		
+		\textsc{(EC-Set)}
+		{   (H, VS, e.SET\_f(e'), FS) \to 
+			 (H, VS, e, \concat{(\bullet.SET\_f(e'))}{FS})
+		}
+	\end{mathpar}
+	\caption{Small-step Semantics.}
+\end{figure*}
+
+%\begin{figure*}
+%	\begin{mathpar}
+%		\textsc{(E-VarAccess) } 
+%		{ (H, MS \circ VS, x, FS) \to (H, MS \circ VS, v, FS)} \\
+%		\text{ where } eval(MS, x) = (v, I) \\
+%		\\
+%		\textsc{(E-FieldAcess) } 
+%		{ (H, VS, o.f(), FS) \to (H, VS, v, FS)} \\
+%		\text{ where } o \in dom(H), H(o) = (I, F), F(f) = v \\
+%		\\
+%		\textsc{(E-FieldWrite) } 
+%		{ (H, VS, o.f(v), FS) \to (H', VS, \kwvoid, FS)} \\
+%		\text{ where } o \in dom(H), H(o) = (I, F), f \in dom(F), H' = H[o \to (I, F')] with F[f \to v] \\
+%		\\
+%		\textsc{(E-Cast) } 
+%		{ (H, VS, (I_2)o, FS) \to (H, VS, o, FS)} \\
+%		\text{ where } o \in dom(H), H(o) = (I_1, F), I_1 \subtype I_2 \\
+%		\\
+%		\textsc{(E-Invk) } 
+%		{ (H, VS, (J)o.m(\overline{v}), FS) \to (H, (BS \circ [])\circ VS, (I_e)e_0, FS)} \\
+%		\text{ where } 
+%		o \in dom(H), H(o) = (I, F), BS = \{ this \to (o, I), \overline{x \to (v, I_x)} \} , \\
+%		\mbody(m, I, J) =  (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0) \\
+%		\\
+%		\textsc{(E-MC) } 
+%		(H, VS, (J)I.m(\overline{v}), FS) \to (H[o \to (I, F)], (BS \circ [])\circ VS, o, FS) \\
+%		\text{ where the fresh object } o \notin dom(H), F = \{ f \to v \} \; \forall f \in \fields(I) \\
+%		
+%		
+%%		%%%%%%**** S-Invk ****%%%%%%%
+%%		\text{\yanlin{(S-Invk) is similar to FHJ} } \\
+%%		\inferrule* [left=(S-Invk)]
+%%		{ \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0) }
+%%		{ \left((J)\neww{I}(\overline{K.f=v})\right).m(\overline{d}) \to
+%%				(I_e)[
+%%				\overline{(I_x)d}
+%%				/\overline{x}, (I_0)\neww{I}(\overline{K.f=v})/\kwthis]e_0 }
+%	\end{mathpar}
+%	\caption{Operational Semantics.}
+%\end{figure*}
+	
+
+\section{Aux}
+
+\subsection{$\Delta$}
+
+Definition of $\Delta(I)(J.f)$:
+$\Delta(I)(J.f) = K$, where $K \; J.f \in \overline{K \; J.f}$, where $static \; I \; of (\overline{K \; J.f});$ is the method constructor of interface $I$.
+
+\subsection{calField}
+$ calField(I, J, \overline{K.f=e}, f_i)$
+\begin{itemize}
+	\item if $I.f_i \in \overline{K.f}$, return $e_i$ where $I.f_i = e_i$
+	\item if $J.f_i \in \overline{K.f}$, return $e_i$ where $J.f_i = e_i$ 
+\end{itemize}
+
+\subsection{updateField}
+similar as $calField$.
+
+\subsection{validMC}
+$\validMC(I, \overline{I_x}, \overline{J.x}) $:
+\begin{itemize}
+	\item If there are no abstract state operations, then empty argument list is valid.
+	\item $\forall J.x \in \overline{J.x}, J.x \text{ is a valid field of } I, \text{ and can be seen as abstrate state operations, and the type matches } I_x$.
+	\item The interface $I$ can be instantiated, meaning that, every abstrate field appears in the argument list of the constructor method.
+\end{itemize}
+
+\subsection{The Method Lookup Algorithm in \mbody{}}\label{subsec:mbodydef}
+$\mbody(m, I_d, I_s)$ denotes the method body lookup function.
+We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation. More
+accurately, $\mbody$ returns the parameters, returned expression
+(empty for abstract methods) and the types for the method. It considers both originally-defined methods and hierarchical overriding methods, so $\mostSpecific$ and $\mostSpecificOverride$ (see the definition in Section~\ref{sec:mostSpecific} and Section~\ref{sec:mostSpecificOverride}) are both invoked.
+
+\saveSpaceFig
+\begin{flalign*}
+	& \rhd \textit{Definition of } \mbody(m, I_d, I_s): & \\
+	& \bullet \mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; e_0) & \\
+	& \indent\indent \textrm{with: } \mostSpecific(m, I_d, I_s) = \{I\} & \\
+	& \hspace{.77in} \mostSpecificOverride(m, I_d, I) = \{J\} & \\
+	& \hspace{.77in} J[m\ \kwoverride\ I] = \method{I_e}{m}{I_x}{x}{I}{e_0} & \\
+	& \bullet \mbody(m, I_d, I_s) = (J, \overline{I_x} \; \overline{x}, I_e \; \o) & \\
+	& \indent\indent \textrm{with: } \mostSpecific(m, I_d, I_s) = \{I\} & \\
+	& \hspace{.77in} \mostSpecificOverride(m, I_d, I) = \{J\} & \\
+	& \hspace{.77in} J[m\ \kwoverride\ I] = \absmethod{I_e}{m}{I_x}{x}{I} & \\
+\end{flalign*}
+\saveSpaceFig
+
+To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for the most specific original methods and their interfaces, and expects a singleton set, so as to achieve unambiguity. Furthermore, the invocation of $\mostSpecificOverride$ also expects a unique and most specific hierarchical override. And finally the target method is returned.
+
+\subsection{\mostSpecific}\label{sec:mostSpecific}
+We proceed to give the definitions of two core functions that support method lookup, namely \mostSpecific{} and \mostSpecificOverride. Generally,
+$\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined. Interfaces in this set should be above interface $I$ and along path $J$. Finally with $\prune$ (defined in Section~\ref{sec:otherdefs})
+the overridden interfaces will be filtered out.
+
+\saveSpaceFig
+\begin{flalign*}
+	& \rhd \textit{Definition of } \mostSpecific(m, I, J): & \\
+	& \bullet \mostSpecific(m, I, J) = \prune(origins) & \\
+	& \indent\indent \textrm{with: } origins = \{K \mid \subt{I}{K}, \textrm{ and } \subt{K}{J} \; \lor \; \subt{J}{K}, &\\
+	& \hspace{1.62in} \textrm{ and } K[m\ \kwoverride\ K] \textrm{ is defined} \} &
+\end{flalign*}
+By the definition, an interface belongs to $\mostSpecific(m, I, J)$ if and only if:
+\begin{itemize}
+	\item It originally defines $m$;
+	\item It is a supertype of $I$ (including $I$);
+	\item It is either a supertype or a subtype of $J$ (including $J$);
+	\item Any subtype of it does not belong to the same result set because of $\prune$.
+\end{itemize}
+\saveSpaceFig
+
+\subsection{\mostSpecificOverride}\label{sec:mostSpecificOverride}
+The $\mostSpecific$ function only focuses on original method
+implementations, where all the hierarchical overriding methods are omitted
+during that step. On the other hand, $\mostSpecificOverride(m, I, J)$
+has the assumption that $J$ defines an original $m$, and this function
+tries to find the interfaces with the most specific implementations that hierarchically overrides such an $m$. Formally,
+
+\saveSpaceFig
+\begin{flalign*}
+	& \rhd \textit{Definition of } \mostSpecificOverride(m, I, J): & \\
+	& \bullet \mostSpecificOverride(m, I, J) = \prune(overrides) & \\
+	& \indent\indent \textrm{with: } overrides = \{K \mid \subt{I}{K}, \; \subt{K}{J} \textrm{ and } K[m\ \kwoverride\ J] \textrm{ is defined} &
+\end{flalign*}
+\saveSpaceFig
+
+By the definition, an interface belongs to $\mostSpecificOverride(m, I, J)$ if and only if:
+\begin{itemize}
+	\item it is between $I$ and $J$ (including $I$, $J$);
+	\item it hierarchically overrides $J.m$;
+	\item any subtype of it does not belong to the same set.
+\end{itemize}
+
+\subsection{others}\label{sec:otherdefs}
+Below we give other minor definitions of the auxiliary functions that are used in previous sections.
+
+%%%%============================ I[m override J] ================%%%%%%%%
+\begin{flalign*}
+	& \rhd \textit{Definition of } I[m\ \kwoverride\ J]: & \\
+	& \bullet I[m\ \kwoverride\ J] = \method{I_e}{m}{I_x}{x}{J}{e_0} & \\
+	& \indent\indent \textrm{with: }
+	\kwinterface \; I \; \kwextends \; \overline{I} \; \{ \method{I_e}{m}{I_x}{x}{J}{e_0} \ldots \} & \\
+	& \bullet I[m\ \kwoverride\ J] = \absmethod{I_e}{m}{I_x}{x}{J} & \\
+	& \indent\indent \textrm{with: }
+	\kwinterface \; I \; \kwextends \; \overline{I} \; \{ \absmethod{I_e}{m}{I_x}{x}{J} \ldots \} & \\
+\end{flalign*}
+Here $I[m\ \kwoverride\ J]$ is basically a direct lookup for method $m$ in the body of $I$, where such a method
+overrides $J$ (like static dispatch). The method can be either concrete or abstract, and the body of definition is returned. Notice that
+by our syntax, $I[m\ \kwoverride\ I]$ is looking for the originally-defined method $m$ in $I$.
+%%%%============================ I[m override J] end================%%%%%%%%
+
+%%%%============================ prune(set) ================%%%%%%%%
+\saveSpaceFig
+\begin{flalign*}
+	& \rhd \textit{Definition of } \prune(set): & \\
+	& \bullet \prune(set) = \{I \in set \; | \; \nexists J \in set\setminus I, J <: I\} &
+\end{flalign*}
+
+The $\prune$ function takes a set of
+types, and filters out those that have subtypes in the same set. In the returned set,
+none of them has subtyping relation to one another, since all supertypes have been removed.
+%%%%============================ prune(set) end ================%%%%%%%%
+
+\subsection{$\Delta$}
+\saveSpaceFig
+\begin{flalign*}
+	& \rhd \textit{Definition of } \Delta_f(I)(J.f) & \\
+	& I', \text{ where } J == I  \text{ and } I' f(); \text{ defined in } I. & \\
+	& I'', \text{ where } I'' f(); \text{ defined in } J \text{ and } \forall I \subtype J' 
+	\subtype J, \text{ there is no field } f \text{ defined in } J'.   &
+\end{flalign*}
+
+\subsection{$\eval(Sc, x)$}
+\saveSpaceFig
+\begin{flalign*}
+	& \rhd \textit{Definition of } \eval(Sc, x): & \\
+	& \bullet \eval(Sc, x) = Sc(x), x \in dom(Sc) & 
+\end{flalign*}
+
+\subsection{example}
+\begin{lstlisting}
+interface I {
+	int x();
+	static I of(int I.x);
+}
+
+interface A {
+	int x();
+}
+interface B {
+	int x();
+}
+interface C extends A, B {
+	static C of (int A.x, int B.x);
+}
+C.of(3,2)
+\end{lstlisting}
+
+

@@ -1,0 +1,34 @@
+interface Void {}
+interface FromDeck extends Void {}
+interface FromSafeDeck extends Void {}
+interface FromDrawable extends Void {}
+interface FromDrawableSafeDeck extends Void {}
+
+interface Deck {
+  Void draw() override Deck {
+    return new FromDeck();
+  }
+  Void shuffleAndDraw() override Deck {
+    return this.draw();
+  }
+}
+
+interface SafeDeck extends Deck {
+  Void draw() override SafeDeck {
+    return new FromSafeDeck();
+  }
+}
+
+interface Drawable {
+  Void draw() override Drawable {
+    return new FromDrawable();
+  }
+}
+
+interface DrawableSafeDeck extends Drawable, SafeDeck {
+  Void draw() override Drawable {
+    return new FromDrawableSafeDeck();
+  }
+}
+
+((Drawable) new DrawableSafeDeck()).draw()

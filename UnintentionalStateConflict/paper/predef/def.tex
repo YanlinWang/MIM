@@ -1,0 +1,111 @@
+\usepackage{array}
+\newcommand\InTextDef[3]{
+\!\!\!\!\begin{array}{c p{#1} c l }
+\ensuremath{\!\!\bullet\!\!\!}&\ensuremath{#2} & \ensuremath{=} & \ensuremath{#3}
+\end{array}
+}
+\newcommand\InTextAssert[2]{
+\!\!\!\!\begin{array}{c p{#1} c l }
+\ensuremath{\!\!\bullet\!\!\!}&\ensuremath{#2} 
+\end{array}
+}
+\newcommand\InTextWith[1]{
+{}_{}\quad\quad\mbox{with }#1
+}
+
+\newenvironment{grammar}{
+$
+\begin{array}[t]{lcll}}{\end{array}$
+}
+\newcommand{\production}[3]{#1&\!{:}{:}{=}\!&#2 & \mbox{{\small{#3}}}}
+\newcommand{\productionMore}[2]{&{}&#1 & \mbox{{\small{#2}}}}
+%\newcommand{\terminale}[1]{{\text{\tt #1}}}
+\newcommand{\nonTerminal}[1]{\mathit{#1}\xspace}
+\newcommand\Q\lstinline
+\newcommand{\metaVar}[1]{\textit{#1}\xspace}
+\newcommand{\ann}{\metaVar{ann}}
+\newcommand{\x}{\metaVar{x}}
+\newcommand{\e}{\metaVar{e}}
+\newcommand{\T}{\metaVar{I}}
+\newcommand{\xs}{\overline\x}
+\newcommand{\m}{\metaVar{m}}
+\newcommand{\es}{\overline\e}
+\newcommand{\C}{\metaVar{I}}
+\newcommand{\f}{\metaVar{f}}
+\newcommand{\MCall}[3]{#1\mbox{\Q@.@}#2\oR#3\cR}
+\newcommand{\ctx}{{\cal{E}}}
+\newcommand{\emptyctx}{[\ ]}
+\newcommand{\val}{\metaVar{v}}
+\newcommand{\vals}{\metaVar{vs}}
+\newcommand{\Aux}[1]{\textsf{#1}}
+\newcommand\QM[1]{\mbox{\Q@#1@}}
+\newcommand\oC{\mbox{\Q@\{@}}
+\newcommand\cC{\mbox{\Q@\}@}}
+\newcommand\oR{\mbox{\Q@(@}}
+\newcommand\cR{\mbox{\Q@)@}}
+\newcommand{\this}{\mbox{\Q@this@\xspace}}
+\newcommand{\mixinAnn}{\mbox{\Q$@Obj$\xspace}}
+\newcommand{\weakAnn}{\mbox{\Q$@ObjOf$\xspace}}
+\newcommand{\method}{\metaVar{meth}}
+\newcommand{\field}{\metaVar{field}}
+\newcommand{\fields}{\overline\field}
+\newcommand{\mh}{\metaVar{mh}}
+\newcommand{\obj}{\metaVar{obj}}
+
+\newcommand{\spc}{\ }
+\newcommand\whereNote{\\\quad\quad}
+
+\newcommand\II{{\cal{I}}}
+
+\newcommand\tops{\Aux{needed}}
+\newcommand\dom{\Aux{dom}}
+\newcommand\override{\Aux{override}}
+\newcommand\shadow{\Aux{shadow}}
+\newcommand\mBody{\Aux{mbody}}
+\newcommand\sigvalid{\Aux{sigvalid}}
+\newcommand\alldefined{\Aux{alldefined}}
+\newcommand\Cs{\overline\C}
+\newcommand\mhs{\overline\mh}
+\newcommand\subtype{\,{<}{:}\,}
+\newcommand\methods{\overline\method}
+\newcommand\mif{\mbox{if}}
+\newcommand\mwhere{\mbox{where}}
+\newcommand\miff{\mbox{iff}}
+\newcommand\mand{\mbox{and}}
+\newcommand\mnot{\mbox{not}}
+\newcommand\mor{\mbox{or}}
+\newcommand\mimply{\mbox{implies}}
+\newcommand\conflicted{\Aux{conflicted}}
+\newcommand\conflictError{\Aux{error}}
+\newcommand\none{\Aux{None}}
+\newcommand\error{\Aux{Error}}
+\newcommand\ofMethod{\Aux{ofMethod}}
+\newcommand\otherMethod{\Aux{refine}}
+\newcommand\fieldsFunc{\Aux{fields}}
+\newcommand\isField{\Aux{isField}}
+\newcommand\isWith{\Aux{isWith}}
+\newcommand\isClone{\Aux{isClone}}
+\newcommand\isSetter{\Aux{isSetter}}
+\newcommand\withMethod{\Aux{withMethod}}
+\newcommand\setterMethod{\Aux{setterMethod}}
+\newcommand\cloneMethod{\Aux{cloneMethod}}
+\newcommand{\rn}[1]{(\textsc{#1})}					% Rule name
+\newcommand\isImplemented{\Aux{isImplemented}}
+\newcommand\with{\Aux{with}}
+\newcommand\clone{\Aux{clone}}
+\newcommand\specialName{\Aux{special}}
+\newcommand\tab{\ \ \ \ }
+\newcommand\valid{\Aux{valid}}
+\newcommand\get{\Aux{get}}
+\newcommand\super{\Aux{super}}
+
+\newcommand\saveSpaceFig{\vspace{-2ex}}
+\newcommand\numOfCaseStudies{4 }
+\newcommand\classbased{class-based\xspace}
+\newcommand\interfacebased{interface-based\xspace}
+\newcommand\InterfaceBased{Interface-Based\xspace}
+\newcommand\prototypebased{prototype-based\xspace}
+\newcommand\Prototypebased{Prototype-based\xspace}
+\newcommand\objectoriented{object-oriented\xspace}
+\newcommand\Objectoriented{Object-oriented\xspace}
+\newcommand\savespace{\vspace{-2pt}}

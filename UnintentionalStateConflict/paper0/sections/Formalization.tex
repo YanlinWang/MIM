@@ -1,0 +1,163 @@
+\section{Overview}
+\subsection{Motivation}
+Combine the work of FHJ and ClasslessJava.
+\begin{itemize}
+	\item Use abstract state operations to mimic state
+	\item If two fields conflict from triangle inheritance, keep the two fields
+	\item Override and covariant type refine of fields
+\end{itemize}
+
+Example of unintentional fields confliction:
+\begin{lstlisting}
+interface Payment {
+	String Check(); // represnets an entity 'check'
+}
+interface Verify {
+	boolean Check(); // represents a flag of whether the verification is checked or not.
+}
+interface VerifiedPayment extends Payment, Verify {}
+\end{lstlisting}
+
+C++ partly support this, just like unintentional method conflicts. However, c++ cannot handle the case where fields need to be refined or two conflicted fields need to be merged.
+\begin{lstlisting}
+class A {};
+class B:A {};
+class Payment {
+	public:
+	A* check;
+};
+class Verify {
+	public:
+	bool check;
+};
+class VerifiedPayment : public Payment, public Verify {
+	public:
+	B* check;
+};
+
+int main()
+{
+VerifiedPayment* vp = new VerifiedPayment();
+vp->check = new B();
+vp->Verify::check = true;
+vp->check;
+cout << vp->Payment::check << endl;
+cout << vp->check << endl;
+}
+\end{lstlisting}
+
+
+Example program in a desired language:
+\begin{lstlisting}
+interface A { int x(); int y(); }
+interface B { int x(); }
+interface C extends A, B {}
+new B(B.x = 0).GET_x();   // 0
+(A)new C(A.x = 1, A.y = 2, B.x = 3).GET_x();  // 1
+\end{lstlisting}
+
+\section{Formalization}~\label{sec:formalization}
+
+\begin{figure*}
+	\saveSpaceFig
+	\begin{displaymath}
+		\begin{array}{l}
+			\begin{array}{llrl}
+				\text{Program}		& P & \Coloneqq  & \overline{I} \ e \\
+				\text{Interfaces}   & IL & \Coloneqq & \interface{I}{I}{M} \\
+				\text{Methods}      & M  & \Coloneqq & \method{I}{m}{I_x}{x}{J}{e}  \mid
+				\absmethod{I}{m}{I_x}{x}{J} \\
+				\text{Expressions}  & e  & \Coloneqq & 
+				x \mid
+				e.m(\overline{e}) \mid
+				(I)e \mid 
+				\neww{I}(\overline{J.f=e}) \\
+				\text{Context}      & \Gamma & \Coloneqq & \overline{x}:\overline{I} \\
+				\text{Values}       & v & \Coloneqq & (J) \neww{I}(\overline{J.f=v}) \\
+			\end{array}
+		\end{array}
+	\end{displaymath}
+	\caption{Syntax}\label{fig:syntax}
+	\saveSpaceFig
+\end{figure*}
+
+%\begin{figure*}[]
+%	\saveSpaceFig
+%	\begin{mathpar}
+%		\framebox{$ I <: J $} \hspace{.5in} \subid \\
+%		\subtrans \hspace{.5in} \subextends \\
+%		
+%		\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
+%		\tvar \\
+%		\tinvk \\
+%		% \tpathinvk \\
+%		% \tsuperinvk \\
+%		% \tstaticinvk  \\
+%		\tnew \\
+%		\tanno \\
+%		\tmethod \\
+%		\tabsmethod \\
+%		\tintf
+%	\end{mathpar}
+%	\saveSpaceFig
+%	\caption{Subtyping and Typing Rules}
+%		\label{fig:typingrules}
+%	\end{figure*}
+	
+
+\begin{figure}
+	\begin{mathpar}
+		%%%%%%**** S-Get ****%%%%%%%
+		\inferrule* [left=(S-Get)]
+		{ calField(I, J, \overline{K.f=e}, f_i) = e }
+		{ (J)new \ I(\overline{K.f=e}).GET\_f_i() \to e } \\
+		
+		%%%%%%**** S-Get ****%%%%%%%
+		\inferrule* [left=(S-Set)]
+		{ updateField(I, J, \overline{K.f=e}, f_i, e) = (J)new \  I(\overline{K.f=e'}) }
+		{ (J)new I(\overline{K.f=e}).SET\_f_i(e) \to (J)new \  I(\overline{K.f=e'}) } \\
+		
+		%%%%%%**** S-Invk ****%%%%%%%
+		\text{\yanlin{(S-Invk) is similar to FHJ} } \\
+		\inferrule* [left=(S-Invk)]
+		{ \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0) }
+		{ \left((J)\neww{I}(\overline{K.f=v})\right).m(\overline{d}) \to
+				(I_e)[
+				\overline{(I_x)d}
+				/\overline{x}, (I_0)\neww{I}(\overline{K.f=v})/\kwthis]e_0 }
+	\end{mathpar}
+	\caption{Reduction Rules.}
+\end{figure}
+	
+%	\begin{figure*}[]
+%		\saveSpaceFig
+%		\begin{mathpar}
+%			% \sinvk \\
+%			\spathinvk \\
+%			% \ssuperinvk \\
+%			% \sstaticinvk \\
+%			\creceiver \hspace{.5in}
+%			% \cpathreceiver \\
+%			\cargs \\
+%			% \cpathargs \\
+%			% \csuperargs \\
+%			% \cstaticargs \\
+%			\cstatictype \\
+%			\cfreduce \\
+%			\cannoreduce
+%		\end{mathpar}
+%		\caption{Small-step semantics.}\label{fig:smallstep}
+%		\saveSpaceFig
+%	\end{figure*}
+
+
+\section{Aux}
+\subsection{calField}
+$ calField(I, J, \overline{K.f=e}, f_i)$
+\begin{itemize}
+	\item if $I.f_i \in \overline{K.f}$, return $e_i$ where $I.f_i = e_i$
+	\item if $J.f_i \in \overline{K.f}$, return $e_i$ where $J.f_i = e_i$ 
+\end{itemize}
+
+\subsection{updateField}
+similar as $calField$.

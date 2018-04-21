@@ -1,0 +1,11 @@
+interface B {
+	static B of();
+}
+
+interface A {
+  static A of(B A.x);
+  B x() override A;
+  B m() override A {return B.of();}
+}
+
+A.of(B.of())
