@@ -229,6 +229,7 @@ new B(B.x = 0).GET_x();   // 0
 %	\saveSpaceFig
 %\end{figure*}
 
+\begin{comment}
 \begin{figure*}
 	\begin{mathpar}
 		\textsc{(E-VarAccess) } 
@@ -259,12 +260,13 @@ new B(B.x = 0).GET_x();   // 0
 	\end{mathpar}
 	\caption{Operational Semantics.}
 \end{figure*}
+\end{comment}
 
 \begin{figure*}
 	\begin{mathpar}
 		\textsc{(E-VarAccess) } 
-		{ (H, VS, x, FS) \to (H, VS, v, FS)} \\
-		\text{ where } eval(VS, x) = (v, I) \\
+		{ (H, \concat{BS}{VS}, x, FS) \to (H, \concat{BS}{VS}, v, FS)} \\
+		\text{ where } BS(x) = v \\
 		\\
 		
 		\textsc{(EC-Let)}
@@ -272,26 +274,42 @@ new B(B.x = 0).GET_x();   // 0
 		\\
 		
 		\textsc{(E-Let)}
-		{(H, VS, \mylet{I}{x}{v}{e}, FS) \to 
-			(H, \concat{\{ x \to v \}}{VS}, \return{e}, FS)			
+		{(H, \concat{BS}{VS}, \mylet{I}{x}{v}{e}, FS) \to 
+			(H, \concat{BS'}{VS}, e, \concat{(\returnLet{e})}{FS})			
+			\text{ where } BS' = \concat{\{ x \to v \}}{BS}
 		}\\
 	
-	   \textsc{(E-Return)} 
-	   {(H, \concat{BS}{VS}, \return{v}, FS) \to 
-	     (H, VS, v, FS)} \\
+		   \textsc{(E-Return)} 
+		   {(H, \concat{BS}{VS}, v, \concat{(\return{\bullet})}{FS}) \to 
+		     (H, VS, v, FS)} \\
+	
+	\textsc{(E-ReturnLet)}
+	{ (H, \concat{BS}{VS}, v, \concat{(\returnLet{\bullet})}{FS}) \to
+		(H, \concat{BS'}{VS}, v, FS) }\\
+	\text{ where } BS' = \tail(BS)
+%	   \textsc{(E-Return)} 
+%	   {(H, \concat{BS}{VS}, \return{v}, FS) \to 
+%	     (H, VS, v, FS)} \\
 	   
-		\textsc{(EC-Return)}
-		{(H, VS, \return{e}, FS) \to 
-			(H, VS, e, \concat{(\return{\bullet})}{FS})			
-		}\\
+%		\textsc{(EC-Return)}
+%		{(H, VS, \return{e}, FS) \to 
+%			(H, VS, e, \concat{(\return{\bullet})}{FS})			
+%		}\\
 		
 		\textsc{(E-Invk)}
 		{ (H, VS, (J)o.m(\overline{v}), FS) \to
-			(H, VS', \return{(I_e)e_0}, FS)  }\\
-		\text{ where } H(o) = \obj{I}{\overline{o}}, 
-		       VS' = \concat{\{\this \to o, \overline{x \to v} \}}{VS},
+			(H, VS', (I_e)e_0, \concat{(\return{\bullet})}{FS})  }\\
+		\text{ where } m \text{ is not a getter ($I_0.m$ does not exist in $I.of$)},  
+			   H(o) = \obj{I}{\overline{o}}, 
+		       VS' = \concat{\{\this \to (I_0)o, \overline{x \to v} \}}{VS},
 		       \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0)
 		
+		\textsc{(E-InvkGetter)}
+		{ (H, VS, (J)o.f(), FS) \to (H, VS, (I_F)o_i, FS) } \\
+	    \text{ where } H(o) = \obj{I}{o_1, ...., o_i, ...},
+	    \mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0),
+	    (I_F \; I_0.f) \text{ is the i-th element of } I.of.
+ 		
 		\textsc{(EC-Invk1)}
 		{(H, VS, e.m(\overline{e}), FS) \to
 		  (H, VS, e, \concat{(\bullet.m(\overline{e}))}{FS}) }\\
@@ -303,7 +321,7 @@ new B(B.x = 0).GET_x();   // 0
 		\text{(E-Cast)}
 		{(H, VS, (J)((I)o), FS) \to
 			(H, VS, (J)o, FS) 
-		} \text{ where } I \subtype J \\
+		}\\ %\text{ where } I \subtype J 
 		
 		\text{(EC-Cast)}
 		{(H, VS, (J)e, FS) \to
@@ -328,10 +346,18 @@ new B(B.x = 0).GET_x();   // 0
 	       H' = H[o \to \obj{K}{o_1, ..., o_{i-1}, o', o_{i+1}, ... o_n}], 
 	            f \text{ is the } i^{th} \text{ of } K's \text{ constructor.} \\
 		
-		\textsc{(EC-Set)}
+		\textsc{(EC-Set1)}
 		{   (H, VS, e.SET\_f(e'), FS) \to 
 			 (H, VS, e, \concat{(\bullet.SET\_f(e'))}{FS})
-		}
+		}\\
+	
+	   \textsc{(EC-Set2)}
+	   { (H, VS, v.SET\_f(e'), FS) \to
+	   	  (H, VS, e', \concat{(v.SET\_f(\bullet))}{FS})
+	   }\\
+   
+     \textsc{(EC-Fill)}
+     { (H, VS, v, \concat{F}{FS}) \to (H, VS, F(v), FS)} 
 	\end{mathpar}
 	\caption{Small-step Semantics.}
 \end{figure*}
