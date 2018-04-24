@@ -1,6 +1,7 @@
 package framework
 
 import scala.io.Source
+import AST._
 
 object Main {
   def run(fileName: String): Unit = {
@@ -8,10 +9,17 @@ object Main {
     val parsed = StateMIMParser.parse(program)
     if (parsed.isLeft) println(parsed.left.get)
     else {
-      val pretty = parsed.right.get.toString
+      val p: Program = parsed.right.get
+      val pretty = p.toString
       println(pretty + "\n")
-      val eval = parsed.right.get.eval()
-      println(eval)
+        val info: Info = p.collectInfo.get
+      try {
+        val typeCheck = p.programCheck(info)
+        println("Type check: ==> " + typeCheck)
+        val eval = parsed.right.get.eval()
+        println(eval)
+      } catch {case error: Throwable => Error.printError(error)}
+      
     }
   }     
   def main(args : Array[String]) = {    
