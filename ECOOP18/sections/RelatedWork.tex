@@ -133,7 +133,7 @@ Figure~\ref{fig:middleman}. In this example, classes \texttt{A} and
 name \texttt{m}
 unintentionally.
 
-Class \texttt{MiddleMan}, as its name suggests, acts as a middle man between its class \texttt{C} and its parents \texttt{A, B}. \texttt{MiddleMan} defines a virtual method \texttt{m} that overrides a parent method \texttt{m} and delegates the implementation to another method \texttt{m\_impl} that takes $\kwthis$ as a parameter. C++ supports method overloading, so that multiple \texttt{m\_impl} methods with different parameter types can coexist. When defining class \texttt{C}, we specify the parents to be \texttt{MiddleMan<A>, MiddleMan<B>} instead of \texttt{A, B}. In this way, programmers may define new versions of \texttt{A.m} and \texttt{B.m} in class \texttt{C} by providing the corresponding \texttt{m\_impl} methods. Then in the client code, the method call \texttt{((A*)c)->m()} will print out string \texttt{"MA2"}, as expected. Although this workaround can help us defining partial method overrides to a certain extent, the drawbacks are obvious. Firstly, the approach is complex and requires the pre-knowledge of the programmer to this approach. Moreover, the lack of direct syntax support makes MiddleMan code cumbersome to write. Finally, the approach is ad-hoc, meaning that the class \texttt{MiddleMan} shown in Figure~\ref{fig:middleman} is not general enough to be used in other cases: more middle-mans are needed if partial method overrides happen in other classes; and it is even worse when return types differ. 
+Class \texttt{MiddleMan}, as its name suggests, acts as a middle man between its class \texttt{C} and its parents \texttt{A, B}. \texttt{MiddleMan} defines a virtual method \texttt{m} that overrides a parent method \texttt{m} and delegates the implementation to another method \texttt{m\_impl} that takes $\kwthis$ as a parameter. C++ supports method overloading, so that multiple \texttt{m\_impl} methods with different parameter types can coexist. When defining class \texttt{C}, we specify the parents to be \texttt{MiddleMan<A>, MiddleMan<B>} instead of \texttt{A, B}. In this way, programmers may define new versions of \texttt{A.m} and \texttt{B.m} in class \texttt{C} by providing the corresponding \texttt{m\_impl} methods. Then in the client code, the method call \texttt{((A*)c)->m()} will print out string \texttt{"MA2"}, as expected. Although this workaround can help us defining partial method overrides to a certain extent, the drawbacks are obvious. Firstly, the approach is complex and requires the pre-knowledge of the programmer to this approach. Moreover, the lack of direct syntax support makes MiddleMan code cumbersome to write. Finally, the approach is ad-hoc, meaning that the class \texttt{MiddleMan} shown in Figure~\ref{fig:middleman} is not general enough to be used in other cases: more middle-men are needed if partial method overrides happen in other classes; and it is even worse when return types differ. 
 
 \begin{figure*}[t]
 \saveSpaceFig
@@ -200,7 +200,7 @@ the compilation strategy is simple, just by generating conventional code (say
 in Java or C++) with
 method names attached with prefixes. Unfortunately, the disadvantage
 is that some expressive power is lost. In particular \emph{merging}
-methods arizing from diamond inheritance is not possible because the 
+methods arising from diamond inheritance is not possible because the 
 methods have different prefixes. 
 As shown in Figure~\ref{fig:magda_code}, two methods
 \lstinline|m| from different branches \lstinline|A| and \lstinline|B|
@@ -266,7 +266,7 @@ As we have discussed before, although the mix of static and dynamic dispatch is
 particularly useful under certain circumstances, it has received little research attention. 
 In the prototype-based language \self{}~\cite{Chambers1991}, inheritance is a basic feature.
 \self{} does not include classes but instead allows individual objects to inherit from (or delegate to) other objects. 
-Although it is different from class-based languages, the multiple inheritance model is somehow similar. The \self{}
+Although it is different from class-based languages, the multiple inheritance model is somewhat similar. The \self{}
 language supports multiple (object) inheritance in a clever way. It not only develops the new inheritance
 relation with \emph{prioritized parents} but also adopts \emph{sender path tiebreaker rule} for method lookup.
 In \self{} ``\emph{if two slots with the same name are defined in equal-priority parents of the receiver, but only 

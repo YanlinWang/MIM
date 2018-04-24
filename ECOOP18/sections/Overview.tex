@@ -22,7 +22,7 @@ an interface in our model has the following characteristics:
 	\item It allows multiple inheritance.
 	\item Every method is either abstract or implemented with a body (like Java 8 default methods). 
 	\item The \lstinline|new| keyword is used to instantiate an interface.
-	\item It cannot have state.
+	\item It cannot have state. But it is possible to support state in future work.
 \end{itemize}
 %In the remainder of this section we show three problems that arize 
 %from unintentional method conflicts. The first two problems 
@@ -420,7 +420,7 @@ hierarchical overriding feature is also an important feature, involved in the al
 \subsubsection{Terminology} In \lstinline|Drawable|, \lstinline|Deck|, and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
 
-A special rule for hierarchical overriding is: it can only refine \textit{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
+A special rule for hierarchical overriding is: it can only refine \textit{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because the existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
 
 \begin{figure*}[t]
 	\vspace{-1ex}
@@ -454,7 +454,7 @@ a peek at the behavior
 using a few examples. The UML diagrams present the hierarchy. 
 In (d) and (e), a cross mark indicates that the interface fails to type-check. Generally, \MIM{} rejects the definition of an interface
 during compilation if it reaches a diamond with ambiguity. $\mbody$ is the method lookup function for hierarchical
-dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody(m, X, Y) = (Z, ...)$ reflects that the source code \lstinline|((Y) new X()).m()| calls \lstinline|Z.m| in the runtime. It is undefined when method dispatch is ambiguous.
+dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody(m, X, Y) = (Z, ...)$ reflects that the source code \lstinline|((Y) new X()).m()| calls \lstinline|Z.m| at runtime. It is undefined when method dispatch is ambiguous.
 
 In  Figure~\ref{fig:examplesmbody}, (a) is the base case for unintentional conflicts, namely the \wordfork{} inheritance. (b) uses overriding to explicitly merge the conflicting methods. (c) represents hierarchical overriding. (d) and (e) are two base cases of diamond inheritance in \MIM{} and the definition of each $C$ is rejected because $T$ is an ambiguous parent to $C$. (f) gives a common solution to the diamond as in Java or traits, which is to explicitly override $A.m$ and $B.m$ in $C$. In the last three examples, conflicting methods $A.m$ and $B.m$ should be viewed as
 intentional conflicts, as they come from the same source $T$.

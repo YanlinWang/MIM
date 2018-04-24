@@ -1,5 +1,6 @@
 % \newcommand{\keyword}[1]{\texttt{#1}}
 % \newcommand{\subtype}   {<:}
+\newcommand{\supertype}   {:>}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% syntax.tex begin %%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\kwinterface}{\keyword{interface}}
 \newcommand{\kwextends}{\keyword{extends}}
@@ -188,8 +189,8 @@
 \newcommand{\tintf} {
 \inferrule* [left=(T-Intf)]
     {  \overline{M} \text{ OK IN } I \\
-    \forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined} \\ 
-    \forall J >: I \text{ and } m, I[m \; \kwoverride \; I] \text{ and } J[m \; \kwoverride \; J] \text{ defined}  \Rightarrow \canOverride(m, I, J)
+    \forall J \supertype I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined} \\ 
+    \forall J \supertype I \text{ and } m, I[m \; \kwoverride \; I] \text{ and } J[m \; \kwoverride \; J] \text{ defined}  \Rightarrow \canOverride(m, I, J)
     }
     { \interface{I}{I}{M} \text{ OK }}
 }

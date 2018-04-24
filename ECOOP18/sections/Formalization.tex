@@ -1,5 +1,5 @@
 \section{Formalization}~\label{sec:formalization}
-In this section, we present a formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following the similar style of 
+In this section, we present a formal model called \MIM{} (\emph{\textbf{F}eatherweight \textbf{H}ierarchical \textbf{J}ava}), following a similar style as  
 Featherweight Java~\cite{Igarashi01FJ}. \MIM{} is a minimal core calculus that formalizes the core concept of hierarchical dispatching and overriding. The syntax, typing rules and small-step semantics are presented.
 
 % \vspace{-2ex}
@@ -28,8 +28,8 @@ type $\overline{I_x}$ and the overriding target $J$. The body of the
 method simply includes the returned expression $e$. Notably, we have introduced the
 \kwoverride{} keyword for two cases: if the overridden interface is exactly the enclosing
 interface itself, then such a method is seen as originally defined; otherwise it is a hierarchical overriding method. 
-Note that in an interface $J$, $\method{I}{m}{I_x}{x}{J}{e} $ is a syntactic sugar for $
-I \; m(\overline{I_x} \; \overline{x}) \; {\{} \kwreturn \; e ; {\}} $, which is the standard way of method definition in Java-like languages. The definition
+Note that in an interface $J$, $
+I \; m(\overline{I_x} \; \overline{x}) \; {\{} \kwreturn \; e ; {\}} $ is syntactic sugar for $\method{I}{m}{I_x}{x}{J}{e}$, which is the standard way of method definition in Java-like languages. The definition
 of abstract methods is written as $\absmethod{I}{m}{I_x}{x}{J}$, which is
 similar to a concrete method but without the method body. 
 For simplicity, overloading is not modelled for methods, which
@@ -170,7 +170,7 @@ interface C extends A, B {}
 \end{lstlisting}
 This program does not compile on interface $C$, because of the second condition in \textsc{(T-Intf)}, where $I$ equals $C$ and $J$ equals $T$.
 By the algorithm, $\mbody(m, T, T)$ will refer to $T.m$, but $\mbody(m, C, T)$ is undefined, since both $A.m$ and $B.m$ are most specific
-to $C$ along path $T$, which forms a diamond. The expression \lstinline|((A) new D()).m()| is one example of triggering ambiguity, but \MIM{}
+to $C$ along path $T$, which forms a diamond. The expression \lstinline|((T) new C()).m()| is one example of triggering ambiguity, but \MIM{}
 simply rejects the definition of $C$. To resolve the issue, the programmer needs to have an overriding method in $C$, to explicitly merge
 the conflicting ones.
 
