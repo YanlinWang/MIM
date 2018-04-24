@@ -24,5 +24,6 @@ object Pretty {
       pretty(e) + "." + m + "(" + argsStr + ")"
     }
     case AnnoExpr(i, e) => "((" + i + ") " + pretty(e) + ")"
+    case _ => e.toString() // TODO
   }
 }

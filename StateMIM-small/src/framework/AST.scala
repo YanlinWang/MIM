@@ -125,14 +125,17 @@ object AST {
   }
   
   case class InvkStatic(t: String, m: String, args: List[Expr]) extends Expr {
-    def checkType(info: Info, env: Map[String, String]) = { // TODO. Incorrect.
+    def checkType(info: Info, env: Map[String, String]) = {
       assert(info.table.contains(t), TypeNotFound(t))
-      val mtype = info.mtype(m, t)
-      assert(mtype.isDefined, Message("method " + m + " is undefine."))
-      val argsT = args.map(arg => arg.checkType(info, env))
-      assert(mtype.get._1.size == argsT.size, Message("#Arguments unexpected."))
-      assert(mtype.get._1.zip(argsT).forall(p => info.subType(p._2, p._1)), Message("Argument types unexpected."))
-      mtype.get._2
+      val constr = info.constructorMap(t)
+      assert(constr.isDefined, Message("Constructor of " + t + " undefined."))
+      assert(constr.get.name == m, Message("Constructor of " + t + " is " + constr.get.name + ", not " + m + "."))
+      assert(constr.get.paras.size == args.size, Message("Wrong arguments on invk of " + t + "." + m + "()."))
+      for (i <- 0 to args.size - 1) {
+        val argType = args(i).checkType(info, env)
+        assert(argType == constr.get.paras(i).fieldType, Message("Wrong argument type on invk of " + t + "." + m + "()."))
+      }
+      t
     }
   }
   
