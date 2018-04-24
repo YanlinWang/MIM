@@ -97,11 +97,13 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
     typeMap(i).foldLeft(res)(op2)
   }
   def isField(info: Info, name: String, t: String) : Option[String] = {
-      if (info.mbody(name, t, t).isEmpty) None
-      if (info.mbody(name, t, t).get._2.size != 0) None
-      if (info.mbody(name, t, t).get._3._2.isDefined) None
-      Some(info.mbody(name, t, t).get._3._1) //return field type
-    }
+    val mbody = info.mbody(name, t, t)
+    println("mbody(" + name + ", " + t + ", " + t + ") = " + mbody)
+    if (mbody.isEmpty) return None
+    if (mbody.get._2.size != 0) return None
+    if (mbody.get._3._2.isDefined) return None
+    Some(mbody.get._3._1) //return field type
+  }
 }
       
      
