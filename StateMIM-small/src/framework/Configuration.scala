@@ -26,8 +26,8 @@ object Configuration {
   }
   
   case class BS(varTable: List[(String, Value)]) {
-    def addLet(x: String, v: Value) = BS(varTable :+ (x, v))
-    def remLet() = BS(varTable.init)
+    def addLet(x: String, v: Value) = BS((x, v) +: varTable)
+    def remLet() = BS(varTable.tail)
   }
   
   case class VS(scopes: List[BS]) {

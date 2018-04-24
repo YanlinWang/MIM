@@ -13,7 +13,6 @@ object Semantics {
     config.expr match {
       case Var(x) => Config(h, vs, vs.getVar(x), fs)
       case Invk(e, m, args) => {
-        println("Evaluating: " + config.expr.toString())
         if (!e.isValue) return Config(h, vs, e, fs.addFrame(Invk_E(m, args)))
         for (index <- 0 to args.length - 1) {
           if (!args(index).isValue)
@@ -29,15 +28,13 @@ object Semantics {
         
         val isField = info.isField(i, j2, m)
         if (args.length == 0 && isField.isDefined) { //Getters
-          println("Is getter")
           val resId = obj.fields(isField.get._1)
           Config(h, vs, Value(isField.get._2, resId), fs)
         } else { //Normal invocations
-          println("Is not getter")
           val paramsMap: List[(String, Value)] = mbody._2.zip(args).map(p => {
             val argValueId = p._2 match { case Value(_, vid) => vid }
             (p._1.name, Value(p._1.paramType, argValueId))
-          }) :+ ("this", eValue)
+          }) :+ ("this", Value(mbody._1, eValue.id))
           val newScope = vs.addScope(BS(paramsMap))
           Config(h, newScope, AnnoExpr(mbody._3._1, mbody._3._2.get), fs.addFrame(ReturnExprForInvk()))
         }
