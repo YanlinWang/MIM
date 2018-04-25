@@ -85,8 +85,7 @@ interface DrawableDeck extends Drawable, Deck {}
 The point of using multiple inheritance is to compose the features from various 
 components and to achieve code reuse, as supported by many mainstream OO
 languages. Nevertheless, at this point, languages like Java simply treat the two \lstinline|draw| methods
-as the same, and hence the compiler throws an error
-on \lstinline|DrawableDeck| about the conflict.
+as the same, hence the compiler fails to compile the program  and reports an error.
 
 This case is an example of a so-called \textit{unintentional method conflict}. It arises when two inherited methods happen to have
 the same name and parameter types, but they are designed for different functionalities with different semantics.
@@ -364,7 +363,7 @@ Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck|
 
 %\paragraph{Problem:} how to update the conflicting methods separately, after the triangle inheritance.
 
-\subsubsection{Potential solutions/workarounds in existing languages} Unfortunately in all languages we have known
+\subsubsection{Potential solutions/workarounds in existing languages} Unfortunately in all languages we know of 
 (including C++), the existing approaches are unsatisfactory.
 One direction is to simply avoid this issue, by putting overriding before inheritance. For example, as shown in Figure~\ref{fig:drawablesafedeck}(middle), we define a new component \lstinline|DrawableRect| that extends \lstinline|Drawable|, which simply draws the deck as a rectangle, and modifies the hierarchy:
 \begin{lstlisting}
@@ -404,7 +403,7 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {
   }
 }
 // main program
-((Drawable)new DrawableSafeDeck()).draw(); // calls the latest draw
+((Drawable)new DrawableSafeDeck()).draw(); //calls the draw in DrawableSafeDeck
 \end{lstlisting}
 
 The UML graph is shown in Figure~\ref{fig:drawablesafedeck}(right), where
@@ -414,13 +413,13 @@ overridden. This is accomplished by specifying, in the method
 definition, that the method only overrides the \lstinline|draw| 
 from \lstinline|Drawable|.  
 The individual overriding allows us to make use of the methods from \lstinline|SafeDeck| as well. In the formalization, the 
-hierarchical overriding feature is also an important feature, involved in the algorithm of hierarchical dispatch.
+hierarchical overriding feature is an important feature, involved in the algorithm of hierarchical dispatch.
 %\bruno{the last two sentences are a bit unclear. I think it is related to ``interaction''.}
 
 \subsubsection{Terminology} In \lstinline|Drawable|, \lstinline|Deck|, and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
 
-A special rule for hierarchical overriding is: it can only refine \textit{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because the existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine an old branch.
+A special rule for hierarchical overriding is: it can only refine \textit{original} methods, and cannot jump over original methods with the same signature. For instance, writing \lstinline|"void draw()| \lstinline|override Deck {...}"| is disallowed in \lstinline|DrawableSafeDeck|, because the existing two branches are \lstinline|Drawable.draw| and \lstinline|SafeDeck.draw|, while \lstinline|Deck.draw| is already covered. It does not really make sense to refine the old branch \lstinline|Deck|.
 
 \begin{figure*}[t]
 	\vspace{-1ex}
