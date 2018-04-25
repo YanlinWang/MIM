@@ -1,7 +1,15 @@
-\section{Discussion}\label{sec:discussion}
-In this section, we will discuss the design space and reflect about some of the design decisions of our work. We relate 
-our language to traits, Java interfaces as well as other languages. Furthermore, we discuss
-ways to improve our work.
+\section{Implementation \& Discussion}\label{sec:discussion}
+In this section, we will talk about the prototype implementation and discuss the design space and reflect about some of the design decisions of our work. We relate our language to traits, Java interfaces as well as other languages. Furthermore, we discuss ways to improve our work.
+
+\subsection{Implementation}
+We have a simple implementation of \name{} interpreter in Scala. The implementation validates all the examples presented in the paper. The implementation is done in 
+Scala, strictly following the type-checking rules and small-step semantics
+presented in the paper. One nice feature of the implementation is that it can
+show the detailed step-by-step evaluation of the program, which is convenient for
+understanding and debugging programs \& semantics. The final model of \name{}
+is actually a bit different from our initial models. This is partly because in
+the process of implementing and proving theorems we found errors and modified
+the earlier models, creating a positive feedback circle.
 
 \subsection{Abstract Methods}
 
