@@ -1,0 +1,18 @@
+Pegasus p = Pegasus.of();
+interface Pegasus extends Horse, Bird { 
+  // generated code not visible to users
+  static Pegasus of() { return new Pegasus() {}; } 
+}
+
+interface Point2D { int x(); int y(); }
+Point2D p = new Point2D() { 
+    public int x() {return 4;}
+    public int y() {return 2;} 
+}
+
+@Obj interface Point2D { int x(); int y(); }
+Point2D myPoint = Point2D.of(4, 2);
+Point2D p = Point2D.of(42, myPoint.y());
+
+ExtendedDatabase query2 = ExtendedDatabase.of()
+    .select("a, b").from("Table").where("c > 10").orderBy("b");

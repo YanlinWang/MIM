@@ -1,0 +1,10 @@
+@Obj interface Point2D {
+    int x(); int y(); // getters 
+    // with- methods
+    Point2D withX(int val); Point2D withY(int val); }
+Point2D p = myPoint.withX(42);
+
+@Obj interface Bird extends Animal {
+    Point3D location(); void location(Point3D val);
+    default void location(Point2D val) { location(location().with(val));}
+    default void fly() { location(location().withX(location().x() + 40));} }
