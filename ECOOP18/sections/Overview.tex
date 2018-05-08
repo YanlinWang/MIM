@@ -102,7 +102,7 @@ that come to our mind. We briefly discuss those potential fixes and
 workarounds next:
 \begin{itemize}
   \item \textit{I. Delegation.} As an alternative to multiple inheritance,
-  delegation can be used by introducing two fields (or field methods) with the \yanlin{"field methods"?}
+  delegation can be used by introducing two fields (or field methods) with the 
   \lstinline|Drawable| type and \lstinline|Deck| type,
   respectively. Although it avoids method conflicts, it is known
   that using delegation makes it hard to correctly maintain
@@ -363,7 +363,8 @@ Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck|
 
 %\paragraph{Problem:} how to update the conflicting methods separately, after the triangle inheritance.
 
-\subsubsection{Potential solutions/workarounds in existing languages} Unfortunately in all languages we know of 
+\subsubsection{Potential solutions/workarounds in existing languages} 
+\yanlin{Bruno: one reviewer says S2.3.1 is "less clear", could you check again?}Unfortunately in all languages we know of 
 (including C++), the existing approaches are unsatisfactory.
 One direction is to simply avoid this issue, by putting overriding before inheritance. For example, as shown in Figure~\ref{fig:drawablesafedeck}(middle), we define a new component \lstinline|DrawableRect| that extends \lstinline|Drawable|, which simply draws the deck as a rectangle, and modifies the hierarchy:
 \begin{lstlisting}

@@ -17,6 +17,7 @@ The metavariables $I, J$ range over interface names; $x$ ranges over variables; 
 conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 ... M_n$ (with no commas). We also abbreviate operations on pairs of sequences in an obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
 
 \subsubsection{Interfaces}
+\yanlin{Bruno: acyclic, clarified herer.}
 In order to achieve multiple inheritance, an interface (which is acyclic, by deafault) can have a set of 
 parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
