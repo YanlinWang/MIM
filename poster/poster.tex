@@ -1,7 +1,7 @@
 \documentclass[portrait,final,a0paper,fontscale=0.277]{baposter}
 
 \usepackage{listings}
-
+\usepackage{comment}
 \usepackage{calc}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -75,43 +75,18 @@ frame=single %border
 \newcommand{\Occluded}{\SET O}
 \newcommand{\occluded}{o}
 \newcommand\mixin{\textbf{\texttt{@Obj }}}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% Some math symbols used in the text
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Multicol Settings
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \setlength{\columnsep}{1.5em}
 \setlength{\columnseprule}{0mm}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Save space in lists. Use this after the opening of the list
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\compresslist}{%
 \setlength{\itemsep}{0pt}%
 \setlength{\parskip}{0pt}%
 \setlength{\parsep}{0pt}%
 }
-
 \input{symbols}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Begin of Document
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Here starts the poster
-%%%---------------------------------------------------------------------------
-%%% Format it to your taste with the options
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Define some colors
-
 %\definecolor{lightblue}{cmyk}{0.83,0.24,0,0.12}
 \definecolor{lightblue}{rgb}{0.145,0.6666,1}
-
 % Draw a video
 \newlength{\FSZ}
 \newcommand{\drawvideo}[3]{% [0 0.25 0.5 0.75 1 1.25 1.5]
@@ -138,9 +113,8 @@ frame=single %border
    }
    \end{tikzpicture}
 }
-
 \hyphenation{resolution occlusions}
-%%
+
 \begin{poster}%
   % Poster Options
   {
@@ -188,8 +162,6 @@ frame=single %border
   }
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Now define the boxes that make up the poster
 %%%---------------------------------------------------------------------------
@@ -206,8 +178,6 @@ frame=single %border
       \tikz{\useasboundingbox (-0.2em,-0.32em) rectangle(0.2em,0.32em); \draw[draw=black,fill=lightblue,line width=0.03em] (0,0) circle(0.18em);}}
 
   \headerbox{Motivation}{name=motivation,column=0,row=0}{
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   
   \noindent \begin{enumerate}\compresslist
 	\item In OOP, multiple inheritance is hard due to the ambiguity arising from inheriting multiple parents (with conflicting methods).
 	\item Numerous existing work provides solutions for conflicts which arise from \emph{diamond inheritance}.
@@ -215,27 +185,19 @@ frame=single %border
 	% \item Other models (traits, mixins, etc) have certain limitations.
 	% \item Our approach is related with traits. But we use operations on state to simulate fields 
 	% which traits do not support.
-\end{enumerate}
+	\end{enumerate}
  }
 
   \headerbox{Contributions}{name=contribution,column=0,below=motivation}{
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \noindent \begin{enumerate}\compresslist
-  \item Abstract state operations: 
-      \noindent \begin{itemize} \compresslist
-          \item a new way to think about state, via operations instead of fields directly
-          \item easy to combine with \emph{multiple (trait) inheritance}
-          \item supports constructors, co-variant type-refinement of state
-      \end{itemize}    
-  % \item Classless Java: a Java extension that allows an interface-based programming style
-    % \item IB and Object Interfaces: enable powerful programming idioms using multiple-inheritance, type-refinement and abstract state operations.
-    \item Classless Java: a practical realization of IB in Java.
-    % \item Type-safe covariant mutable state
-    % \item Applications and case studies
+		\item A formalization of the hierarchical dispatching algorithm
+		\item Hierarchical overriding: override individual branches of the class hierarchy.
+		\item FHJ: a formalized model based on Featherweight Java
+		\item Prototype implementation: FHJ interpreter in Scala.
    \end{enumerate}
    \vspace{0.3em}
   }
-
+\begin{comment}
   \headerbox{Implementation}{name=implementation,column=0,below=contribution}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -263,6 +225,7 @@ In the maze game case study, both SLOC and \# of interfaces are greatly reduced:
 \noindent{\centering\includegraphics[width=0.81\linewidth]{pdfs/result.png}\\}
 \vspace{0.1em}
 }
+\end{comment}
 
 \vspace{-0.5em}
 \headerbox{Object Interfaces and Instantiation}{name=Model,column=1,span=2,row=0}{
