@@ -1,15 +1,13 @@
-\documentclass[a4paper,english]{lipics-v2016}
+
+\documentclass[a4paper,english]{lipics-v2018}
+% \nolinenumbers
 %This is a template for producing LIPIcs articles. 
 %See lipics-manual.pdf for further information.
 %for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
 %for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
 % for section-numbered lemmas etc., use "numberwithinsect"
- 
+
 \usepackage{mathtools} % For \Coloneqq
-
-
- 
-\usepackage{microtype}%if unwanted, comment out or use option "draft"
 \usepackage{listings}
 
 \usepackage{xspace}
@@ -41,7 +39,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage{flushend}
 \usepackage{lmodern}
-
 % \let\proof\relax
 % \let\endproof\relax
 \let\mathpar\relax
@@ -79,106 +76,121 @@
 \newcommand\wordfork{fork}
 \newcommand\wordFork{Fork}
 \lstset{ %
-	language=Java,                % choose the language of the code
-	columns=flexible,
-	lineskip=-1pt,
-	basicstyle=\ttfamily\small,       % the size of the fonts that are used for the code
-	numbers=none,                   % where to put the line-numbers
-	numberstyle=\ttfamily\tiny,      % the size of the fonts that are used for the line-numbers
-	stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be numbered
-	numbersep=5pt,                  % how far the line-numbers are from the code
-	backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
-	showspaces=false,               % show spaces adding particular underscores
-	showstringspaces=false,         % underline spaces within strings
-	showtabs=false,                 % show tabs within strings adding particular underscores
-	morekeywords={var,override},
-	%  frame=single,                   % adds a frame around the code
-	tabsize=2,                  % sets default tabsize to 2 spaces
-	captionpos=none,                   % sets the caption-position to bottom
-	breaklines=true,                % sets automatic line breaking
-	breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
-	title=\lstname,                 % show the filename of files included with \lstinputlisting; also try caption instead of title
-	escapeinside={(*}{*)},          % if you want to add a comment within your code
-	keywordstyle=\sffamily\bfseries,
-	aboveskip=3pt,
-	belowskip=3pt
-	% commentstyle=\color{Gray},
-	% stringstyle=\color{Green}
+    language=Java,                % choose the language of the code
+    columns=flexible,
+    lineskip=-1pt,
+    basicstyle=\ttfamily\small,       % the size of the fonts that are used for the code
+    numbers=none,                   % where to put the line-numbers
+    numberstyle=\ttfamily\tiny,      % the size of the fonts that are used for the line-numbers
+    stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be numbered
+    numbersep=5pt,                  % how far the line-numbers are from the code
+    backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+    showspaces=false,               % show spaces adding particular underscores
+    showstringspaces=false,         % underline spaces within strings
+    showtabs=false,                 % show tabs within strings adding particular underscores
+    morekeywords={var,override},
+    %  frame=single,                   % adds a frame around the code
+    tabsize=2,                  % sets default tabsize to 2 spaces
+    captionpos=none,                   % sets the caption-position to bottom
+    breaklines=true,                % sets automatic line breaking
+    breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+    title=\lstname,                 % show the filename of files included with \lstinputlisting; also try caption instead of title
+    escapeinside={(*}{*)},          % if you want to add a comment within your code
+    keywordstyle=\sffamily\bfseries,
+    aboveskip=3pt,
+    belowskip=3pt
+    % commentstyle=\color{Gray},
+    % stringstyle=\color{Green}
 }
 
 \lstdefinestyle{reduction}{
-  	language=C,                % choose the language of the code
-	columns=flexible,
-	lineskip=-1pt,
-	basicstyle=\ttfamily\small,       % the size of the fonts that are used for the code
-	numbers=none,                   % where to put the line-numbers
-	numberstyle=\ttfamily\tiny,      % the size of the fonts that are used for the line-numbers
-	stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be numbered
-	numbersep=5pt,                  % how far the line-numbers are from the code
-	backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
-	showspaces=false,               % show spaces adding particular underscores
-	showstringspaces=false,         % underline spaces within strings
-	showtabs=false,                 % show tabs within strings adding particular underscores
-	morekeywords={var,override},
-	%  frame=single,                   % adds a frame around the code
-	tabsize=2,                  % sets default tabsize to 2 spaces
-	captionpos=none,                   % sets the caption-position to bottom
-	breaklines=true,                % sets automatic line breaking
-	breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
-	title=\lstname,                 % show the filename of files included with \lstinputlisting; also try caption instead of title
-	escapeinside={(*}{*)},          % if you want to add a comment within your code
-	keywordstyle=\sffamily\bfseries,
-	aboveskip=0pt,
-	belowskip=0pt,
+    language=C,                % choose the language of the code
+    columns=flexible,
+    lineskip=-1pt,
+    basicstyle=\ttfamily\small,       % the size of the fonts that are used for the code
+    numbers=none,                   % where to put the line-numbers
+    numberstyle=\ttfamily\tiny,      % the size of the fonts that are used for the line-numbers
+    stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be numbered
+    numbersep=5pt,                  % how far the line-numbers are from the code
+    backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+    showspaces=false,               % show spaces adding particular underscores
+    showstringspaces=false,         % underline spaces within strings
+    showtabs=false,                 % show tabs within strings adding particular underscores
+    morekeywords={var,override},
+    %  frame=single,                   % adds a frame around the code
+    tabsize=2,                  % sets default tabsize to 2 spaces
+    captionpos=none,                   % sets the caption-position to bottom
+    breaklines=true,                % sets automatic line breaking
+    breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+    title=\lstname,                 % show the filename of files included with \lstinputlisting; also try caption instead of title
+    escapeinside={(*}{*)},          % if you want to add a comment within your code
+    keywordstyle=\sffamily\bfseries,
+    aboveskip=0pt,
+    belowskip=0pt,
   moredelim=[is][\underbar]{_}{_},
   keepspaces=true
-	% commentstyle=\color{Gray},
-	% stringstyle=\color{Green}
+    % commentstyle=\color{Gray},
+    % stringstyle=\color{Green}
 }
-
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
-\bibliographystyle{plainurl}% the recommended bibstyle
+\bibliographystyle{plainurl}% the recommnded bibstyle
 
-
-
-% Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{FHJ: A Formal Model for Hierarchical Dispatching and Overriding}
-% \titlerunning{A Sample LIPIcs Article} %optional, in case that the title is too long; the running title should fit into the top page column
 
-%% Please provide for each author the \author and \affil macro, even when authors have the same affiliation, i.e. for each author there needs to be the  \author and \affil macros
-\author[1]{Yanlin Wang}
-\author[1]{Haoyuan Zhang}
-\author[1]{Bruno C. d. S. Oliveira}
-\affil[1]{The University of Hong Kong, China \\
-	\texttt{\{yanlin,hyzhang,bruno\}@cs.hku.hk}}
-\author[2]{Marco Servetto}
-\affil[2]{Victoria University of Wellington, New Zealand \\
-    \texttt{marco.servetto@ecs.vuw.ac.nz}}
+% \titlerunning{Dummy short title}%optional, please use if title is longer than one line
 
-%\author{Yanlin Wang}{The University of Hong Kong}{yanlin@cs.hku.hk}
-%\author{Haoyuan Zhang}{The University of Hong Kong}{hyzhang@cs.hku.hk}
-\authorrunning{} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus ‘et. al.’
+\author{Yanlin Wang}
+{The University of Hong Kong, China}
+{ylwang@cs.hku.hk}
+{}{}%mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty.
+\author{Haoyuan Zhang}
+{The University of Hong Kong, China}
+{hyzhang@cs.hku.hk}
+{}{}
+\author{Bruno C. d. S. Oliveira}
+{The University of Hong Kong, China}
+{bruno@cs.hku.hk}
+{}{}
+\author{Marco Servetto}
+{Victoria University of Wellington, New Zealand}
+{marco.servetto@ecs.vuw.ac.nz}
+{}{}
 
-\Copyright{}%mandatory, please use full first names. LIPIcs license is “CC-BY”;  http://creativecommons.org/licenses/by/3.0/
+\authorrunning{Y. Wang, H. Zhang, B. C. d. S. Oliveira and M. Servetto}%mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
 
-% \subjclass{Dummy classification -- please refer to \url{http://www.acm.org/about/class/ccs98-html}}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as “F.1.1 Models of Computation”.
-% \keywords{Dummy keyword -- please provide 1--5 keywords}% mandatory: Please provide 1-5 keywords
-% Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Copyright{John Q. Public and Joan R. Public}%mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{Dummy classification}% mandatory: Please choose ACM 2012 classifications from https://www.acm.org/publications/class-2012 or https://dl.acm.org/ccs/ccs_flat.cfm . E.g., cite as "General and reference $\rightarrow$ General literature" or \ccsdesc[100]{General and reference~General literature}. 
+
+\keywords{Dummy keyword}%mandatory
+
+\category{}%optional, e.g. invited paper
+
+\relatedversion{}%optional, e.g. full version hosted on arXiv, HAL, or other respository/website
+
+\supplement{}%optional, e.g. related research data, source code, ... hosted on a repository like zenodo, figshare, GitHub, ...
+
+\funding{}%optional, to capture a funding statement, which applies to all authors. Please enter author specific funding statements as fifth argument of the \author macro.
+
+\acknowledgements{I want to thank \dots}%optional
 
 %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\EventEditors{John Q. Open and Joan R. Acces}
-\EventNoEds{2}
-\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
-\EventShortTitle{CVIT 2016}
-\EventAcronym{CVIT}
-\EventYear{2016}
-\EventDate{December 24--27, 2016}
-\EventLocation{Little Whinging, United Kingdom}
+\EventEditors{Todd Millstein}
+\EventNoEds{1}
+\EventLongTitle{32nd European Conference on Object-Oriented Programming (ECOOP 2018)}
+\EventShortTitle{ECOOP 2018}
+\EventAcronym{ECOOP}
+\EventYear{2018}
+\EventDate{July 16--21, 2018}
+\EventLocation{Amsterdam, Netherlands}
 \EventLogo{}
-\SeriesVolume{42}
-\ArticleNo{23}
-% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\SeriesVolume{109}
+\ArticleNo{20} % “New number” (=<article-no>) goes here!
+
+%\nolinenumbers %uncomment to disable line numbering
+%\hideLIPIcs  %uncomment to remove references to LIPIcs series (logo, DOI, ...), e.g. when preparing a pre-final version to be uploaded to arXiv or another public repository
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
@@ -198,19 +210,6 @@ with \emph{unintentional method conflicts}: conflicts which
 arise from two unrelated methods that happen to share the same name
 and signature. 
 
-\begin{comment}
-One of the most promising 
-approaches to multiple inheritance is the \emph{trait} model. Traits offer a
-restricted model of multiple inheritance that is easy to reason and 
-have many elegant properties. Traits have good support for method 
-conflicts which arise from \emph{diamond inheritance}:
-conflicts that arise from method implementations sharing a common 
-ancestor. However, the mechanisms of traits are inadequate to deal 
-with \emph{unintentional method conflicts}: conflicts which 
-arise from two unrelated methods that happen to share the same name
-and signature. 
-\end{comment}
-
 This paper presents a new model called \emph{\textbf{F}eatherweight
   \textbf{H}ierarchical \textbf{J}ava} (\name{}) that deals with
 unintentional method conflicts.  In our new model, which is partly
@@ -225,21 +224,8 @@ supports \emph{hierarchical method overriding}: that is, methods can
 be \emph{independently overridden} along the multiple inheritance
 hierarchy. We give illustrative examples of our language and features
 and formalize \name{} as a minimal Featherweight-Java style calculus.
+\end{abstract}
 
-\begin{comment}
-Furthermore we discuss similarities and differences to 
-
-
-What ensures unambiguity is the use of information about
-the class hierarchy.
-
-\name{} is partly inspired by the method resolution semantics
-of C++, but it also incoorporates ideas from the trait model and Java
-8's default methods. We discuss the similarities
-and differences with and also advantages and disadvantages. 
-\end{comment}
-
- \end{abstract}
 
 \input{sections/Introduction.tex}
 \input{sections/Overview.tex}
@@ -247,14 +233,7 @@ and differences with and also advantages and disadvantages.
 \input{sections/Auxiliary.tex}
 \input{sections/Discussion.tex}
 \input{sections/RelatedWork.tex}
-
 \input{sections/Conclusion.tex}
-
-%%
-%% Bibliography
-%%
-
-%% Please use bibtex, 
 
 \bibliography{paper}
 \newpage
