@@ -22,7 +22,7 @@ an interface in our model has the following characteristics:
 	\item It allows multiple inheritance.
 	\item Every method is either abstract or implemented with a body (like Java 8 default methods). 
 	\item The \lstinline|new| keyword is used to instantiate an interface.
-	\item It cannot have state. But it is possible to support state in future work.
+	\item It cannot have state. 
 \end{itemize}
 %In the remainder of this section we show three problems that arize 
 %from unintentional method conflicts. The first two problems 
@@ -355,7 +355,9 @@ in one class. Ideally, we would like to support overriding for those
 methods too, in exactly the same way that overriding is available for 
 other (non-conflicting) methods. However, we need to be able to
 override the individual conflicting methods, rather than overriding all
-conflicting methods into a single merged one. We illustrate the
+conflicting methods into a single merged one. 
+
+We illustrate the
 problem and the need for a more refined overriding mechanism with 
 an example.
 Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck| (based on the code in Section~\ref{subsec:problem2} without the old \lstinline|DrawableSafeDeck|), but he needs to override
@@ -364,7 +366,9 @@ Suppose that the programmer defines a new interface \lstinline|DrawableSafeDeck|
 %\paragraph{Problem:} how to update the conflicting methods separately, after the triangle inheritance.
 
 \subsubsection{Potential solutions/workarounds in existing languages} 
-\yanlin{Bruno: one reviewer says S2.3.1 is "less clear", could you check again?}Unfortunately in all languages we know of 
+\yanlin{Bruno: one reviewer says S2.3.1 is "less clear", could you
+  check again?}\bruno{seems ok to me.}
+Unfortunately in all languages we know of 
 (including C++), the existing approaches are unsatisfactory.
 One direction is to simply avoid this issue, by putting overriding before inheritance. For example, as shown in Figure~\ref{fig:drawablesafedeck}(middle), we define a new component \lstinline|DrawableRect| that extends \lstinline|Drawable|, which simply draws the deck as a rectangle, and modifies the hierarchy:
 \begin{lstlisting}
@@ -414,8 +418,12 @@ overridden. This is accomplished by specifying, in the method
 definition, that the method only overrides the \lstinline|draw| 
 from \lstinline|Drawable|.  
 The individual overriding allows us to make use of the methods from \lstinline|SafeDeck| as well. In the formalization, the 
-hierarchical overriding feature is an important feature, involved in the algorithm of hierarchical dispatch.
-%\bruno{the last two sentences are a bit unclear. I think it is related to ``interaction''.}
+hierarchical overriding feature is an important feature, involved in
+the algorithm of hierarchical dispatch.
+
+Note that, although the example here only shows one conflicting method
+being overriden, hierarchical overriding allows (as expected) multiple conflicting
+methods to be overriden in the same class. 
 
 \subsubsection{Terminology} In \lstinline|Drawable|, \lstinline|Deck|, and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.
@@ -458,4 +466,14 @@ dispatch, formally defined in Section~\ref{subsec:mbodydef}. In general, $\mbody
 
 In  Figure~\ref{fig:examplesmbody}, (a) is the base case for unintentional conflicts, namely the \wordfork{} inheritance. (b) uses overriding to explicitly merge the conflicting methods. (c) represents hierarchical overriding. (d) and (e) are two base cases of diamond inheritance in \MIM{} and the definition of each $C$ is rejected because $T$ is an ambiguous parent to $C$. (f) gives a common solution to the diamond as in Java or traits, which is to explicitly override $A.m$ and $B.m$ in $C$. In the last three examples, conflicting methods $A.m$ and $B.m$ should be viewed as
 intentional conflicts, as they come from the same source $T$.
-% Similar to many OO languages, the model also allows \textit{super method invocation} in a method body. The invocation \lstinline|super.T::m()| will ignore all the subtypes of \lstinline|T|, and only look at \lstinline|T| together with its super interfaces. It should behave the same as \lstinline|new T().m()| in principle.
+% Similar to many OO languages, the model also allows \textit{super
+% method invocation} in a method body. The invocation
+% \lstinline|super.T::m()| will ignore all the subtypes of
+% \lstinline|T|, and only look at \lstinline|T| together with its
+% super interfaces. It should behave the same as \lstinline|new
+% T().m()| in principle.
+
+\bruno{I remember that a big complain in the reviews was talking about
+diamond inheritance. The Figure does have diamond inheritance but this
+wasn't clear to the reviewers. Please expand the text to emphasize
+diamond inheritance better!}

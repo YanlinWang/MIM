@@ -181,13 +181,15 @@ supports multiple conflicting methods to be independently overridden as well.
 To present hierarchical overriding and dispatching, we introduce a
 formalized model \MIM{} in Section~\ref{sec:formalization} based on
 Featherweight Java~\cite{Igarashi01FJ}, together with theorems and
-proofs for type soundness. 
-
-\yanlin{Bruno.}
-In terms of implementation, we have a prototype implementation of \name{} interpreter in Scala. The implementation validates all the examples presented in the paper. The implementation is done in 
-Scala, strictly following the type-checking rules and small-step semantics presented in the paper. One nice feature of the implementation is that it can show the detailed step-by-step evaluation of the program, which is convenient for understanding and debugging programs \& semantics. The final model of \name{}
-is actually a bit different from our initial models. This is partly because in
-the process of implementing and proving theorems we found errors and modified the earlier models, creating a positive feedback circle.
+proofs for type soundness. We also have a prototype implementation of
+a \name{} interpreter written in Scala. The implementation validates
+all the examples presented in the paper. 
+One nice feature of the implementation is that it can show the
+detailed step-by-step evaluation of the program, which is convenient
+for understanding and debugging programs \& semantics. 
+%The final model of \name{}
+%is actually a bit different from our initial models. This is partly because in
+%the process of implementing and proving theorems we found errors and modified the earlier models, creating a positive feedback circle.
 
 In summary, our contributions are:
 \begin{itemize}

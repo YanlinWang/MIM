@@ -18,8 +18,9 @@ conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty seq
 
 \subsubsection{Interfaces}
 \yanlin{Bruno: acyclic, clarified herer.}
-In order to achieve multiple inheritance, an interface (which is acyclic, by deafault) can have a set of 
-parent interfaces, where such a set can be empty. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
+In order to achieve multiple inheritance, an interface can have a set of 
+parent interfaces, where such a set can be empty. Moreover, as usual
+in class-based languages, the class hierarchy is acyclic. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
 \subsubsection{Methods}
 Original methods and hierarchically overriding methods share the same syntax in our model for simplicity.
