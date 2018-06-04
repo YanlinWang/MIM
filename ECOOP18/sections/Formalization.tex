@@ -13,14 +13,14 @@ in an interface are either default methods or abstract methods. Default methods 
 have a method body. Abstract methods can be overridden with future implementations.
 
 \subsubsection{Notations}
-The metavariables $I, J$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
+The metavariables $I, J, K$ range over interface names; $x$ ranges over variables; $m$ ranges over method names; $e$ ranges over expressions; and $M$ ranges over method declarations. Following Featherweight Java, we assume that the set of variables includes the special variable \kwthis, which cannot be used as the name of an argument to a method. We use the same
 conventions as FJ; we write $\overline{I}$ as shorthand for a possibly empty sequence $I_1, ..., I_n$, which may be indexed by $I_i$; and write $\overline{M}$ as shorthand for $M_1 ... M_n$ (with no commas). We also abbreviate operations on pairs of sequences in an obvious way, writing $\overline{I} \; \overline{x}$ for $I_1 \; x_1, ..., I_n \; x_n$, where $n$ is the length of $\overline{I}$ and $\overline{x}$.
 
 \subsubsection{Interfaces}
 \yanlin{Bruno: acyclic, clarified herer.}
 In order to achieve multiple inheritance, an interface can have a set of 
 parent interfaces, where such a set can be empty. Moreover, as usual
-in class-based languages, the class hierarchy is acyclic. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
+in class-based languages, \yanlin{refined 'acyclic'} the extension relation over interfaces is acyclic. The interface declaration $\interface{I}{I}{M}$ introduces an interface named $I$ with parent interfaces $\overline{I}$ and a suite of methods $\overline{M}$. The methods of $I$ may either override methods that are already defined in $\overline{I}$ or add new functionality special to $I$, we will illustrate this in more detail later.
 
 \subsubsection{Methods}
 Original methods and hierarchically overriding methods share the same syntax in our model for simplicity.
@@ -29,7 +29,7 @@ method named $m$ with result type $I$, parameters $\overline{x}$ of
 type $\overline{I_x}$ and the overriding target $J$. The body of the
 method simply includes the returned expression $e$. Notably, we have introduced the
 \kwoverride{} keyword for two cases: if the overridden interface is exactly the enclosing
-interface itself, then such a method is seen as originally defined; otherwise it is a hierarchical overriding method. 
+interface itself, then such a method is seen as originally defined \yanlin{added an explanation} (including the case of merging methods from different branches,  which can be viewed as \emph{reborn}); otherwise it is a hierarchical overriding method. 
 Note that in an interface $J$, $
 I \; m(\overline{I_x} \; \overline{x}) \; {\{} \kwreturn \; e ; {\}} $ is syntactic sugar for $\method{I}{m}{I_x}{x}{J}{e}$, which is the standard way of method definition in Java-like languages. The definition
 of abstract methods is written as $\absmethod{I}{m}{I_x}{x}{J}$, which is
@@ -81,7 +81,7 @@ e.m(\overline{e}) \mid
 \saveSpaceFig
 \begin{mathpar}
 	\framebox{$ I <: J $} \hspace{.5in} \subid \\
-	\subtrans \hspace{.5in} \subextends \\
+	\subtrans \hspace{.5in} \subextendsForall \\
 	
 	\framebox{$ \judgeewf \Gamma {e:I} $} \hspace{.5in}
 	\tvar \\
@@ -132,8 +132,7 @@ the most specific interface that has a subtyping relationship with $J$.
 In \textsc{(T-Invk)}, as the compilation should not be aware
 of the dynamic type, it only requires that invoking $m$ is valid for the static type of the
 receiver. The result of $\mbody$ contains the interface that provides the most specific implementation,
-the parameters and the return type. We use underscore for the return expression, implying that an empty return expression
-from an abstract method is acceptable.
+the parameters and the return type. We use underscore for the return expression, matching both implemented and abstract methods. \yanlin{refined.}
 % \textsc{(T-PathInvk)} is the typing judgement for a path invocation. Besides the conditions of \textsc{(T-Invk)}, \textsc{(T-PathInvk)} requires the type of receiver to be the subtype of the specified path type. 
 % and \textsc{(T-SuperInvk)} checks if the enclosing type directly extends the specified super type.
 
@@ -178,9 +177,9 @@ the conflicting ones.
 
 Finally, rule \textsc{(T-Anno)} is the typing rule for a cast expression. By the rule, only upcasts are valid.
 
-\subsection{Small-step Semantics and Congruence}
+\subsection{Small-step Semantics and \Congruence{}}
 Figure~\ref{fig:smallstep} defines the small-step semantics and
-congruence rules of \MIM{}. When evaluating an expression, they
+\congruence{} rules of \MIM{}. When evaluating an expression, they
 are invoked and produce a single value in
 the end. %\haoyuan{we need to be consistent on paragraph upper/lower case.}
 
@@ -193,7 +192,7 @@ Here we use $e_0$ to imply that the return expression is forced to be non-empty 
 rule reduces method invocation to $e_0$ with substitution.
 Parameters are substituted with arguments, and the \lstinline|this| reference is substituted with the receiver,
 and in the meanwhile the static types are recorded via annotations. Finally, the return type $I_e$ is put in the front as an annotation.
-\subsubsection{Congruence Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural congruence rules
+\subsubsection{\Congruence{} Rules} \textsc{(C-Receiver)}, \textsc{(C-Args)} and \textsc{(C-FReduce)} are natural \congruence{} rules
 on receivers, arguments, and cast-expressions, respectively. \textsc{(C-StaticType)} automatically adds an annotation $I$ to the new
 object $\new{I}$. \textsc{(C-AnnoReduce)} merges nested upcasts into a single upcast with the outermost type.
 

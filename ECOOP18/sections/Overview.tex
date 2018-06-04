@@ -145,9 +145,9 @@ interface Drawable { void draw() {...} }
 interface DrawableDeck extends Drawable, Deck {}
 // main program
 ((Deck) new DrawableDeck()).draw()  // calls Deck.draw
-// (new DrawableDeck()).draw()        // this call is ambiguous and rejected
+// new DrawableDeck().draw()        // this call is ambiguous and rejected
 \end{lstlisting}
-In our language, the main program is merely an expression. The above cast indicates
+\yanlin{Refined.}In our language, a program consists of interfaces declarations and a main an expression which produces the final result. In the above main expression \lstinline|((Deck) new DrawableDeck()).draw()|, the cast indicates
 that we expect to invoke the \lstinline|draw| method from the branch
 \lstinline|Deck|. Similarly, we could have used an upcast to \lstinline|Drawable|
 to call the \lstinline|draw| method from \lstinline|Drawable|.

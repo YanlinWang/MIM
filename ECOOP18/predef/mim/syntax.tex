@@ -11,6 +11,8 @@
 \newcommand{\kwnew}{\keyword{new}}
 \newcommand{\kwtrue}{\keyword{true}}
 \newcommand{\kwfalse}{\keyword{false}}
+\newcommand{\Congruence}{Propagation}
+\newcommand{\congruence}{propagation}
 
 
 \newcommand{\mtype}{\keyword{mtype}}
@@ -60,6 +62,9 @@
 \newcommand{\interface}[3]{
   \kwinterface \; #1 \; \kwextends \; \overline{#2} \; {\{} \overline{#3} {\}}
 }
+\newcommand{\interfaceLongExt}[3]{
+	\kwinterface \; #1 \; \kwextends \; #2 \; {\{} \overline{#3} {\}}
+}
 \newcommand{\method}[6]{
   #1 \; #2 (\overline{#3} \; \overline{#4}) \; \kwoverride \; #5 \; {\{} \kwreturn \; #6 ; {\}}
 }
@@ -75,7 +80,7 @@
 
 \newcommand{\subid} {
 \inferrule* [right=]
-    {}
+    { }
     {I \subtype I}
 }
 \newcommand{\subtrans} {
@@ -84,10 +89,16 @@
     {I \subtype K}
 }
 
-\newcommand{\subextends} {
+\newcommand{\subextendsForall} {
 \inferrule* [right=]
-    {\interface{I}{I}{M}}
-    {\forall I_i \in \overline{I}, I \subtype I_i}
+    {\interfaceLongExt{I}{I_1, I_2, ..., I_n}{M}}
+    {I \subtype I_1, I \subtype I_2, ..., I \subtype I_n}
+}
+
+\newcommand{\subextends} {
+	\inferrule* [right=]
+	{\interface{I}{I}{M}}
+	{\forall I_i \in \overline{I}, I \subtype I_i}
 }
 
 \newcommand{\tvar} {
@@ -310,7 +321,7 @@ e_0.I\staticIvk m(\ldots,e',\ldots)}
 
 \newcommand{\cstatictype} {
 \inferrule* [left=(C-StaticType)]
-{}
+{ }
 {\new{I} \to \; (I)\new{I}}
 }
 
