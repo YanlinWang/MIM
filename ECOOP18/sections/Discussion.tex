@@ -1,6 +1,10 @@
 \section{Discussion}\label{sec:discussion}
 In this section, we will discuss the design space and reflect about some of the design decisions of our work. We relate our language to traits, Java interfaces as well as other languages. Furthermore, we discuss ways to improve our work.
 
+\yanlin{marco: The whole section 5 may benefit some English proofreading, but I'm too
+	bad at English to really help... may be Bruno can give some more
+	support here?}
+
 \subsection{Abstract Methods}
 Abstract methods are one of the key features in most general OO languages. For example, Java interfaces were designed
 to include only method declarations, and those abstract methods can be implemented in a class body. 
@@ -21,6 +25,10 @@ In the diamond inheritance case, the definition of $C$ is rejected.
 There are two reasons for this difference in behaviour. Firstly, our formalization just treats abstract methods as concrete methods with an empty body, and that simplifies
 the rules and proofs a lot. Secondly, and more importantly, we distinguish and treat differently conflicting methods, since they may represent different operations, even if they are abstract. Thus our model adopts a very conservative behavior rather than automatically merging 
 methods by default (as done in many languages). 
+\yanlin{717: we could mention that Godez (the guy maintaing java now) would
+	prefer if Java behaved like our formalization but he can not for
+	retrocompatibility.
+	Re: where do you think is the proper place to mention this? }
 Arguably, for the diamond case, as we have mentioned, it is actually an intentional conflict due to the same source $T$.
 It is possible to change our model to account for other behaviors for abstract methods, but we view this as a mostly 
 orthogonal change to our work, which should not affect the essence of the model presented here.
@@ -97,7 +105,7 @@ Semantic rules themselves remain unchanged, however, we need to change slightly 
 \end{flalign*}
 \saveSpaceFig
 
-With this approach, branches \lstinline|A| and \lstinline|B| are merged in the sense that they share the same code, which can be separately updated in future interfaces. Another approach is to deeply merge the branches, with similar effect as introducing an intermediate interface \lstinline|AB| to explicitly merge the two branches. However, this approach is problematic because there is no clear mechanism of identifying and further updating the merged branches. This could be an interesting future work to explore.
+With this approach, branches \lstinline|A| and \lstinline|B| are merged in the sense that they share the same code, which can be separately updated in future interfaces. Another approach would be to deeply merge the branches, with similar effect as introducing an intermediate interface \lstinline|AB| to explicitly merge the two branches. However, this approach is problematic because there is no clear mechanism of identifying and further updating the merged branches. This could be an interesting future work to explore.
 
 %\noindent This \emph{multiple overriding} non-othogonal extension shows that our model is friendly to different kinds of language extensions.
 

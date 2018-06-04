@@ -7,9 +7,8 @@ the key components that implement our algorithm for method lookup.
 
 \subsection{The Method Lookup Algorithm in \mbody{}}\label{subsec:mbodydef}
 $\mbody(m, I_d, I_s)$ denotes the method body lookup function.
-We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation. More
-accurately, $\mbody$ returns the parameters, returned expression
-(empty for abstract methods) and the types for the method. It considers both originally-defined methods and hierarchical overriding methods, so $\mostSpecific$ and $\mostSpecificOverride$ (see the definition in Section~\ref{sec:mostSpecific} and Section~\ref{sec:mostSpecificOverride}) are both invoked.
+We use $I_d, I_s$, since $\mbody$ is usually invoked by a receiver of a method $m$, with its dynamic type $I_d$ and static type $I_s$. Such a function returns the most specific method implementation. \yanlin{Refined.}More
+accurately, $\mbody$ returns $(J, \overline{I_x} \; \overline{x}, I_e \; e_0)$ where $J$ is the found interface that contains the desired method; $\overline{I_x} \; \overline{x}$ are the parameters and its types, $e_0$ is the returned expression (empty for abstract methods). It considers both originally-defined methods and hierarchical overriding methods, so $\mostSpecific$ and $\mostSpecificOverride$ (see the definition in Section~\ref{sec:mostSpecific} and Section~\ref{sec:mostSpecificOverride}) are both invoked.
  The formal definition gives the expected results
 for the earlier examples in Figure~\ref{fig:examplesmbody}.
 
@@ -128,8 +127,8 @@ none of them has subtyping relation to one another, since all supertypes have be
 \saveSpaceFig
 \begin{flalign*}
 	& \rhd \textit{Definition of } \canOverride(m, I, J): & \\
-	& \bullet \canOverride(m, I, J) = True & \\
-	& \indent\indent \textrm{with: } I[m\ \kwoverride\ I] = I_e \; m(\overline{I_x} \; \overline{x}) \; \kwoverride \; I \ldots & \\
+	& \bullet \canOverride(m, I, J) \textrm{ holds} & \\
+	& \indent\indent \textrm{iff: } I[m\ \kwoverride\ I] = I_e \; m(\overline{I_x} \; \overline{x}) \; \kwoverride \; I \ldots & \\
 	& \hspace{.77in} J[m\ \kwoverride\ J] = I_e \; m(\overline{I_x} \; \overline{y}) \; \kwoverride \; J \ldots &
 \end{flalign*}
 \saveSpaceFig
@@ -140,14 +139,14 @@ $\canOverride$ just checks that two original $m$ in $I$ and $J$ have the same ty
 \saveSpaceFig
 \begin{flalign*}
 	& \rhd \textit{Definition of } \canInstantiate(I): & \\
-	& \bullet \canInstantiate(I) = True & \\
-	& \indent\indent \textrm{with: } \forall m, \forall J \in \mostSpecific(m, I, I), \mostSpecificOverride(m, I, J) = \{K\}, & \\
+	& \bullet \canInstantiate(I) \textrm{ holds} & \\
+	& \indent\indent \textrm{iff: } \forall m, \forall J \in \mostSpecific(m, I, I), \mostSpecificOverride(m, I, J) = \{K\}, & \\
 	& \hspace{.77in} \textrm{ and } K[m\ \kwoverride\ J] = \method{I_e}{m}{I_x}{x}{J}{e_0} &
 \end{flalign*}
 
 $\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the keyword $\kwnew$.
 $\mostSpecific(m, I, I)$ represents the set of branches $I$ inherits on method $m$. $I$ can be instantiated
-if and only if for every branch, the most specific implementation is unambiguous and non-abstract.
+if and only if for every branch, the most specific implementation is non-abstract. \yanlin{removed 'unambiguous'.}
 %%%%============================ canInstantiate end ================%%%%%%%%
 
 \subsection{Properties}
