@@ -28,10 +28,15 @@ The concrete method declaration $\method{I}{m}{I_x}{x}{J}{e}$ introduces a
 method named $m$ with result type $I$, parameters $\overline{x}$ of
 type $\overline{I_x}$ and the overriding target $J$. The body of the
 method simply includes the returned expression $e$. Notably, we have introduced the
-\kwoverride{} keyword for two cases: if the overridden interface is exactly the enclosing
-interface itself, then such a method is seen as originally defined \yanlin{added an explanation} (including the case of merging methods from different branches,  which can be viewed as \emph{reborn}); otherwise it is a hierarchical overriding method. 
+\kwoverride{} keyword for two cases. Firstly, if the overridden interface is exactly the enclosing
+interface itself, then such a method is seen as \emph{originally
+defined}. Note that  the case of merging methods from different
+branches,  also counts as originally defined.
+Secondly, for all other cases the method is considered a \emph{hierarchical overriding method}. 
 Note that in an interface $J$, $
-I \; m(\overline{I_x} \; \overline{x}) \; {\{} \kwreturn \; e ; {\}} $ is syntactic sugar for $\method{I}{m}{I_x}{x}{J}{e}$, which is the standard way of method definition in Java-like languages. The definition
+I \; m(\overline{I_x} \; \overline{x}) \; {\{} \kwreturn \; e ; {\}} $
+is syntactic sugar for $\method{I}{m}{I_x}{x}{J}{e}$, which is the
+standard way to define methods in Java-like languages. The definition
 of abstract methods is written as $\absmethod{I}{m}{I_x}{x}{J}$, which is
 similar to a concrete method but without the method body. 
 For simplicity, overloading is not modelled for methods, which
