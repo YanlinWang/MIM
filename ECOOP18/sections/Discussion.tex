@@ -29,9 +29,11 @@ methods by default (as done in many languages).
 	prefer if Java behaved like our formalization but he can not for
 	retrocompatibility.
 	Re: where do you think is the proper place to mention this? }
-Arguably, for the diamond case, as we have mentioned, it is actually an intentional conflict due to the same source $T$.
+Arguably, the diamond case it is actually an intentional conflict due
+to the same source $T$. Therefore our model conservatively rejects
+this case.
 It is possible to change our model to account for other behaviors for abstract methods, but we view this as a mostly 
-orthogonal change to our work, which should not affect the essence of the model presented here.
+orthogonal change to our work, and should not affect the essence of the model presented here.
 
 \begin{figure*}[t]
 \saveSpaceFig
@@ -67,7 +69,10 @@ Those features can, in principle, be modularly added to the model without breaki
 A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ in $J_0$ that hierarchically overrides $J_1$, thus $J_0[m\ \kwoverride\ J_1]$ is invoked. As shown in \textsc{(S-StaticInvk)}, static dispatch needs a receiver for the substitution of the ``$\kwthis$'' reference, so as to provide the latest implementations. In fact, static dispatch is common in OO programming, as it provides a shortcut to the reuse of old implementation easily, and super calls can also rely on this feature. For convenience we just make it simple above, whereas in languages like C++ or Java, the static or super invocations are more flexible, as they can climb the class hierarchy. 
 
 \yanlin{Bruno: discussed multiple overriding and the two designs}
-One non-orthogonal extension to \MIM{} could be to generalize the model to allow multiple hierarchical method overrding, meaning that, we allow overriding methods to update multiple branches instead of only one branch. It offers a more fine-grained mechanism for merging, and can be helpful to easily understand the structure of the hierarchy. Multiple overriding would be useful in the following situation, for example:
+One non-orthogonal extension to \MIM{} could be to generalize the
+model to allow multiple hierarchical method overrding, meaning that,
+we allow overriding methods to update multiple branches instead of
+only one branch. This feature offers a more fine-grained mechanism for merging, and can be helpful to easily understand the structure of the hierarchy. Multiple overriding would be useful in the following situation, for example:
 
 \begin{lstlisting}
 interface A { void m() {...} }
