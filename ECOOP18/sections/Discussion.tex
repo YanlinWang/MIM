@@ -6,7 +6,8 @@ In this section, we will discuss the design space and reflect about some of the 
 	support here?}
 
 \subsection{Abstract Methods}
-Abstract methods are one of the key features in most general OO languages. For example, Java interfaces were designed
+Abstract methods are one of the key features in most general OO
+languages. For example, Java interfaces (prior to Java 8) were designed
 to include only method declarations, and those abstract methods can be implemented in a class body. 
 The formal Featherweight Java model~\cite{Igarashi01FJ} does not include abstract methods because of the orthogonality
 to the core calculus. In traits, a
@@ -70,7 +71,7 @@ A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ 
 
 \yanlin{Bruno: discussed multiple overriding and the two designs}
 One non-orthogonal extension to \MIM{} could be to generalize the
-model to allow multiple hierarchical method overrding, meaning that,
+model to allow multiple hierarchical method overriding, meaning that,
 we allow overriding methods to update multiple branches instead of
 only one branch. This feature offers a more fine-grained mechanism for merging, and can be helpful to easily understand the structure of the hierarchy. Multiple overriding would be useful in the following situation, for example:
 

@@ -11,8 +11,9 @@ hierarchical overriding. Hierarchical dispatching is inspired by the
 mechanisms in C++. We provide a minimal formal model of hierarchical
 dispatching in \MIM{}. Such an algorithm makes use of both dynamic type
 information and static information from either upcasts or parameters'
-information. It not only offers great code reuse like
-dynamic dispatch but also ensures unambiguity by our algorithm for
+information. It not only offers code reuse and
+dynamic dispatch, but also ensures unambiguity using our hierarchical
+dispatching algorithm for
 method resolution. Additionally we introduce \emph{hierarchical
   overriding} to allow conflicting methods in different branches to be
 individually overridden.
