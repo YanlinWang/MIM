@@ -210,7 +210,6 @@ For instance, when we have the class hierarchy structure shown in Figure~\ref{fi
 
 \begin{lstlisting}
 interface DrawableSafeDeck extends Drawable, SafeDeck {}
-// main program
 new DrawableSafeDeck().shuffleAndDraw()
 \end{lstlisting}
 
@@ -222,7 +221,7 @@ new DrawableSafeDeck().shuffleAndDraw()
 %  & = \frac{1}{2} \pi r^2
 % \end{split}
 % \end{equation}
-
+\vspace{1ex}
 \begin{lstlisting}[style=reduction, escapechar=\%]
    %new DrawableSafeDeck()%.shuffleAndDraw()
 -> %new DrawableSafeDeck().shuffle()%; new DrawableSafeDeck().draw()
@@ -276,11 +275,11 @@ interface Deck {
 interface Drawable {...}
 interface SafeDeck extends Deck {...}
 interface DrawableSafeDeck extends Drawable, SafeDeck {}
-// main program
 new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
 \end{lstlisting}
 
 \noindent The computation performed in \MIM{} is as follows:
+\vspace{1ex}
 \begin{lstlisting}[style=reduction, escapechar=\%]
    %new DrawableSafeDeck()%.shuffleAndDraw()
 -> %((DrawableSafeDeck) new DrawableSafeDeck()).shuffleAndDraw()%
@@ -407,7 +406,6 @@ interface DrawableSafeDeck extends Drawable, SafeDeck {
     frame.getContentPane().add(new Square(10,10,100,100)); ...
   }
 }
-// main program
 ((Drawable)new DrawableSafeDeck()).draw(); //calls the draw in DrawableSafeDeck
 \end{lstlisting}
 
