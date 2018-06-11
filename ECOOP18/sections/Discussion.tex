@@ -73,7 +73,7 @@ A static invocation $e.J_0@J_1::m(\overline{e})$ aims at finding the method $m$ 
 One non-orthogonal extension to \MIM{} could be to generalize the
 model to allow multiple hierarchical method overriding, meaning that,
 we allow overriding methods to update multiple branches instead of
-only one branch. This feature offers a more fine-grained mechanism for merging, and can be helpful to easily understand the structure of the hierarchy. Multiple overriding would be useful in the following situation, for example:
+only one branch. This feature offers a more fine-grained mechanism for merging and can be helpful to easily understand the structure of the hierarchy. Multiple overriding would be useful in the following situation, for example:
 
 \begin{lstlisting}
 interface A { void m() {...} }
@@ -111,7 +111,7 @@ Semantic rules themselves remain unchanged, however, we need to change slightly 
 \end{flalign*}
 \saveSpaceFig
 
-With this approach, branches \lstinline|A| and \lstinline|B| are merged in the sense that they share the same code, which can be separately updated in future interfaces. Another approach would be to deeply merge the branches, with similar effect as introducing an intermediate interface \lstinline|AB| to explicitly merge the two branches. However, this approach is problematic because there is no clear mechanism of identifying and further updating the merged branches. This could be an interesting future work to explore.
+With this approach, branches \lstinline|A| and \lstinline|B| are merged in the sense that they share the same code, which can be separately updated in future interfaces. Another approach would be to deeply merge the branches, with similar effect as introducing an intermediate interface \lstinline|AB| to explicitly merge the two branches. However, this approach is problematic because there is no clear mechanism for identifying and further updating the merged branches. This could be an interesting future work to explore.
 
 %\noindent This \emph{multiple overriding} non-othogonal extension shows that our model is friendly to different kinds of language extensions.
 
