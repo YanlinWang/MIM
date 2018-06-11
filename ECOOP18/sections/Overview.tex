@@ -1,7 +1,7 @@
 \section{A Running Example: Drawable Deck}\label{sec:overview}
 This section illustrates the problem of unintentional method conflicts,
 together with the features of our model for addressing this issue, by
-a simple running example. In the following text we will introduce three
+a simple running example. In the following text, we will introduce three
 problems one by one and have a discussion on possible workarounds and
 our solutions.
 Problems 1 and 2 are related to hierarchical dispatching, and in 
@@ -36,7 +36,7 @@ have been developed in a system. \lstinline|Deck| represents a deck
 of cards and defines a method \lstinline|draw| for drawing a card from the
 deck.  \lstinline|Drawable| is an interface for graphics that
 can be drawn and also includes a method called \lstinline|draw| for
-visual display. For simple illustration, the default implementation of
+visual display. For simple illustration, the default implementation of the 
 \lstinline|draw| in \lstinline|Drawable| only creates a blank canvas
 on the screen, while the \lstinline|draw| method in \lstinline|Deck| simply
 prints out a message \lstinline|"Draw a card."|.
@@ -112,7 +112,7 @@ workarounds next:
   \item \textit{II. Refactor \lstinline|Drawable| and/or \lstinline|Deck| to rename the methods.} If
   the source code for \lstinline|Drawable| or \lstinline|Deck| is available
   then it may be possible to rename one of the \lstinline|draw|
-  methods. However this approach is non-modular, as it requires 
+  methods. However, this approach is non-modular, as it requires 
   modifying existing code and becomes impossible if the code is unavailable.
   
   \item \textit{III. Method exclusion/renaming.} Eiffel~\cite{Meyer:1987:EPR:24686.24694} and some trait models support method exclusion/renaming. Those features
@@ -420,8 +420,8 @@ hierarchical overriding feature is an important feature, involved in
 the algorithm of hierarchical dispatch.
 
 Note that, although the example here only shows one conflicting method
-being overriden, hierarchical overriding allows (as expected) multiple conflicting
-methods to be overriden in the same class. 
+being overridden, hierarchical overriding allows (as expected) multiple conflicting
+methods to be overridden in the same class. 
 
 \subsubsection{Terminology} In \lstinline|Drawable|, \lstinline|Deck|, and \lstinline|SafeDeck|, the \lstinline|draw| methods are called \textit{original methods} in this paper, because they are originally defined by the interfaces.
 In contrast, \lstinline|DrawableSafeDeck| defines a \textit{hierarchical overriding method}. The difference is that traditional method overriding overrides all branches by defining another original method, whereas hierarchical overriding only refines one branch.

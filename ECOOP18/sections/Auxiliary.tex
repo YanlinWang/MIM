@@ -50,7 +50,7 @@ To calculate $\mbody(m, I_d, I_s)$, the invocation of $\mostSpecific$ looks for 
 \end{figure*}
 
 \subsection{Finding the Most Specific Origin: \mostSpecific}\label{sec:mostSpecific}
-We proceed to give the definitions of two core functions that support method lookup, namely \mostSpecific{} and \mostSpecificOverride. Generally,
+We proceed to give the definitions of two core functions that support method lookup, namely, \mostSpecific{} and \mostSpecificOverride. Generally,
 $\mostSpecific(m, I, J)$ finds the set of most specific interfaces where $m$ is originally defined. Interfaces in this set should be above interface $I$ and along path $J$. Finally with $\prune$ (defined in Section~\ref{sec:otherdefs})
 the overridden interfaces will be filtered out.
 
@@ -145,7 +145,7 @@ $\canOverride$ just checks that two original $m$ in $I$ and $J$ have the same ty
 \end{flalign*}
 
 $\canInstantiate(I)$ checks whether interface $I$ can be instantiated by the keyword $\kwnew$.
-$\mostSpecific(m, I, I)$ represents the set of branches $I$ inherits on method $m$. $I$ can be instantiated
+$\mostSpecific(m, I, I)$ represents the set of branches that $I$ inherits on method $m$. $I$ can be instantiated
 if and only if for every branch, the most specific implementation is non-abstract. \yanlin{removed 'unambiguous'.}
 %%%%============================ canInstantiate end ================%%%%%%%%
 
