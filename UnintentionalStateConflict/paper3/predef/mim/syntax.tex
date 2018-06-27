@@ -1,0 +1,350 @@
+% \newcommand{\keyword}[1]{\texttt{#1}}
+% \newcommand{\subtype}   {<:}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% syntax.tex begin %%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\fields}{\keyword{fields}}
+\newcommand{\kwvoid}{\keyword{void}}
+\newcommand{\kwinterface}{\keyword{interface}}
+\newcommand{\kwextends}{\keyword{extends}}
+\newcommand{\kwreturn}{\keyword{return}}
+\newcommand{\kwoverride}{\keyword{override}}
+\newcommand{\kwsuper}{\keyword{super}}
+\newcommand{\kwthis}{\keyword{this}}
+\newcommand{\kwnew}{\keyword{new}}
+\newcommand{\kwtrue}{\keyword{true}}
+\newcommand{\kwfalse}{\keyword{false}}
+\newcommand{\kwstatic}{\keyword{static}}
+
+\newcommand{\eval}{\keyword{eval}}
+\newcommand{\mtype}{\keyword{mtype}}
+\newcommand{\ext}{\keyword{ext}}
+\newcommand{\definedin}{\keyword{definedin}}
+\newcommand{\collectMethods}{\keyword{collectMethods}}
+\newcommand{\mbody}{\keyword{mbody}}
+\newcommand{\mconstr}{\keyword{mconstr}}
+\newcommand{\validMC}{\keyword{validMC}}
+\newcommand{\mbodyStatic}{\keyword{mbodyStatic}}
+\newcommand{\Undefined}{\keyword{Undefined}}
+\newcommand{\Error}{\keyword{Error}}
+\newcommand{\needed}{\keyword{needed}}
+\newcommand{\methods}{\keyword{methods}}
+\newcommand{\only}{\keyword{only}}
+\newcommand{\pathcheck}{\keyword{pathcheck}}
+\newcommand{\mostSpecific}{\keyword{findOrigin}}
+\newcommand{\mostSpecificOverride}{\keyword{findOverride}}
+\newcommand{\overrideSet}{\keyword{overrideSet}}
+\newcommand{\prune}{\keyword{prune}}
+\newcommand{\update}{\keyword{update}}
+\newcommand{\dom}{\keyword{dom}}
+\newcommand{\tail}{\keyword{tail}}
+
+\newcommand{\canInstantiate}{\keyword{canInstantiate}}
+\newcommand{\canOverride}{\keyword{canOverride}}
+% \newcommand{\mbodyStatic}{\keyword{mbodyStatic}}
+\newcommand{\pathIvk}{?}
+\newcommand{\staticIvk}{::}
+
+\newcommand{\mylet}[4]{
+	#1 \; #2 = #3;#4 
+}
+\newcommand{\concat}[2]{
+	#1 \circ #2
+}
+\newcommand{\return}[1]{
+   return \; #1
+}
+\newcommand{\returnLet}[1]{
+returnLet \; #1
+}
+\newcommand{\obj}[2]{
+	#1 [ #2 ]  
+}
+\newcommand{\subt}[2]{
+    #1 <: #2
+}
+\newcommand{\staAnno}[2]{
+    #1 @ #2 \staticIvk
+}
+
+\newcommand{\angl}[1]{
+    \langle #1 \rangle
+}
+
+\newcommand{\num}[1]{
+    \#(#1)
+}
+
+\newcommand{\new}[1]{
+    \kwnew \; #1()
+}
+
+\newcommand{\neww}[1]{
+    \kwnew \; #1
+}
+\newcommand{\newI}[2]{
+    \kwnew \; #1(#2)
+}
+\newcommand{\interface}[3]{
+  \kwinterface \; #1 \; \kwextends \; \overline{#2} \; {\{} \overline{#3} {\}}
+}
+\newcommand{\interfaceMC}[4]{
+\kwinterface \; #1 \; \kwextends \; \overline{#2} \; {\{} #3 \; \overline{#4} {\}}
+}
+% \newcommand{\prog}[2]{
+% 	\overline{#1} \; #2
+% }
+\newcommand{\prog}[2]{
+    \overline{#1} \; #2
+}
+\newcommand{\method}[6]{
+  #1 \; #2 (\overline{#3} \; \overline{#4}) \; \kwoverride \; #5 \; {\{} \kwreturn \; #6 ; {\}}
+}
+\newcommand{\absmethod}[5]{
+  #1 \; #2 (\overline{#3} \; \overline{#4}) \; \kwoverride \; #5 \; ;
+}
+\newcommand{\methodStatic}[4]{
+\kwstatic \; #1 \; #2 (\overline{#3} \; \overline{#4}) \;  ;
+}
+\newcommand{\constructor}[2]{
+\kwnew (\overline{#1} \; \overline{#2}) \;  ;
+}
+\newcommand{\subid} {
+\inferrule* [right=]
+    {}
+    {I \subtype I}
+}
+\newcommand{\subtrans} {
+\inferrule* [left=]
+    {I \subtype J \\ J \subtype K}
+    {I \subtype K}
+}
+
+\newcommand{\subextends} {
+\inferrule* [right=]
+    {\interface{I}{I}{M}}
+    {\forall I_i \in \overline{I}, I \subtype I_i}
+}
+
+\newcommand{\tvar} {
+\inferrule* [left=(T-Var)]
+    {}
+    {\judgeewf \Gamma x:\Gamma(x)}
+}
+
+\newcommand{\tinvk} {
+\inferrule* [left=(T-Invk)]
+    {  \judgeewf \Gamma {e_0:I_0}
+    % \\ \mtype(m, I_0) = \overline{J} \to I
+    \\ \mbody(m, I_0, I_0) = (K, \overline{J} \; \overline{x}, I \; \_) 
+    \\ \judgeewf \Gamma \overline{e}:\overline{I}
+    \\ \overline{I} \subtype \overline{J}
+    }
+    {\judgeewf \Gamma e_0.m(\overline{e}):I}
+}
+
+\newcommand{\tpathinvk} {
+\inferrule* [left=(T-PathInvk)]
+    {  \judgeewf \Gamma {e_0:I_0}
+    \\ I_0 \subtype J_0
+    \\ \mbody(m, I_0, J_0) = (K, \overline{J} \; \overline{x}, I \; \_) 
+    \\ \judgeewf \Gamma \overline{e}:\overline{I}
+    \\ \overline{I} \subtype \overline{J}
+    }
+    {\judgeewf \Gamma e_0.J_0?m(\overline{e}):I}
+}
+
+\newcommand{\tstaticinvk} {
+\inferrule* [left=(T-StaticInvk)]
+    {J_0[m \; \kwoverride \; J_1] = \method{I}{m}{J}{x}{J_1}{e} \\ 
+    \judgeewf \Gamma {e_0:I_0} \\ I_0 \subtype J_0 \\
+    \judgeewf \Gamma \overline{e}:\overline{I} \\
+    \overline{I} \subtype \overline{J}
+    }
+    {\judgeewf \Gamma {e_0.\staAnno{J_0}{J_1}m(\overline{e})}:I}
+}
+
+% \newcommand{\tsuperinvk} {
+% \inferrule* [left=(T-SuperInvk)]
+%     {  \ext(\Gamma(this), J_0)
+%     \\ \mtype(m, J_0) = \overline{J} \to I
+%     \\ \judgeewf \Gamma \overline{e}:\overline{I}
+%     \\ \overline{I} \subtype \overline{J}
+%     }
+%     {\judgeewf \Gamma {\kwsuper.J_0::m(\overline{e})}:I}
+% }
+
+\newcommand{\tnew} {
+\inferrule* [left=(T-New)]
+    {\interface{I}{I}{M} \\ \canInstantiate(I) } 
+    {\judgeewf \Gamma \new{I}:I}
+}
+
+\newcommand{\tmethod} {
+\inferrule* [left=(T-Method)]
+    {  I <: J \\
+    \mostSpecific(m, I, J) = \{J\} \\
+    \mbody(m, J, J) = (K, \overline{I_x} \; \overline{x}, I_e \; \_) \\
+        \judgeewf {\overline{x}:\overline{I_x}, this:I  } {e_0:I_0} \\
+        I_0 \subtype I_e
+    %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
+    }
+    {\method{I_e}{m}{I_x}{x}{J}{e_0} \text{ OK IN } I}
+}
+
+\newcommand{\tabsmethod} {
+\inferrule* [left=(T-AbsMethod)]
+    {  I <: J \quad
+    \mostSpecific(m, I, J) = \{J\} \\
+    % \mtype(m, J) = \overline{I_x} \to I_e 
+    \mbody(m, J, J) = (K, \overline{I_x} \; \overline{x}, I_e \; \_)
+    %\\ \definedin(m, J) % m is (directly or indirectly) defined in J
+    }
+    {\absmethod{I_e}{m}{I_x}{x}{J} \text{ OK IN } I}
+}
+
+% \newcommand{\tintf} {
+% \inferrule* [left=(T-Intf)]
+%     {  \overline{I} \text{ OK}
+%     \\ \forall m \in \collectMethods(I), \mbody(m, I) \neq \Undefined
+%     }
+%     { \interface{I}{I}{M} \text{ OK }}
+% }
+\newcommand{\tintf} {
+\inferrule* [left=(T-Intf)]
+    {  \overline{M} \text{ OK IN } I \\
+    \forall J >: I \text{ and } m, \mbody(m, J, J) \text{ is defined} \Rightarrow \mbody(m, I, J) \text{ is defined} \\ 
+    \forall J >: I \text{ and } m, I[m \; \kwoverride \; I] \text{ and } J[m \; \kwoverride \; J] \text{ defined}  \Rightarrow \canOverride(m, I, J)
+    }
+    { \interface{I}{I}{M} \text{ OK }}
+}
+
+\newcommand{\tanno} {
+\inferrule* [left=(T-Anno)]
+    {  \judgeewf \Gamma e:I  \\
+       I \subtype J  }
+    { \judgeewf \Gamma {(J)e : J} }
+}
+
+
+\newcommand{\sinvk} {
+\inferrule* [left=(S-Invk)]
+{}
+{\left(\angl{J}\new{I}\right).m(\marcoT{\overline{e}}) \to
+    \left(\angl{J}\new{I}\right).J?m(\marcoT{\overline{e}})}
+}
+
+\newcommand{\spathinvk} {
+\inferrule* [left=(S-Invk)]
+{\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e \; e_0) 
+%\\ e_0 \neq \o
+}
+{\left((J)\new{I}\right).m(\overline{v}) \to
+    (I_e)[
+  \overline{(I_x)v}
+  /\overline{x}, (I_0)\new{I}/\kwthis]e_0}
+}
+
+\newcommand{\sstaticinvk} {
+\inferrule* [left=(S-StaticInvk)]
+{J_0[m \; \kwoverride \; J_1] = \method{I_e}{m}{I_x}{x}{J_1}{e_0}}
+{\left((J)\new{I}\right).\staAnno{J_0}{J_1}m(\overline{v}) \to
+    (I_e)[\overline{(I_x)v}
+  /\overline{x}, (J_0)\new{I}/\kwthis]e_0}
+}
+
+% \newcommand{\ssuperinvk} {
+% \inferrule* [left=(S-SuperInvk)]
+% {\mbody(m, K, K) = (I_0, \overline{I_x} \; \overline{x}, I'_e \; e_0) \\ e_0 \neq \o}
+% {\kwsuper.K::m(\overline{\angl{I_e}} \overline{e}) \to
+%     \angl{I'_e}[\overline{\angl{I_x}} \overline{e}/\overline{x}, \angl{I_0}\new{K}/\kwthis]e_0}
+% }
+
+\newcommand{\deff} {
+\begin{displaymath}
+    \begin{array}{l}
+        \begin{array}{llrl}
+        \text{Annotated Expressions}   & f & \Coloneqq & e \mid \angl{I}e
+        \end{array}
+    \end{array}
+\end{displaymath}
+}
+
+\newcommand{\creceiver} {
+%----------- v1.0 ---------------
+%\inferrule* [left=(C-Receiver)]
+%{e \to e'}
+%{e.m(\overline{e}) \to e'.m(\overline{e})}
+%}
+\inferrule* [left=(C-Receiver)]
+{e_0 \to e'_0}
+{e_0.m(\overline{e}) \to e'_0.m(\overline{e})}
+}
+
+\newcommand{\cpathreceiver} {
+\inferrule* [left=(C-PathReceiver)]
+{e_0 \to e'_0}
+{e_0.K\pathIvk m(\overline{e}) \to e'_0.K\pathIvk m(\overline{e})}
+}
+
+\newcommand{\cargs} {
+%---------- v1.0 ---------------
+%\inferrule* [left=(C-Args)]
+%{e_i \to e_i'}
+%{e.m(..., e_i, ...) \to e.m(..., e_i', ...)}
+%}
+%---------- v2.0 ---------------
+%\inferrule* [left=(C-Args)]
+%{e_1 \to f}
+%{\angl{J}\new{I}.m(<\overline{E}>\overline{e_0}, e_1, \overline{e_2})
+%\to
+%\angl{J}\new{I}.m(<\overline{E}>\overline{e_0}, f, \overline{e_2})}
+%}
+%---------- v3.0 ---------------
+\inferrule* [left=(C-Args)]
+{e \to e'}
+{e_0.m(\ldots,e,\ldots)
+\to
+e_0.m(\ldots,e',\ldots)}
+}
+
+\newcommand{\cpathargs} {
+\inferrule* [left=(C-PathArgs)]
+{e \to e'}
+{e_0.I\pathIvk m(\ldots,e,\ldots)
+\to
+e_0.I\pathIvk m(\ldots,e',\ldots)}
+}
+
+\newcommand{\cstaticargs} {
+\inferrule* [left=(C-StaticArgs)]
+{e \to e'}
+{e_0.I\staticIvk m(\ldots,e,\ldots)
+\to
+e_0.I\staticIvk m(\ldots,e',\ldots)}
+}
+
+% \newcommand{\csuperargs} {
+% \inferrule* [left=(C-SuperArgs)]
+% {e \to e'}
+% {super.I::m(\ldots,e,\ldots)
+% \to
+% super.I::m(\ldots,e',\ldots)}
+% }
+
+\newcommand{\cstatictype} {
+\inferrule* [left=(C-StaticType)]
+{}
+{\new{I} \to \; (I)\new{I}}
+}
+
+\newcommand{\cfreduce} {
+\inferrule* [left=(C-FReduce)]
+{e \to e' \\ e \neq \new{J}}
+{(I)e \to \; (I)e'}
+}
+
+\newcommand{\cannoreduce} {
+\inferrule* [left=(C-AnnoReduce)]
+{}
+{(I)((J)\new K) \to (I) \new K}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% syntax.tex end %%%%%%%%%%%%%%%%%%%%%%%%

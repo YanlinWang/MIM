@@ -1,0 +1,104 @@
+\newcommand{\kwsig}{\keyword{sig}}
+% \newcommand{\kwextends}{\keyword{extends}}
+\newcommand{\kwalgebra}{\keyword{algebra}}
+\newcommand{\kwimplements}{\keyword{implements}}
+\newcommand{\kwdata}{\keyword{data}}
+\newcommand{\kwfrom}{\keyword{from}}
+\newcommand{\trans}[4]{#1 \; \turns \; #2 \; : \; #3 \; \Rightarrow \; #4}
+\newcommand{\Tau}{\mathrm{T}}
+
+\newcommand{\sig}[5]{
+  \kwsig \; #1 {[} \overline{#2} {]} \;
+  \kwwhere \; \overline{#3 : #4} \; \kwin \; #5
+}
+\newcommand{\sigext}[7]{
+  \kwsig \; #1 {[} \overline{#2} {]} \;
+  \kwextends \; \overline{#3 {[} \overline{#4} {]}} \;
+  \kwwhere \; \overline{#5 : #6} \; \kwin \; #7
+}
+
+\newcommand{\alg}[8]{
+  \kwalgebra \; #1 \; \kwimplements \; \overline{#2 {[} \overline{#3} {]}} \;
+  \kwwhere \; \overline{#4 {@(} #5 \; \overline{#6} {)=} \; #7} \; \kwin \; #8
+}
+
+\newcommand{\algext}[9]{
+  \kwalgebra \; #1 \; \kwextends \; \overline{#2} \;
+  \kwimplements \; \overline{#3 {[} \overline{#4} {]}} \;
+  \kwwhere \; \overline{#5 {@(} #6 \; \overline{#7} {)=} \; #8} \; \kwin \; #9
+}
+
+\newcommand{\data}[5]{
+  \kwdata \; #1 \; \kwfrom \; #2 {[} \overline{#3} {]} . #4 \;
+  \kwin \; #5
+}
+
+\newcommand{\rulesig}{
+\inferrule* [right=]
+  {\trans {\Gamma, s {[} \overline{\alpha} {]}\to\overline{l:\tau}} e {\tau_*} E }
+  {\trans \Gamma {\sig s \alpha l \tau e} {\tau_*} {\letexpr {merge_s : ...} {...} E}}
+}
+
+\newcommand{\rulesigext}{
+\inferrule* [right=]
+  {\overline{\judgeewf \Gamma {s_2[\overline{\alpha_2}]}} \\ \trans {\Gamma, s_1[\overline{\alpha_1}]\to\textbf{U}_\varnothing\overline{[\overline{\alpha}/\overline{\alpha_2}]\Gamma(s_2)} \; \textbf{U}_\leftarrow\overline{l:\tau}} e {\tau_*} E }
+  {\trans \Gamma {\sigext {s_1} {\alpha_1} {s_2} \alpha l \tau e} {\tau_*} {\letexpr {merge_{s_1} : ...} {...} E}}
+}
+
+\newcommand{\rulealg}{
+\inferrule* [right=]
+  {\overline{\judgeewf \Gamma {s[\overline{\alpha}]}} \\ \overline{\trans {\Gamma, \overline{x_1} : [\overline{\tau}/\overline{\alpha}]gen2_A(l_1)} {e_1} {\tau_1} {E_1}} \\ \trans {\Gamma, x : \andop\overline{[\overline{\tau}/\overline{\alpha}]\Gamma(s)}, x \multimap \overline{s[\overline{\tau}]}} e {\tau_*} E}
+  {\trans \Gamma {\alg x s \tau l {l_1} {x_1} {e_1} e} {\tau_*} {\\ \letexpr {x : \red{\andop\overline{[\overline{\tau}/\overline{\alpha}]\Gamma(s)}}} {\red{\{\overline{l_1 = \lam {\overline{x_1}} {[\overline{\tau}/\overline{\alpha}]gen2_A(l_1)} {\{l = E_1\}}}\}}} E}}
+}
+
+\newcommand{\rulealgext}{
+\inferrule* [right=]
+  {\overline{\judgeewf \Gamma {s[\overline{\alpha}]}} \\ \overline{\judgeewf \Gamma {x_0}} \\ \overline{\trans {\Gamma, \overline{x_1} : [\overline{\tau}/\overline{\alpha}]gen2_A(l_1)} {e_1} {\tau_1} {E_1}} \\ \trans {\Gamma, x : \andop\overline{[\overline{\tau}/\overline{\alpha}]\Gamma(s)}, x \multimap \overline{s[\overline{\tau}]}} e {\tau_*} E}
+  {\trans \Gamma {\algext x {x_0} s \tau l {l_1} {x_1} {e_1} e} {\tau_*} {\\ \letexpr {\red{x : \andop\overline{[\overline{\tau}/\overline{\alpha}]\Gamma(s)}}} {\red{\overline{x_0} \mergeop \{\overline{l_1 = \lam {\overline{x_1}} {[\overline{\tau}/\overline{\alpha}]gen2_A(l_1)} {\{l = E_1\}}}\}}} E}}
+}
+
+%\newcommand{\ruledatatype}{
+%\inferrule* [right=]
+%  {\judgeewf \Gamma {s[\overline{\alpha}]} \to \overline{l : \tau} \\ \trans \Gamma {[[\overline{\tau}/(\overline{\alpha_0}\backslash\alpha_1)]\{accept : \for {\alpha_1} {s[\overline{\alpha_0}] \to \alpha_1}\}/d[\overline{\tau}]]e} {\tau_*} E}
+%  {\trans \Gamma {\data d s {\alpha_0} {\alpha_1} e} {\tau_*} {\letexpr {\overline{gen3(l)}} {...} E}}
+%}
+
+\newcommand{\ruledatatype}{
+\inferrule* [right=\red{need tcheck}]
+  {\judgeewf \Gamma {s[\overline{\alpha}]} \to \overline{l : \tau} \\ \trans {\Gamma, d \rightsquigarrow s[\overline{\alpha_0}].\alpha_1 : \{accept : \for {\alpha_1} {s[\overline{\alpha_0}] \to \alpha_1}\}} e {\tau_*} E}
+  {\trans \Gamma {\data d s {\alpha_0} {\alpha_1} e} {\tau_*} {\letexpr {\overline{gen3(l)}} {...} E}}
+}
+
+\newcommand{\rulebuilda}{
+\inferrule* [right=\red{need tcheck}]
+  {...}
+  {\trans \Gamma {\letexpr {x : d[\overline{\tau}]} {e_1} e} {\tau_*} {...}}
+}
+
+\newcommand{\rulebuildb}{
+\inferrule* [right=\red{need tcheck}]
+  {\judgeewf \Gamma d \\ \trans {\Gamma, \overline{x_1} : \overline{\tau_1}, \overline{x_2} : d[\overline{\tau}]} {e_1} {d[\overline{\tau}]} {E_1} \\ \trans {\Gamma, x : \overline{\tau_1} \to \overline{d[\overline{\tau}]} \to d[\overline{\tau}]} {e} {\tau_*} {E}}
+  {\trans \Gamma {\letexpr {x \; (\overline{x_1} : \overline{\tau_1}) \; (\overline{x_2} : d[\overline{\tau}]) : d[\overline{\tau}]} {e_1} e} {\tau_*} {\letexpr x {[gen4(d)]E_1} E}}
+}
+
+\newcommand{\ruleinsta}{
+\inferrule* [right=]
+  {\overline{\judgeewf \Gamma {x \multimap s[\overline{\tau}]}} \\ \judgeewf \Gamma {s[\overline{\alpha}]}}
+  {\trans \Gamma {\texttt{<}\overline{x}\texttt{>}} {s[\andop\overline{\tau}]} {merge_s\overline{[\overline{\tau}]} \; \overline{x}}}
+}
+
+\newcommand{\mergealg}{
+merge_s : \for {\overline{\alpha_A}} {\for {\overline{\alpha_B}} {s[\overline{\alpha_A}] \to s[\overline{\alpha_B}] \to s[\overline{\alpha_A\andop\alpha_B}]}} = \blam {\overline{\alpha_A}} {\blam {\overline{\alpha_B}} {\lam {alg_1} {s[\overline{\alpha_A}]} {\lam {alg_2} {s[\overline{\alpha_B}]} {\{\overline{l=[\overline{\alpha_A\andop\alpha_B} / \overline{\alpha}] gen(l)}\}}}}}
+}
+
+\newcommand{\ruleexpandsig} {
+\inferrule* [right=]
+    {\judgeewf \Gamma {s[\overline{\alpha}]\to\tau_*}}
+    {\judgeewf \Gamma {s[\overline{\tau_0}]\Rightarrow[\overline{\tau_0}/\overline{\alpha}]\tau_*}}
+}
+
+\newcommand{\ruleexpanddata} {
+\inferrule* [right=]
+    {\judgeewf \Gamma {d \rightsquigarrow s[\overline{\alpha_0}].\alpha_1 : \tau_*} \\ \judgeewf \Gamma {s[\overline{\alpha}]\to\overline{l:\tau}}}
+    {\judgeewf \Gamma {d[\overline{\tau_0}]\Rightarrow[\overline{\tau_0}/(\overline{\alpha_0}\backslash\alpha_1)]\tau_*}}
+}
