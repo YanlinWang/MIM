@@ -1,4 +1,6 @@
 interface A {
   static A of();
 }
-let A x = A.of(); x
+
+A x = A.of();
+x

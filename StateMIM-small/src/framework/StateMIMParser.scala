@@ -6,7 +6,7 @@ import scala.util.parsing.combinator.syntactical._
 object StateMIMParser extends StandardTokenParsers with PackratParsers {
   import AST._
   
-  lexical.reserved += ("interface", "extends", "return", "override", "super", "static", "let")
+  lexical.reserved += ("interface", "extends", "return", "override", "super", "static")
   lexical.delimiters += ("(", ")", "{", "}", ",", ".", "::", ";", "=")
   
   val lcid = ident ^? { case id if id.charAt(0).isLower => id }
@@ -31,7 +31,9 @@ object StateMIMParser extends StandardTokenParsers with PackratParsers {
         { case e ~ m ~ args => Invk(e, m, args) } |||
       pE ~ ("." ~> ucid) ~ ("(" ~> pE <~ ")") ^^
         { case e ~ m ~ arg if (m.startsWith("SET_")) => InvkSetter(e, m.substring(4), arg) } |||
-      ("let" ~> ucid) ~ lcid ~ ("=" ~> pE) ~ (";" ~> pE) ^^
+      pE ~ ("." ~> ucid) ~ ("(" ~> pE <~ ")") ~ (";" ~> pE) ^^
+        { case e ~ m ~ arg ~ e2 if (m.startsWith("SET_")) => LetExpr("Void", "TEMP", InvkSetter(e, m.substring(4), arg), e2) } |||
+      ucid ~ lcid ~ ("=" ~> pE) ~ (";" ~> pE) ^^
         { case t ~ x ~ e1 ~ e2 => LetExpr(t, x, e1, e2) } |||
       lcid ~ ("(" ~> repsep(pE, ",") <~ ")") ^^
         { case m ~ args => Invk(Var("this"), m, args) } |||
@@ -41,8 +43,11 @@ object StateMIMParser extends StandardTokenParsers with PackratParsers {
         { case t ~ m ~ args => InvkStatic(t, m, args) }
   }
   
-  def parse(in: String): Either[String, Program] = phrase(Parser.pP)(new lexical.Scanner(in)) match {
+  def parse(in: String): Either[String, Program] = {
+    val prelude = "interface Void {static Void of();}"
+    phrase(Parser.pP)(new lexical.Scanner(prelude + in)) match {
       case t if t.successful => Right(t.get)
       case t                 => Left(t.toString)
+    }
   }
 }

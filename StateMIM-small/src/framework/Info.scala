@@ -8,16 +8,14 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
   def isField(i: String, j: String, m: String): Option[(Int, String)] = {
     // see the of() method in class I.
     // see if argument J.m exists
-    println("Checking isField: i = " + i + " j = " + j + " m = " + m)
     val typeDef = typeDefMap.get(i).get
     val constr = typeDef.constr
-    if (constr.isEmpty) {println("here"); return None}
+    if (constr.isEmpty) return None
     val paras = constr.get.paras
     for (x <- 0 to paras.length - 1) {
       val para = paras(x)
       if (para.path == j && para.name == m) return Some(x, para.fieldType)
     }
-    println("there")
     None
   }
   
@@ -98,7 +96,6 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
   }
   def isField(info: Info, name: String, t: String) : Option[String] = {
     val mbody = info.mbody(name, t, t)
-    println("mbody(" + name + ", " + t + ", " + t + ") = " + mbody)
     if (mbody.isEmpty) return None
     if (mbody.get._2.size != 0) return None
     if (mbody.get._3._2.isDefined) return None

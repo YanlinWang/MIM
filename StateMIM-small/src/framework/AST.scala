@@ -25,7 +25,7 @@ object AST {
       }
     }
     def eval(): (String, String) = {
-      val init = Config(H(Map(), 1), VS(List(BS(List()))), e, FS(List()))
+      val init = Config(H(Map(), 1), VS(List(BS(List()))), e)
       Semantics.eval(collectInfo.get, init)
     }
     
@@ -133,7 +133,8 @@ object AST {
       assert(constr.get.paras.size == args.size, Message("Wrong arguments on invk of " + t + "." + m + "()."))
       for (i <- 0 to args.size - 1) {
         val argType = args(i).checkType(info, env)
-        assert(argType == constr.get.paras(i).fieldType, Message("Wrong argument type on invk of " + t + "." + m + "()."))
+        assert(info.subType(argType, constr.get.paras(i).fieldType),
+            Message("Wrong argument#" + (i + 1) + " type on invk of " + t + "." + m + "()."))
       }
       t
     }
@@ -158,7 +159,7 @@ object AST {
       assert(fieldType.isDefined, Message(fieldName + " not a field in " + eT))
       // fieldName:efT, check paraT <: efT 
       assert(info.subType(para.checkType(info, env), fieldType.get), Message("para type <: " + fieldType.get + "does not hold"))
-      eT //TODO: should return static type or?
+      "Void"
     }
   }
  
@@ -175,49 +176,17 @@ object AST {
     }
   }
   
-  case class Value(t: String, id: OId) extends Expr {
-    override def isValue = true
+  case class InvkCloseExpr(e: Expr) extends Expr {
     def checkType(info: Info, env: Map[String, String]) = throw Buggy
   }
   
-  abstract class OpenExpr {
-    def fill(v: Value): Expr = throw Error.TODO
-  }
+  case class LetCloseExpr(e: Expr) extends Expr {
+    def checkType(info: Info, env: Map[String, String]) = throw Buggy
+  } 
   
-  case class Invk_E(m: String, args: List[Expr]) extends OpenExpr {
-    override def fill(v: Value) = Invk(v, m, args)
-  }
-  
-  case class Invk_Arg(e: Expr, m: String, args: List[Expr], index: Int) extends OpenExpr {
-    override def fill(v: Value) = Invk(e, m, args.updated(index, v))
-  }
-  
-  case class InvkStatic_Arg(t: String, m: String, args: List[Expr], index: Int) extends OpenExpr {
-    override def fill(v: Value) = InvkStatic(t, m, args.updated(index, v))
-  }
-  
-  case class AnnoExpr_E(i: String) extends OpenExpr {
-    override def fill(v: Value) = AnnoExpr(i, v)
-  }
-  
-  case class InvkSetter_E(fieldName: String, para: Expr) extends OpenExpr {
-    override def fill(v: Value) = InvkSetter(v, fieldName, para)
-  }
-  
-  case class InvkSetter_Arg(e: Expr, fieldName: String) extends OpenExpr {
-    override def fill(v: Value) = InvkSetter(e, fieldName, v)
-  }
-  
-  case class LetExpr_E1(t: String, x: String, e2: Expr) extends OpenExpr {
-    override def fill(v: Value) = LetExpr(t, x, v, e2)
-  }
-  
-  case class ReturnExprForLet() extends OpenExpr {
-    override def fill(v: Value) = throw Error.Buggy
-  }
-  
-  case class ReturnExprForInvk() extends OpenExpr {
-    override def fill(v: Value) = throw Error.Buggy
+  case class Value(t: String, id: OId) extends Expr {
+    override def isValue = true
+    def checkType(info: Info, env: Map[String, String]) = throw Buggy
   }
   
 }

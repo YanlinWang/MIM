@@ -9,4 +9,7 @@ interface A {
    static A of(Int A.x);
    Int x() override A;
 }
-A.of(I3.of()).SET_x(I2.of()).x()
+
+A m = A.of(I3.of());
+m.SET_x(I2.of());
+m.x()

@@ -26,24 +26,28 @@ interface Located {
 }
 
 interface Employee {
-  String position() override Employee;
+  Title position() override Employee;
   Int age() override Employee;
   String name() override Employee;
 }
 
 interface OfficeClerk extends Located, Employee {
-  static OfficeClerk of(String Employee.name, Int Employee.age, String Employee.position,
+  static OfficeClerk of(String Employee.name, Int Employee.age, Title Employee.position,
     Int OfficeClerk.deskNumber, Point Located.position);
   Int deskNumber() override OfficeClerk;
   OfficeClerk moveTo(OfficeClerk c) override OfficeClerk {
     return (
-      let Point p = ((Located)c).position();
-      ((Located)this).SET_position(p).SET_deskNumber(c.deskNumber())
+      Point p = ((Located)c).position();
+      ((Located)this).SET_position(p);
+      this.SET_deskNumber(c.deskNumber());
+      this
     );
   }
 }
 
-let OfficeClerk alice = OfficeClerk.of(Alice.of(), I27.of(), Manager.of(), I1.of(), let Point p = Point.of(I2.of(), I3.of()); p);
-let OfficeClerk bob = OfficeClerk.of(Bob.of(), I45.of(), Director.of(), I2.of(), let Point p = Point.of(I2.of(), I4.of()); p);
-let Title p = Officer.of();
-((Employee) alice.moveTo(bob)).SET_position(p)
+OfficeClerk alice = OfficeClerk.of(Alice.of(), I27.of(), Manager.of(), I1.of(), (Point p = Point.of(I2.of(), I3.of());p));
+OfficeClerk bob = OfficeClerk.of(Bob.of(), I45.of(), Director.of(), I2.of(), (Point p = Point.of(I2.of(), I4.of());p));
+Title p = Officer.of();
+OfficeClerk a2b = alice.moveTo(bob);
+((Employee)a2b).SET_position(p);
+a2b

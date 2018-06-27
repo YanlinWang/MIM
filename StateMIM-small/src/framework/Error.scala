@@ -12,7 +12,7 @@ object Error {
   
   case object Buggy extends Throwable
   case object TODO extends Throwable
-  case class Done(c: Config) extends Throwable
+  case class Done(config: Config) extends Throwable
   
   def assert[A](f: Boolean, exception: Throwable): Unit = if (!f) throw exception
   def nextError(f: Throwable, g: Throwable): Unit = {printError(f); throw g}
