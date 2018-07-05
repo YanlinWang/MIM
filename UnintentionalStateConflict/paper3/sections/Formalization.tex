@@ -59,9 +59,9 @@ new B(B.x = 0).GET_x();   // 0
 \section{Formalization}~\label{sec:formalization}
 This version:
 \begin{itemize}
-	\item void setters
-	\item statements
-	\item explicit constructor. (?)
+	\item does not support fluent setters
+	\item let-expressions
+	\item explicit constructor.
 \end{itemize}
 \begin{figure*}
 	\saveSpaceFig
@@ -389,4 +389,35 @@ interface C extends A, B {
 C.of(3,2)
 \end{lstlisting}
 
+\section{Proof}
+\subsection{Properties}
+\begin{theorem}[Subject Reduction]~\label{theorem_subject}
+If $\judgeewf \Gamma {e : I}$ and $e \rightarrow e'$, 
+then $\judgeewf \Gamma {e' : I}$.
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
 
+\begin{theorem}[Progress]~\label{theorem_progress}
+Suppose $e$ is a well-typed expression, if $e$ includes 
+$\left((J)\emph{\kwnew}\;I()\right).m(\overline{v})$ as a sub-expression, then $\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0)$ and $\num{\overline{x}} = \num{\overline{v}}$ for some $I_0$, $\overline{I_x}$, $\overline{x}$, $I_e$ and $e_0$.
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
+
+\begin{theorem}[Type Soundness]~\label{theorem_soundness}
+If $\judgeewf \o {e : I}$ and $e \to^* e'$ with $e'$ a normal form, then $e'$ is 
+a value $v$ with $\judgeewf \o {v:I}$.
+\end{theorem}
+\begin{proof}
+Immediate from Theorem~\ref{theorem_subject} and Theorem~\ref{theorem_progress}.
+\end{proof}
+
+\begin{theorem}[Determinacy of One-Step Evaluation]~\label{theorem_determinacy}
+	If $t \to t'$ and $t \to t''$, then $t' = t''$.
+\end{theorem}
+\begin{proof}
+See Appendix~\ref{appendix_proof}.
+\end{proof}
