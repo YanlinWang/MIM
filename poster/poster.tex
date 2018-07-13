@@ -197,28 +197,37 @@ frame=single %border
    \end{enumerate}
    \vspace{0.3em}
   }
-\begin{comment}
-  \headerbox{Implementation}{name=implementation,column=0,below=contribution}{
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
-Java supports compilation agents, where Java libraries can interact with the Java compilation process,
-acting as a man in the middle between the
-generation of AST and bytecode.
 
-This process is facilitated by frameworks like Lombok:
-a Java library that aims at reducing Java boilerplate code via
-annotations. \mixin was created using Lombok.
+\headerbox{Real Conflicts}{name=implementation,column=0,below=contribution}{
 
-\noindent{\centering\includegraphics[width=\linewidth]{pdfs/lombok3.png}\\}
+\noindent{\centering\includegraphics[width=5em]{../ECOOP18/pics/P1.pdf}\\}
+\vspace{0.5em}
+\noindent{\centering\includegraphics[width=5em]{../ECOOP18/pics/P4.pdf}\\}
 \vspace{0.1em}
+
+\begin{enumerate}
+\item Real conflicts needs to be explicitly resolved by programmers. \\
+\item Existing OOP models have taken care of this case intensively.
+\end{enumerate}
+% \begin{figure*}
+% \begin{tabular}{clcl}
+% &\multicolumn{1}{c}{\includegraphics[width=5em]{../ECOOP18/pics/P1.pdf}} & & 
+% \multicolumn{1}{c}{\includegraphics[width=5em]{../ECOOP18/pics/P4.pdf}}\\
+% \end{tabular}
+% \end{figure*}
 }
 
-  \headerbox{UML Diagram}{name=uml,column=0,below=implementation}{
+  \headerbox{Unintentional Conflicts}{name=uml,column=0,below=implementation,above=bottom}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\noindent{\centering\includegraphics[width=0.8\linewidth]{pdfs/PegasusDetail.pdf}\\}
+\noindent{\centering\includegraphics[width=\linewidth]{../ECOOP18/pics/conflicts.png}\\}
 \vspace{0.1em}
+\begin{enumerate}
+\item Conflicting methods have completely different meaning/domain which just share the same name (and parameter types). 
+\item Few existing OOP models support unintentional method conflicts well. 
+\end{enumerate}
 }
 
+\begin{comment}  
   \headerbox{Results (Partial)}{name=result,column=0,below=uml,above=bottom}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In the maze game case study, both SLOC and \# of interfaces are greatly reduced:
@@ -228,77 +237,86 @@ In the maze game case study, both SLOC and \# of interfaces are greatly reduced:
 \end{comment}
 
 \vspace{-0.5em}
-\headerbox{Object Interfaces and Instantiation}{name=Model,column=1,span=2,row=0}{
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \lstinputlisting[linerange=6-13]{../UseMixinLombok/src/pegasus/simple/java8/Main.java}% APPLY:linerange=PEGASUS_JAVA
-% \lstinputlisting[linerange=17-19]{../UseMixinLombok/src/pegasus/simple/java8/Main.java}% APPLY:linerange=PEGASUS_INST
-\lstinputlisting[linerange=8-12]{../UseMixinLombok/src/pegasus/simple/lombok/Main.java}% APPLY:linerange=PEGASUS_LOMBOK
-\lstinputlisting[linerange=1-5]{./import_src/src1.txt}
+\headerbox{P1: basic unintentional method conflicts}{name=Model,column=1,span=2,row=0}{
+\lstinputlisting[linerange=1-6]{./src/src1.txt}
 }
 
 \vspace{-0.5em}
-\headerbox{Object Interfaces with State (immutable data)}{name=results,column=1,span=2,row=0,below=Model}{
+\headerbox{P2: dynamic dispatching}{name=results,column=1,span=2,row=0,below=Model}{
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  \begin{multicols}{2}
 %  \noindent{\centering\includegraphics[width=1\linewidth]{images/mymodel.pdf}\\}
 % The process of generating an academic document is as follows: for each citation in that document, firstly sample a topic $\topic_k$ according to the distribution from paper\_topic distribution $\delta(\topic ; \paper)$ or author\_topic distribution $\zeta(\topic ; \authorvar)$ or venue\_topic distribution $\psi(\topic ; \venue)$  based on the document type. Then, draw a citation $\citationvar$ from the sampled topic distribution $\phi(:;\topic_k)$ in topic\_citation distribution $\phi(\citationvar;\topic)$.
 % \end{multicols}
 
-\lstinputlisting[linerange=7-11]{./import_src/src1.txt}
-\lstinputlisting[linerange=13-15]{./import_src/src1.txt}
+\lstinputlisting[linerange=9-17]{./src/src1.txt}
 }
 
 \vspace{-0.5em}
 
-\headerbox{with- Methods}{name=with,column=1,span=2,row=0,below=results}{
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\lstinputlisting[linerange=1-5]{./import_src/src2.txt}
+\headerbox{P3: overriding on individual branches}{name=with,column=1,span=2,row=0,below=results}{
+
+\lstinputlisting[linerange=20-29]{./src/src1.txt}
 }
 
 \vspace{-0.5em}
-\headerbox{Mutable Data \& Field Type Refinement}{name=refine,column=1,span=2,row=0,below=with}{
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\lstinputlisting[linerange=7-10]{./import_src/src2.txt}
+\headerbox{Syntax}{name=syntax,column=1,span=2,row=0,below=with}{
+\noindent{\includegraphics[width=0.9\linewidth]{pdfs/syntax.png}}
 }
 \vspace{-0.5em}
 
-\headerbox{More in the paper}{name=more,column=1,span=2,row=0,below=refine}{
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-\noindent{\centering\includegraphics[width=0.95\linewidth]{table.png}\\}
+\headerbox{The Key Semantics Rule}{name=semantics,column=1,span=2,row=0,below=syntax}{
+\noindent{\includegraphics[width=0.85\linewidth]{pdfs/semantics2.png}}
+}
+\vspace{-0.5em}
 
+
+\headerbox{More in the paper}{name=more,column=1,span=2,row=0,below=semantics}{
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{multicols}{2}
-\noindent{\centering\includegraphics[width=1.15\linewidth]{pdfs/screenshot4.png}\\}
-\begin{itemize}\compresslist
-\item Techniques for field type refinement.
-\item Formalization and proofs.
-\item Case studies and applications.
-    \small{\newline
-    % \begin{itemize}\compresslist
-    % \item The Expression Problem
-    % \item Embedded DSLs with Fluent Interfaces
-    % \item A Maze Game
-    % \item Refactoring an Interpreter
-    % \end{itemize}
-    [The Expression Problem]\newline
-    [Embedded DSLs with Fluent Interfaces]\newline
-    [A Maze Game]\newline
-    [Refactoring an Interpreter] 
-    }
+\begin{itemize}
+\item Intuitive examples
+\item Subtyping, typing and reduction rules
+\item Design choices
+\item Extensions
+\item Properties/Proofs
+\item ...
 \end{itemize}
 \end{multicols}
+% \noindent{\centering\includegraphics[width=0.95\linewidth]{table.png}\\}
+
+% \begin{multicols}{2}
+% \noindent{\centering\includegraphics[width=1.15\linewidth]{pdfs/screenshot4.png}\\}
+% \begin{itemize}\compresslist
+% \item Techniques for field type refinement.
+% \item Formalization and proofs.
+% \item Case studies and applications.
+%     \small{\newline
+%     % \begin{itemize}\compresslist
+%     % \item The Expression Problem
+%     % \item Embedded DSLs with Fluent Interfaces
+%     % \item A Maze Game
+%     % \item Refactoring an Interpreter
+%     % \end{itemize}
+%     [The Expression Problem]\newline
+%     [Embedded DSLs with Fluent Interfaces]\newline
+%     [A Maze Game]\newline
+%     [Refactoring an Interpreter] 
+%     }
+% \end{itemize}
+% \end{multicols}
 }
 
 
-  \headerbox{Acknowledgments}{name=acknowledge,column=1, span=2, below=more}{
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-This work is sponsored by the Hong Kong Research Grant Council Early Career 
-Scheme project number 27200514. The first and second authors are supported by 
-the SIG PAC student travel grant.
-  }
+%   \headerbox{Acknowledgments}{name=acknowledge,column=1, span=2, below=more}{
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This work is sponsored by the Hong Kong Research Grant Council Early Career 
+% Scheme project number 27200514. The first and second authors are supported by 
+% the SIG PAC student travel grant.
+%   }
 
 
-  \headerbox{Contacts}{name=acknowledge,column=1,span=2,below=acknowledge,above=bottom}{
+  \headerbox{Contacts}{name=acknowledge,column=1,span=2,below=more,above=bottom}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \noindent \textbf{The University of Hong Kong} \\
 Yanlin Wang, Haoyuan Zhang, Bruno C. d. S. Oliveira: \emph{\{ylwang,hyzhang,bruno\}@cs.hku.hk} \\

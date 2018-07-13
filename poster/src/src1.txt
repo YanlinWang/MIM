@@ -1,0 +1,29 @@
+interface Deck { void draw() {...} }
+interface Drawable { void draw() {...} }
+interface DrawableDeck extends Drawable, Deck {}
+// main program
+((Deck) new DrawableDeck()).draw()  // calls Deck.draw
+// new DrawableDeck().draw()        // ambiguous!!!
+
+
+interface Deck {
+  void draw() {...}
+  void shuffle() {...}
+  void shuffleAndDraw() { this.shuffle(); this.draw(); }
+}
+interface Drawable {...}
+interface SafeDeck extends Deck {...}
+interface DrawableSafeDeck extends Drawable, SafeDeck {}
+new DrawableSafeDeck().shuffleAndDraw() // SafeDeck.draw is called
+
+
+interface DrawableSafeDeck extends Drawable, SafeDeck {
+  void draw() override Drawable {
+    JFrame frame = new JFrame("Canvas");
+    frame.setSize(600, 600);
+    frame.getContentPane().setBackground(Color.red);
+    frame.getContentPane().add(new Square(10,10,100,100)); ...
+  }
+}
+((Drawable)new DrawableSafeDeck()).draw(); 
+//calls the draw in DrawableSafeDeck
