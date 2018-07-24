@@ -191,8 +191,8 @@ This version:
 		\inferrule* [left=(E-Invk)]
 		{ }{\mu \mid (J)o.m(\overline{v}) \to \mu \mid e'} \\
 		\mu(o) = \newI{I}{...} \\ 
-		\mbody(m, I, J) = \overline{x}, e \\ 
-		e' = e[(J)o/\kwthis, \overline{v}/\overline{x}] \\
+		\mbody(m, I, J) = \overline{I_x} \ \overline{x}, e \\ 
+		e' = e[(J)o/\kwthis, (\overline{I_x})\overline{v}/\overline{x}] \\
 
 		\inferrule* [left=(E-New)]
 		{ }{\mu \mid \newI{I}{\overline{v}} \to \mu' \mid (I)o} \\
