@@ -25,7 +25,7 @@ If $\mbody(m, J, J) = (K, \overline{I_x}\ \_, I_e\ \_)$, then for any $I \subtyp
 \end{lemma}
 \begin{proof}
 	
-%\begin{comment}	
+\begin{comment}	
 Since $\mbody(m, J, J)$ is defined, by \textsc{(T-Intf)} we derive that $\mbody(m, I, J)$ is also defined. Suppose that $$\mostSpecific(m, J, J) = \{I_0\}$$ $$\mostSpecificOverride(m, J, I_0) = \{K\}$$
 $$\mostSpecific(m, I, J) = \{I'_0\}$$ $$\mostSpecificOverride(m, I, I'_0) = \{K'\}$$
 
@@ -40,7 +40,7 @@ Two facts:
 By definition of $\mostSpecificOverride$, $K \subtype I_0, K' \subtype I'_0$. By Fact B, $$K[m\uparrow I_0] = I_0[m\uparrow I_0] \quad K'[m\uparrow I'_0] = I'_0[m\uparrow I'_0]$$
 
 Hence it suffices to prove that $I'_0[m\uparrow I'_0] = I_0[m\uparrow I_0]$. Actually when calculating $\mostSpecific(m, J, J)$, by the definition of $\mostSpecific$ we know that $I_0 \subtype J$ and $I_0[m \; \kwoverride \; I_0]$ is defined. So when calculating $\mostSpecific(m, I, J)$ with $I \subtype J$, $I_0$ should also appear in the set before pruned, since the conditions are again satisfied. But after pruning, only $I'_0$ is obtained, by definition of $\prune$ it implies $I'_0 \subtype I_0$. By Fact A, the proof is done.
-%\end{comment}
+\end{comment}
 
 \end{proof}
 
@@ -52,211 +52,26 @@ $\judgeewf {\Gamma} {\overline{y}:\overline{I_x}}$, then
 $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
 
 \begin{proof}
+% We prove by induction. The expression $e$ has the following cases:
 
-\begin{comment}
-\noindent \textbf{Case Var.}
-$ e = x \quad I = \Gamma(x) $. \\
-If $x \notin \overline{x}$, then the conclusion is immediate, since $[\overline{y}/\overline{x}]x = x$.
-On the other hand, if $x = x_i$ and $I = {I_x}_i$, then since $[\overline{y}/\overline{x}]x = [\overline{y}/\overline{x}]x_i = y_i$,
-letting $I' = {I_y}_i$ finishes the case.
+% \textbf{Case Var.} Let $e = x$. If $x \notin \overline{x}$, then the substitution does not change anything. Otherwise,
+% since $\overline{y}$ have the same types as $\overline{x}$, it immediately finishes the case.
 
-\noindent \textbf{Case New.}
-$e = \new I$ and there are no term for substitution, the conclusion is obvious.
-\noindent \textbf{Case Invk.}
-$ e = e_0.m(\overline{e}) \quad
-  \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} $
-$$ mtype(m, I_0) = \overline{I_e} \rightarrow J $$
-$$ \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e}:\overline{I}} \quad
-    \overline{I} \subtype \overline{I_e} $$
-By induction hypothesis, there are some $I_0'$ and $\overline{I_e'}$ such that
-    $$ \judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0'} \quad 
-        I_0' \subtype I_0 $$
-    $$ \judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e'}} \quad  
-        \overline{I_e'} \subtype \overline{I}$$    
-By lemma~\ref{lemma2}, 
-    $mtype(m, I_0') = \overline{I_e} \rightarrow J$.
-    
-\noindent Then $\overline{I_e'} \subtype \overline{I_e}$ by the transitivity of $\subtype$.
-Therefore, by the rule \textsc{(T-Invk)}, 
-    $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0.m([\overline{y}/\overline{x}]\overline{e}) : J}$.
-
-\noindent \textbf{Case PathInvk.}
-$ e = e_0.I::m(\overline{e}) $ and proof is similar as case Var.
-
-\noindent \textbf{Case SuperInvk.}
-$ e = \kwsuper.I::m(\overline{e}) $ \\
-Suppose $\judgeewf {\Gamma} {\kwthis : I_0}$, the following proof should be similar as case Var.
-\end{comment}
-We prove by induction. The expression $e$ has the following cases:
-
-\textbf{Case Var.} Let $e = x$. If $x \notin \overline{x}$, then the substitution does not change anything. Otherwise,
-since $\overline{y}$ have the same types as $\overline{x}$, it immediately finishes the case.
-
-\textbf{Case Invk.} Let $e = e_0.m(\overline{e})$. By \textsc{(T-Invk)} we can suppose that
-	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad \mbody(m, I_0, I_0) = (\_, \overline{J}\ \_, I\ \_)$$
-	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e} : \overline{I_e}} \quad 
-	\overline{I_e} \subtype \overline{J} \quad \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e : I}$$
+% \textbf{Case Invk.} Let $e = e_0.m(\overline{e})$. By \textsc{(T-Invk)} we can suppose that
+% 	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad \mbody(m, I_0, I_0) = (\_, \overline{J}\ \_, I\ \_)$$
+% 	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e} : \overline{I_e}} \quad 
+% 	\overline{I_e} \subtype \overline{J} \quad \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e : I}$$
 	
-By induction hypothesis, 
-	$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0} \quad
-	  \judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e}}$$
+% By induction hypothesis, 
+% 	$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0} \quad
+% 	  \judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e}}$$
 	  
-Again by \textsc{(T-Invk)}, $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
+% Again by \textsc{(T-Invk)}, $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
 
-\begin{comment}
-\textbf{Case PathInvk.} $e = e_0.J_0?m(\overline{e})$. By \textsc{(T-PathInvk)}, suppose
-	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e_0 : I_0} \quad I_0 \subtype J_0$$
-	$$\mbody(m, I_0, J_0) = (\_, \overline{J}\ \_, I\ \_)$$
-	$$\judgeewf {\Gamma, \overline{x}:\overline{I_x}} {\overline{e} : \overline{I_e}} \quad 
-	  \overline{I_e} \subtype \overline{J} \quad \judgeewf {\Gamma, \overline{x}:\overline{I_x}} {e : I}$$
+% \textbf{Case New.} Straightforward.
 
-By induction hypothesis, 
-$$\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e_0 : I_0} \quad
-\judgeewf {\Gamma} {[\overline{y}/\overline{x}]\overline{e} : \overline{I_e}}$$ 
-
-Again by \textsc{(T-PathInvk)}, $\judgeewf {\Gamma} {[\overline{y}/\overline{x}]e : I}$.
-\end{comment}
-
-\textbf{Case New.} Straightforward.
-
-\textbf{Case Anno.} Straightforward by induction hypothesis and \textsc{(T-Anno)}.
-
-
+% \textbf{Case Anno.} Straightforward by induction hypothesis and \textsc{(T-Anno)}.
 \end{proof}
 
 \end{lemma}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-\subsubsection{Proof for Theorem~\ref{theorem_subject}}
-\begin{proof} ~\\
-\indent \textbf{Case S-Invk.} Let
-\begin{comment}
-   $$e = (\angl{J}\new{I}).m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
-   $$e' = (\angl{J}\new{I}).J?m(\overline{v})$$
-   
-Since $e$ is well-typed, $\angl{J}\new{I}$ is also well-typed. By \textsc{(T-Anno)},
-  $$\judgeewf {\Gamma} {\angl{J}\new{I} : J} \quad I \subtype J$$
-  
-By \textsc{(T-Invk)} on $e$,
-  $$\mbody(m, J, J) = (\_, \overline{I_x}\ \_, I_e\ \_) \quad \judgeewf {\Gamma} {\overline{v} : \overline{I_v}} \quad \overline{I_v}  \subtype \overline{I_x}$$
-  
-At this moment, \textsc{(T-PathInvk)} is immediately applicable by the above conditions, including that $e'$ also invokes $\mbody(m, J, J)$. Hence $\judgeewf {\Gamma} {e' : I_e}$.
-\textbf{Case S-PathInvk.} Let
-\end{comment}
-  $$e = ((J)\new{I}).m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
-  $$e' = (I_{e_0})[\overline{(I_x)v}/\overline{x}, (I_0)\new{I}/\kwthis]e_0$$
-  $$\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_{e_0} \; e_0)$$
-
-Since $\mbody(m, I, J)$ is defined, the definition of $\mbody$ ensures that $I \subtype J$. And since $e$ is well-typed, by \textsc{(T-Invk)},
-  $$\judgeewf {\Gamma} {\overline{v} : \overline{I_v}} \quad \overline{I_v} \subtype \overline{I_x}$$
-
-By the rules \textsc{(T-Anno)} and  \textsc{(T-New)},
-  $$\judgeewf {\Gamma} {\overline{(I_x)v} : \overline{I_x}} \quad \judgeewf {\Gamma} {(I_0)\new{I} : I_0}$$
-  
-On the other hand, by Lemma~\ref{lemma:return_expr_typing},
-  $$\judgeewf {\overline{x} : \overline{I_x}, \kwthis: I_0} {e_0 : I'_{e_0}} \quad I'_{e_0} \subtype I_{e_0}$$
-  
-By Lemma~\ref{lemma:weakening},
-  $$\judgeewf {\Gamma, \overline{x} : \overline{I_x}, \kwthis: I_0} {e_0 : I'_{e_0}}$$
-
-Hence by Lemma~\ref{lemma:subst_type_preservation}, the substitution preserves typing, thus
-  $$\judgeewf {\Gamma} {[\overline{(I_x)v}/\overline{x}, (I_0)\new{I}/\kwthis]e_0 : I'_{e_0}}$$
-  
-Since $I'_{e_0} \subtype I_{e_0}$, the conditions of \textsc{(T-Anno)} are satisfied, hence $\judgeewf {\Gamma} {e' : I_{e_0}}$. Now we only need to prove that $I_{e_0} = I_e$. Since $I_{e_0}$ is from $\mbody(m, I, J)$, whereas $I_e$ is from $\mbody(m, J, J)$, by the rule \textsc{(T-Invk)} on $e$. Since $I \subtype J$, by Lemma~\ref{lemma:mbody_type_preservation}, $I_{e_0} = I_e$.
-
-\textbf{Case C-Receiver.} Straightforward induction.
-
-%\textbf{Case C-PathReceiver.} Straightforward induction.
-
-\textbf{Case C-Args.} Straightforward induction.
-
-%\textbf{Case C-PathArgs.} Straightforward induction.
-
-\textbf{Case C-StaticType.} Immediate by \textsc{(T-Anno)}.
-
-\textbf{Case C-FReduce.} Immediate by \textsc{(T-Anno)} and induction.
-
-\textbf{Case C-AnnoReduce.} Immediate by \textsc{(T-Anno)} and transitivity of $\subtype$.
-
-\begin{comment}
-\noindent \textbf{Case Invk.} 
-let \[ e = \angl{J}\new I.m(\overline{\angl{I_e}}\overline{e}) \] 
-Suppose \[ \mbody(m, I, J) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
-then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{J}\new I/\kwthis ] e_0 \] 
-By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
-  \[ \judgeewf \Gamma {\new I:I} \quad 
-     \mtype(m, I, J) = \overline{I_x} \rightarrow I_{e_0} \quad 
-     \judgeewf \Gamma {\overline{e} : \overline{I_e'}} \quad
-     \overline{I_e'} \subtype \overline{I_x} \quad
-     \textit{, for some } \; \overline{I_e'}
-  \]
-By Lemma~\ref{lemma0},
-    \[
-    \judgeewf {\Gamma, \overline{x}:\overline{I_x}, \kwthis:J_0} {e_0:I_f} \textit{, for some } J \subtype J_0 \textit{ and } I_f \subtype I_{e_0}
-    \]
-By Lemma~\ref{lemma1},
-    \[
-    \judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{J}\new I/\kwthis ] e_0  :  I_g} \textit{, for some } I_g \subtype I_f 
-    \]
-So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
-
-\noindent \textbf{Case PathInvk.}
-let \[ e = \angl{J}\new I.K::m(\overline{\angl{I_e}} \overline{e}) \]  
-Suppose \[ \mbody(m, I, K) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
-then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{K}\new I/\kwthis ] e_0 \] 
-By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
-  \[ \judgeewf \Gamma {\new I:I} \quad 
-     \mtype(m, I, K) = \overline{I_x} \rightarrow I_{e_0} \quad 
-     \judgeewf \Gamma {\overline{e} : \overline{I_e'}} \quad
-     \overline{I_e'} \subtype \overline{I_x} \quad
-     \textit{, for some } \; \overline{I_e'}
-  \]
-By Lemma~\ref{lemma0},
-    \[
-    \judgeewf {\Gamma, \overline{x}:\overline{I_x}, \kwthis:J_0} {e_0:I_f} \textit{, for some } K \subtype J_0 \textit{ and } I_f \subtype I_{e_0}
-    \]
-By Lemma~\ref{lemma1},
-    \[
-    \judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{e}/\overline{x}, \; \angl{K}\new I/\kwthis ] e_0  :  I_g} \textit{, for some } I_g \subtype I_f 
-    \]
-So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
-
-\noindent \textbf{Case Super-Invk.}
-let \[ e = \kwsuper.K::m(\overline{\angl{I_e}} \overline{e}) \]   
-Suppose \[ \mbody(m, K, K) = (J', \overline{I_x} \; \overline{x}, I_{e_0} \; e_0) \] 
-then \[ e' =  [\overline{\angl{I_x}} \overline{e}/\overline{x}] e_0 \] 
-By rules \textsc{(T-New)} and \textsc{(T-Invk)}, 
-  \[ 
-     \mtype(m, K, K) = \overline{I_x} \rightarrow I_{e_0} \quad 
-     \judgeewf \Gamma {\overline{e} : \overline{I_e'}} \quad
-     \overline{I_e'} \subtype \overline{I_x} \quad
-     \textit{, for some } \; \overline{I_e'}
-  \]
-By Lemma~\ref{lemma0},
-    \[
-    \judgeewf {\Gamma, \overline{x}:\overline{I_x}, \kwthis:J_0} {e_0:I_f} \textit{, for some } K \subtype J_0 \textit{ and } I_f \subtype I_{e_0}
-    \]
-By Lemma~\ref{lemma1},
-    \[
-    \judgeewf {\Gamma} {[\overline{\angl{I_x}} \overline{e}/\overline{x} ] e_0  :  I_g} \textit{, for some } I_g \subtype I_f 
-    \]
-So $I_g <: I_{e_0}$, finally just let $I' = I_g$.
-
-\end{comment}
-\end{proof}
-
-\subsubsection{Proof for Theorem~\ref{theorem_progress}}
-\begin{proof}
-	
-Since $e$ is well-typed, by \textsc{(T-Invk)} and \textsc{(T-Anno)} we know that
-$$I \subtype J\textrm{, and }\mbody(m, J, J) \textrm{ is defined}$$
-
-By \textsc{(T-Intf)}, $\mbody(m, I, J)$ is also defined, and the type checker ensures the expected number of arguments.
-
-On the other hand, since $I \subtype J$, by the definition of $\mostSpecific$, $$\mostSpecific(m, I, J) \subseteq \mostSpecific(m, I, I)$$
-
-By \textsc{(T-New)}, $\canInstantiate(I) = True$. By the definition of $\canInstantiate$, any $J_0\in\mostSpecific(m, I, I)$ satisfies that
-$\mostSpecificOverride(m, I, J_0)$ contains only one interface, in which the $m$ that overrides $J_0$ is a concrete method. Therefore $\mbody(m, I, J)$ also provides a concrete method, which finishes the proof.
-\end{proof}
