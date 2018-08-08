@@ -392,23 +392,111 @@ C.of(3,2)
 \section{Proof}
 \subsection{Properties}
 \begin{theorem}[Subject Reduction]~\label{theorem_subject}
-If $\judgeewf \Gamma {e : I}$ and $e \rightarrow e'$, 
+If $\judgeewf \Gamma {e : I}$ and $\mu | e \rightarrow \mu' | e'$, 
 then $\judgeewf \Gamma {e' : I}$.
 \end{theorem}
-\begin{proof}
-See Appendix~\ref{appendix_proof}.
+\begin{proof} ~\\
+\indent \textbf{Case E-Invk.} Let
+  $$e = (J)o.m(\overline{v}) \quad \judgeewf {\Gamma} {e : I_e}$$
+  $$e' = (I_{e_0})[\overline{(I_x)v}/\overline{x}, (I_0)o/\kwthis]e_0$$
+  $$\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_{e_0} \; e_0)$$
+
+Since $\mbody(m, I, J)$ is defined, the definition of $\mbody$ ensures that $I \subtype J$. And since $e$ is well-typed, by \textsc{(T-Invk)},
+  $$\judgeewf {\Gamma} {\overline{v} : \overline{I_v}} \quad \overline{I_v} \subtype \overline{I_x}$$
+
+By the rule \textsc{(T-Cast)},
+  $$\judgeewf {\Gamma} {\overline{(I_x)v} : \overline{I_x}} \quad \judgeewf {\Gamma} {(I_0)\new{I} : I_0}$$
+  
+On the other hand, by Lemma~\ref{lemma:return_expr_typing},
+  $$\judgeewf {\overline{x} : \overline{I_x}, \kwthis: I_0} {e_0 : I'_{e_0}} \quad I'_{e_0} \subtype I_{e_0}$$
+  
+By Lemma~\ref{lemma:weakening},
+  $$\judgeewf {\Gamma, \overline{x} : \overline{I_x}, \kwthis: I_0} {e_0 : I'_{e_0}}$$
+
+Hence by Lemma~\ref{lemma:subst_type_preservation}, the substitution preserves typing, thus
+  $$\judgeewf {\Gamma} {[\overline{(I_x)v}/\overline{x}, (I_0)o/\kwthis]e_0 : I'_{e_0}}$$
+  
+Since $I'_{e_0} \subtype I_{e_0}$, the conditions of \textsc{(T-Cast)} are satisfied, hence $\judgeewf {\Gamma} {e' : I_{e_0}}$. Now we only need to prove that $I_{e_0} = I_e$. Since $I_{e_0}$ is from $\mbody(m, I, J)$, whereas $I_e$ is from $\mbody(m, J, J)$, by the rule \textsc{(T-Invk)} on $e$. Since $I \subtype J$, by Lemma~\ref{lemma:mbody_type_preservation}, $I_{e_0} = I_e$.
+
+\indent \textbf{Case E-New} Let   
+$$e = \newI{I}{\overline{v}}$$   
+$$e' = (I)o$$   
+By the rule \textsc{(T-Constructor)}, $\judgeewf \Gamma e:I$. And by the rule \textsc{(T-Cast)}, $\judgeewf \Gamma e':I$. Proved.
+
+\indent \textbf{Case E-Getter} Let
+$$e = (J)o.f()$$
+$$e' = (I_F)o_i$$
+where $f()$ is a getter with the return type $I_F$. And by the rule \textsc{(T-Cast)}, $\judgeewf \Gamma (I_F)o_i:I_F$. Proved.
+
+\indent \textbf{Case E-Setter}
+Similar as \textbf{Case E-Getter}.
+
+\indent \textbf{Case E-Let} Let
+$$e = \mylet{I}{x}{o}{e_1}$$
+$$e' = [(I)o/x]e_1$$
+Assume that $\judgeewf {\Gamma, x : I} e_1 : I_1$, then by the rule \textsc{(T-Let)}, $\judgeewf {\Gamma} \mylet{I}{x}{o}{e_1} : I_1$.
+By Lemma~\ref{lemma:subst_type_preservation}, $\judgeewf \Gamma [(I)o/x]e_1 : I_1$. Proved.
+
+\indent \textbf{Case E-Cast} 
+Let $e = (J)(I)o$ and $e' = (J)o$, then $\judgeewf \Gamma e : J$ and $\judgeewf \Gamma e' : J$ immediately from the rule \textsc{(T-Cast)}.
+
+\indent \textbf{Case E-CTX}
+Let $e = \varepsilon\{e_1\}$ and $e' = \varepsilon\{e_1'\}$.
+By the induction condition $\mu \mid e_1 \to \mu' \mid e_1'$ and the hypothesis:
+if $\judgeewf \Gamma e_1:J$ and $\mu \mid e_1 \to \mu' \mid e_1'$, then 
+$\judgeewf \Gamma e_1' : J$. Assume that $\judgeewf \Gamma {\varepsilon\{e_1\} : I}$, then by Lemma~\ref{lemma:subst_type_preservation}, 
+$\judgeewf \Gamma {\varepsilon\{e_1'\} : I}$. Proved.
 \end{proof}
 
 \begin{theorem}[Progress]~\label{theorem_progress}
 Suppose $e$ is a well-typed expression, if $e$ includes 
-$\left((J)\emph{\kwnew}\;I()\right).m(\overline{v})$ as a sub-expression, then $\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0)$ and $\num{\overline{x}} = \num{\overline{v}}$ for some $I_0$, $\overline{I_x}$, $\overline{x}$, $I_e$ and $e_0$.
+$(J)o.m(\overline{v})$ as a sub-expression, where $\mu(o) = \newI{I}{...}$, then one of the following conditions holds: 
+\begin{enumerate}
+	\item \# $\overline{v} = 0$, validGetter(m, I, J) 
+	\item \# $\overline{v} = 1$, validSetter(m, I, J)
+	\item $\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0)$ and $\num{\overline{x}} = \num{\overline{v}}$ for some $I_0$, $\overline{I_x}$, $\overline{x}$, $I_e$ and $e_0$.
+\end{enumerate}
 \end{theorem}
-\begin{proof}
-See Appendix~\ref{appendix_proof}.
+\begin{proof} 
+Since $e$ is well-typed and includes $(J)o.m(\overline{v})$ as a sub-expression. 
+Then the sub-expression $(J)o.m(\overline{v})$ can be divided into three cases:
+\begin{enumerate}
+	\item $m$ is a getter, validGetter(m, I, J) and getters contain no parameter. And by the rule \textsc{(T-Invk)}, the number of arguments is the same to the number of parameters of the method(getter), which is 0. 
+	\item $m$ is a setter, validSetter(m, I, J) and setters contain one and only one parameter. By the rule \textsc{(T-Invk)}, the number of arguments is the same to the number of parameters of the method(setter), which is 1. 
+	\item $m$ is neither a getter or setter, by the rule \textsc{(T-Invk)} we know that
+	$$I \subtype J\textrm{, and }\mbody(m, J, J) \textrm{ is defined}$$
+
+	By \textsc{(T-Intf)}, $\mbody(m, I, J)$ is also defined, and the type checker ensures the expected number of arguments.
+
+	On the other hand, since $I \subtype J$, by the definition of $\mostSpecific$, $$\mostSpecific(m, I, J) \subseteq \mostSpecific(m, I, I)$$
+
+	By \textsc{(T-New)}, assume $mconstr(I) = \overline{I_x} \; \overline{x}$ and MC OK in interface I. $\validMC(I, \overline{I_x} \; \overline{x}) = True$. By the definition of $\validMC$, any $J_0\in\mostSpecific(m, I, I)$ satisfies that
+	$\mostSpecificOverride(m, I, J_0)$ contains only one interface, in which the $m$ that overrides $J_0$ is a concrete method. Therefore $\mbody(m, I, J)$ also provides a concrete method, which finishes the proof.
+\end{enumerate}
 \end{proof}
 
+% \begin{theorem}[Progress]~\label{theorem_progress}
+% Suppose $e$ is a well-typed expression, if $e$ includes 
+% $(J)o.m(\overline{v})$ as a sub-expression, where $\mu(o) = \newI{I}{...}$, then  
+% $\mbody(m, I, J) = (I_0, \overline{I_x} \; \overline{x}, I_e\; e_0)$ and $\num{\overline{x}} = \num{\overline{v}}$ for some $I_0$, $\overline{I_x}$, $\overline{x}$, $I_e$ and $e_0$.
+% \end{theorem}
+% \begin{proof}
+% See Appendix~\ref{appendix_proof}.
+% \end{proof}
+% \begin{proof} 
+% Since $e$ is well-typed, by \textsc{(T-Invk)} and \textsc{(T-Anno)} we know that
+% $$I \subtype J\textrm{, and }\mbody(m, J, J) \textrm{ is defined}$$
+
+% By \textsc{(T-Intf)}, $\mbody(m, I, J)$ is also defined, and the type checker ensures the expected number of arguments.
+
+% On the other hand, since $I \subtype J$, by the definition of $\mostSpecific$, $$\mostSpecific(m, I, J) \subseteq \mostSpecific(m, I, I)$$
+
+% By \textsc{(T-New)}, $\canInstantiate(I) = True$. By the definition of $\canInstantiate$, any $J_0\in\mostSpecific(m, I, I)$ satisfies that
+% $\mostSpecificOverride(m, I, J_0)$ contains only one interface, in which the $m$ that overrides $J_0$ is a concrete method. Therefore $\mbody(m, I, J)$ also provides a concrete method, which finishes the proof.
+% \end{proof}
+
 \begin{theorem}[Type Soundness]~\label{theorem_soundness}
-If $\judgeewf \o {e : I}$ and $e \to^* e'$ with $e'$ a normal form, then $e'$ is 
+If $\judgeewf \o {e : I}$ and $\o | e \to^* \mu | e'$ with $e'$ a normal form, then $e'$ is 
 a value $v$ with $\judgeewf \o {v:I}$.
 \end{theorem}
 \begin{proof}
@@ -416,8 +504,32 @@ Immediate from Theorem~\ref{theorem_subject} and Theorem~\ref{theorem_progress}.
 \end{proof}
 
 \begin{theorem}[Determinacy of One-Step Evaluation]~\label{theorem_determinacy}
-	If $t \to t'$ and $t \to t''$, then $t' = t''$.
+	If $\mu | t \to \mu' | t'$ and $\mu | t \to \mu'' | t''$, then $t' = t''$ and $\mu' = \mu''$.
 \end{theorem}
-\begin{proof}
-See Appendix~\ref{appendix_proof}.
+\begin{proof}	
+The Proof is done by induction on a derivation of $t \to t'$, following the book  \emph{TAPL}.
+\begin{itemize}
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(S-Invk)}, then we know that $t$ has the form $\left((J)\new{I}\right).m(\overline{v})$ with $I, J, m$ determined. Now it is obvious that the last rule in the derivation of $t \to t''$ should also be \textsc{(S-Invk)} with the same $I, J, m$. Since $\mbody(m, I, J)$ is a \emph{function} that given the same input will calculate the same result, we know the two induction results are the same, thus $t' = t''$ is immediately proved.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-Receiver)}, then $t$ has the form $e_0.m(\overline{e})$ and $e_0 \to e_0'$. Since $e_0$ is not a value, the last rule used in $t \to t''$ has to be \textsc{(C-Receiver)} (other rules do not match) too. Assume in the reduction $t \to t''$, $e_0 \to e_0''$, thus $e_0'.m(\overline{e}) = e_0''.m(\overline{e})$. Thus, $t' = t''$ proved.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-StaticType)}, then $t$ is fixed to be $\new{I}$. The last rule used in $t \to t''$  has to be \textsc{(C-StaticType)}, and obviously, $t' = t'' = (I)\new{I}$.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-FReduce)}, then $t$ has the form $(I)e$ and $e \to e'$. The last rule used in $t \to t''$ cannot be \textsc{(C-StaticType)} because it requires $t$ to be $\new{I}$; it can neither be \textsc{(C-AnnoReduce)} because it requires $t$ to be $(I)((J)\new{K})$ where $(J)\new{K}$ is already a value. So the last rule used in $t \to t''$ can only be \textsc{(C-FReduce)} (other rules do not match). Assume in the reduction $t \to t''$, $e \to e''$, and $(I)e \to (I)e''$. By induction hypothesis, $e' = e''$, thus $t' = t''$ proved.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-AnnoReduce)}, then the form of $t$ is fixed to be $(I)((J)\new{K})$. Since $(I)((J)\new{K})$ is not reducible, the rule \textsc{(C-FReduce)} does not apply. The only rule applies in $t \to t''$ is \textsc{(C-AnnoReduce)}. Thus $t' = t'' = (I)\new{K}$ proved.
+	
+	\item If the last rule used in the derivation of $t \to t'$ is \textsc{(C-Args)}, then $t$ has the form $v.m(..., e, ...)$ and $e \to e'$. The last rule used in $t \to t''$ cannot be \textsc{(S-Invk)} because it requires all arguments to be values. Thus only \textsc{(C-Args)} applies to $t \to t''$. Assume in the reduction $t \to t''$, $e \to e''$. By induction hypothesis, $e' = e''$, thus $v.m(..., e', ...) = v.m(..., e'', ...)$, thus $t' = t''$ proved.
+\end{itemize}
 \end{proof}
+
+
+\subsubsection{Proof for Theorem~\ref{theorem_subject}}
+
+
+
+\subsubsection{Proof for Theorem~\ref{theorem_progress}}
+
+
+
+\subsubsection{Proof for Theorem~\ref{theorem_determinacy}}
