@@ -391,6 +391,10 @@ C.of(3,2)
 
 \section{Proof}
 \subsection{Properties}
+
+
+
+
 \begin{theorem}[Subject Reduction]~\label{theorem_subject}
 If $\judgeewf \Gamma {e : I}$ and $\mu | e \rightarrow \mu' | e'$, 
 then $\judgeewf \Gamma {e' : I}$.
@@ -521,17 +525,14 @@ The Proof is done by induction on a derivation of $\mu \mid t \to \mu' \mid t'$,
 	
 	\item If the last rule used in the derivation of $\mu \mid t \to \mu' \mid t'$ is \textsc{(E-Setter)}, then the form of $t$ is fixed to be $(J)o.SET_f((I')o)$. Then for the second reduction $\mu \mid t \to \mu'' \mid t''$, the rule \textsc{(E-Getter)} does not apply because the number of parameters does not match. Also the rule \textsc{(E-Invk)} does not match because the precondition $!validSetter(m, I, J)$ is not satisfied. The only rule applies is the rule \textsc{(E-Setter)}. And from the rule \textsc{(E-Setter)}, we know that $t' = t'' = (I)o$. Assume in the first derivation $\mu \mid t \to \mu' \mid t'$, $\mu = \mu_0, o \to \newI{I}{o_1,...,o_i,...,o_n}, \mu' = \mu_0, o \to \newI{I}{o_1,...,o',...,o_n}$, then in the second derivation $\mu \mid t \to \mu'' \mid t''$, $\mu = \mu_0, o \to \newI{I}{o_1,...,o_i,...,o_n}, \mu'' = \mu_0, o \to \newI{I}{o_1,...,o',...,o_n} = \mu'$. Proved.
 
-	\item \item If the last rule used in the derivation of $\mu \mid t \to \mu' \mid t'$ is \textsc{(E-CTX)}, 
+    \item If the last rule used in the derivation of $\mu \mid t \to \mu' \mid t'$ is \textsc{(E-CTX)}, then there are 5 cases ($t$ could take 5 forms):
+    \begin{itemize}
+    	\item If $t = \mylet{I}{x}{\varepsilon}{e}$ and the precondition is $\mu \mid e \to \mu' \mid e'$. Then $t' = \varepsilon\{e'\}$ .Then for the second reduction $\mu \mid t \to \mu'' \mid t''$, the rule \textsc{(E-Let)} does not apply because $\varepsilon$ is reducible and does not conform to the form of $\mylet{I}{x}{o}{e}$ in \textsc{(E-Let)}. Thus the only rule applies is the rule \textsc{(E-CTX)}. Assume the precondition is $\mu \mid e \to \mu'' \mid e''$. By the induction hypothesis, $\mu'' = \mu'$ and $e'' = e'$. Therefore, $t'' = \varepsilon\{e''\} = \varepsilon\{e'\} = t'$. Proved.
+    	\item The proof for the other cases, where 
+    		$t = \varepsilon.m(\overline{e}) $, 
+            $t = (J)o.m(\overline{o}, \varepsilon, \overline{e}) $
+            $t = \newI{I}{\overline{o}, \varepsilon, \overline{e}} $
+            or $t = (I)\varepsilon $ takes the same approach as the first case.
+    \end{itemize}
 \end{itemize}
 \end{proof}
-
-
-\subsubsection{Proof for Theorem~\ref{theorem_subject}}
-
-
-
-\subsubsection{Proof for Theorem~\ref{theorem_progress}}
-
-
-
-\subsubsection{Proof for Theorem~\ref{theorem_determinacy}}
