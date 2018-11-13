@@ -1,53 +1,53 @@
-interface Int {}
-interface I1 extends Int { static I1 of(); }
-interface I2 extends Int { static I2 of(); }
-interface I3 extends Int { static I3 of(); }
-interface I4 extends Int { static I4 of(); }
-interface I5 extends Int { static I5 of(); }
-interface I27 extends Int { static I27 of(); }
-interface I45 extends Int { static I45 of(); }
+class Int {}
+class I1  extends Int { new(); }
+class I2  extends Int { new(); }
+class I3  extends Int { new(); }
+class I4  extends Int { new(); }
+class I5  extends Int { new(); }
+class I27 extends Int { new(); }
+class I45 extends Int { new(); }
 
-interface String {}
-interface Alice extends String { static Alice of(); }
-interface Bob extends String { static Bob of(); }
-interface Title {}
-interface Manager extends Title { static Manager of(); }
-interface Director extends Title { static Director of(); }
-interface Officer extends Title { static Officer of(); }
+class String {}
+class Alice    extends String { new(); }
+class Bob      extends String { new(); }
 
-interface Point {
-  static Point of(Int Point.x, Int Point.y);
-  Int x() override Point;
-  Int y() override Point;
+class Title {}
+class Manager  extends Title  { new(); }
+class Director extends Title  { new(); }
+class Officer  extends Title  { new(); }
+
+class Point {
+	new(Int Point.x, Int Point.y);
+	Int x() override Point;
+	Int y() override Point;
 }
 
-interface Located {
-  Point position() override Located;
+class Located {
+	Point position() override Located;
 }
 
-interface Employee {
-  Title position() override Employee;
-  Int age() override Employee;
-  String name() override Employee;
+class Employee {
+	Title position() override Employee;
+	Int age() override Employee;
+	String name() override Employee;
 }
 
-interface OfficeClerk extends Located, Employee {
-  static OfficeClerk of(String Employee.name, Int Employee.age, Title Employee.position,
-    Int OfficeClerk.deskNumber, Point Located.position);
-  Int deskNumber() override OfficeClerk;
-  OfficeClerk moveTo(OfficeClerk c) override OfficeClerk {
-    return (
-      Point p = ((Located)c).position();
-      ((Located)this).SET_position(p);
-      this.SET_deskNumber(c.deskNumber());
-      this
-    );
-  }
+class OfficeClerk extends Located, Employee {
+	new(String Employee.name, Int Employee.age, Title Employee.position, Int OfficeClerk.deskNumber, Point Located.position);
+	Int deskNumber() override OfficeClerk;
+	OfficeClerk moveTo(OfficeClerk c) override OfficeClerk {
+		return (
+			Point p4 = ((Located)c).position();
+			((Located)this).SET_position(p4);
+			this.SET_deskNumber(c.deskNumber());
+			this
+		);
+	}
 }
 
-OfficeClerk alice = OfficeClerk.of(Alice.of(), I27.of(), Manager.of(), I1.of(), (Point p = Point.of(I2.of(), I3.of());p));
-OfficeClerk bob = OfficeClerk.of(Bob.of(), I45.of(), Director.of(), I2.of(), (Point p = Point.of(I2.of(), I4.of());p));
-Title p = Officer.of();
+OfficeClerk alice = new OfficeClerk(new Alice(), new I27(), new Manager(), new I1(), (Point p1 = new Point(new I2(), new I3());p1));
+OfficeClerk bob = new OfficeClerk(new Bob(), new I45(), new Director(), new I2(), (Point p2 = new Point(new I2(), new I4());p2));
+Title p3 = new Officer();
 OfficeClerk a2b = alice.moveTo(bob);
-((Employee)a2b).SET_position(p);
+((Employee)a2b).SET_position(p3);
 a2b

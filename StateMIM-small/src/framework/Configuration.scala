@@ -25,26 +25,8 @@ object Configuration {
     }
   }
   
-  case class BS(varTable: List[(String, Value)]) {
-    def addLet(x: String, v: Value) = BS((x, v) +: varTable)
-    def remLet() = BS(varTable.tail)
-    override def toString() = if (varTable.isEmpty) ""
-      else varTable.map(p => p._1 + " = " + p._2).reduce((a, b) => a + "; " + b)
-  }
-  
-  case class VS(scopes: List[BS]) {
-    def addScope(scope: BS) = VS(scope +: scopes)
-    def addLet(x: String, v: Value) = VS(scopes.head.addLet(x, v) +: scopes.tail)
-    def remScope() = VS(scopes.tail)
-    def remLet() = VS(scopes.head.remLet() +: scopes.tail)
-    def getVar(x: String) = scopes.head.varTable.find(p => p._1 == x).get._2
-    override def toString() = if (scopes.isEmpty) ""
-      else scopes.map(p => "[" + p.toString + "]").reduce((a, b) => a + "\n\t " + b)
-  }
-  
-  case class Config(h: H, vs: VS, e: Expr) {
-    def update(f: Expr => Expr) = Config(h, vs, f(e))
-    override def toString() = "H = " + h + "\n    VS = " + vs + "\n    Expr = " + e
+  case class Config(h: H, e: Expr) {
+    def update(f: Expr => Expr) = Config(h, f(e))
   }
   
 }

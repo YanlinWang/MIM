@@ -1,6 +1,6 @@
-interface A {
-  static A of();
+class A {
+	new();
 }
 
-A x = A.of();
+A x = new A();
 x

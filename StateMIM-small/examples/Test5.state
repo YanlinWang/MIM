@@ -1,22 +1,22 @@
-interface Int {}
-interface I2 extends Int {
- static I2 of();
+class Int {}
+class I2 extends Int {
+	new();
 }
-interface I3 extends Int {
- static I3 of();
+class I3 extends Int {
+	new();
 }
-interface A5 {
- static A5 of(Int A5.x);
- Int x() override A5;
+class A5 {
+	new(Int A5.x);
+	Int x() override A5;
 }
-interface B5 {
- static B5 of(Int B5.x);
- Int x() override B5;
+class B5 {
+	new(Int B5.x);
+	Int x() override B5;
 }
-interface C extends A5, B5 {
- static C of(Int A5.x, Int B5.x);
+class C extends A5, B5 {
+	new(Int A5.x, Int B5.x);
 }
 
-C c = C.of(I2.of(), I2.of());
-((A5)c).SET_x(I3.of());
+C c = new C(new I2(), new I2());
+((A5)c).SET_x(new I3());
 ((A5)c).x()

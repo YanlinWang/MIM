@@ -73,12 +73,11 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
     if (meth.isEmpty || meth2.isEmpty) return false
     meth.get.returnType == meth2.get.returnType && meth.get.paras.zip(meth2.get.paras).forall(p => p._1.paramType == p._2.paramType)
   }
-  def canInstantiate(c: Constructor): Boolean = {
-    val i = c.returnType
-    assert(table.contains(i), "Bug: canInstantiate.")
-    val methods = collectFieldsAndOthers(i)
-    c.paras.toSet.equals(methods._1) && methods._2.forall(m => mostSpecific(m, i, i).forall(j => {
-      val set = mostSpecificOverride(m, i, j)
+  def canInstantiate(t: String, c: Constructor): Boolean = {
+    assert(table.contains(t), "Bug: canInstantiate.")
+    val methods = collectFieldsAndOthers(t)
+    c.paras.toSet.equals(methods._1) && methods._2.forall(m => mostSpecific(m, t, t).forall(j => {
+      val set = mostSpecificOverride(m, t, j)
       set.size == 1 && dispatch(set.head, m, j).exists(meth => meth.returnExpr.isDefined)
     }))
   }

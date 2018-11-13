@@ -1,10 +1,10 @@
-interface Int {}
-interface I3 extends Int {
-	static I3 of();
+class Int {}
+class I3 extends Int {
+	new();
 }
-interface A {
- 	static A of(Int A.x);
+class A {
+ 	new(Int A.x);
 	Int x() override A;
 }
 
-A.of(I3.of()).x()
+new A(new I3()).x()

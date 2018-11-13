@@ -25,7 +25,7 @@ object AST {
       }
     }
     def eval(): (String, String) = {
-      val init = Config(H(Map(), 1), VS(List(BS(List()))), e)
+      val init = Config(H(Map(), 1), e)
       Semantics.eval(collectInfo.get, init)
     }
     
@@ -53,6 +53,7 @@ object AST {
     def interfaceCheck(info: Info): Unit = {
       for (x <- sups) assert(info.table.contains(x), TypeNotFound(x))
       for (x <- methods) try x.methodCheck(info, name) catch {case error: Throwable => nextError(error, MethError(x))}
+      if (constr.isDefined) constr.get.constructorCheck(info, name)
       val collectMethods = info.collectMethods(name)
       val cond1 = !(collectMethods.exists(m => info.table.exists(j => info.subType(name, j) &&
           info.mtype(m, j).isDefined && info.mbody(m, name, j).isEmpty)))
@@ -68,14 +69,13 @@ object AST {
   
   case class Parameter(paramType: String, name: String)
   
-  case class Constructor(returnType: String, name: String, paras: List[Field]) {
+  case class Constructor(paras: List[Field]) {
     def constructorCheck(info: Info, thisType: String): Unit = {
-      assert(thisType == returnType, Message("Constructor of " + thisType + " has wrong type."))
       for (para <- paras) {
         assert(info.table.contains(para.fieldType), TypeNotFound(para.fieldType))
         assert(info.table.contains(para.path), TypeNotFound(para.path))
       }
-      assert(info.canInstantiate(this), Message("Invalid constructor of " + thisType + "."))
+      assert(info.canInstantiate(thisType, this), Message("Invalid constructor of " + thisType + "."))
     }
   }
   
@@ -103,6 +103,8 @@ object AST {
   abstract class Expr {
     def isValue: Boolean = false
     def checkType(info: Info, env: Map[String, String]): String
+    def subst(x: String, v: Value): Expr // warning: trivial subst. not capture avoiding.
+    // override def toString() = Pretty.pretty(this) // TODO
   }
   
   case class Var(x: String) extends Expr {
@@ -110,6 +112,7 @@ object AST {
       case Some(t) => t
       case None    => throw VarNotInScope(x)
     }
+    def subst(s: String, v: Value) = if (s == x) v else Var(x)
   }
   
   case class Invk(e: Expr, m: String, args: List[Expr]) extends Expr {
@@ -122,22 +125,23 @@ object AST {
       assert(mtype.get._1.zip(argsT).forall(p => info.subType(p._2, p._1)), Message("Argument types unexpected."))
       mtype.get._2
     }
+    def subst(x: String, v: Value) = Invk(e.subst(x, v), m, args.map(_.subst(x, v)))
   }
   
-  case class InvkStatic(t: String, m: String, args: List[Expr]) extends Expr {
+  case class InvkStatic(t: String, args: List[Expr]) extends Expr {
     def checkType(info: Info, env: Map[String, String]) = {
       assert(info.table.contains(t), TypeNotFound(t))
       val constr = info.constructorMap(t)
       assert(constr.isDefined, Message("Constructor of " + t + " undefined."))
-      assert(constr.get.name == m, Message("Constructor of " + t + " is " + constr.get.name + ", not " + m + "."))
-      assert(constr.get.paras.size == args.size, Message("Wrong arguments on invk of " + t + "." + m + "()."))
+      assert(constr.get.paras.size == args.size, Message("Wrong arguments on invk of " + t + "'s constructor."))
       for (i <- 0 to args.size - 1) {
         val argType = args(i).checkType(info, env)
         assert(info.subType(argType, constr.get.paras(i).fieldType),
-            Message("Wrong argument#" + (i + 1) + " type on invk of " + t + "." + m + "()."))
+            Message("Wrong argument#" + (i + 1) + " type on invk of " + t + "'s constructor."))
       }
       t
     }
+    def subst(x: String, v: Value) = InvkStatic(t, args.map(_.subst(x, v)))
   }
   
   case class AnnoExpr(i: String, e: Expr) extends Expr {
@@ -147,6 +151,7 @@ object AST {
       assert(info.subType(eT, i), Message(eT + " <: " + i + " does not hold."))
       i
     }
+    def subst(x: String, v: Value) = AnnoExpr(i, e.subst(x, v))
   }
   
   case class InvkSetter(e: Expr, fieldName: String, para: Expr) extends Expr {
@@ -161,6 +166,7 @@ object AST {
       assert(info.subType(para.checkType(info, env), fieldType.get), Message("para type <: " + fieldType.get + "does not hold"))
       "Void"
     }
+    def subst(x: String, v: Value) = InvkSetter(e.subst(x, v), fieldName, para.subst(x, v))
   }
  
   case class LetExpr(t: String, x: String, e1: Expr, e2: Expr) extends Expr {
@@ -174,19 +180,13 @@ object AST {
       //e2 type with x:t
       e2.checkType(info, env.+(x -> t))
     }
+    def subst(s: String, v: Value) = LetExpr(t, x, e1.subst(s, v), e2.subst(s, v))
   }
-  
-  case class InvkCloseExpr(e: Expr) extends Expr {
-    def checkType(info: Info, env: Map[String, String]) = throw Buggy
-  }
-  
-  case class LetCloseExpr(e: Expr) extends Expr {
-    def checkType(info: Info, env: Map[String, String]) = throw Buggy
-  } 
   
   case class Value(t: String, id: OId) extends Expr {
     override def isValue = true
     def checkType(info: Info, env: Map[String, String]) = throw Buggy
+    def subst(x: String, v: Value) = Value(t, id)
   }
   
 }

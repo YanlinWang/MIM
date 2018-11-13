@@ -1,15 +1,15 @@
-interface Int {}
-interface I2 extends Int {
-   static I2 of();
+class Int {}
+class I2 extends Int {
+	new();
 }
-interface I3 extends Int {
-   static I3 of();
+class I3 extends Int {
+	new();
 }
-interface A {
-   static A of(Int A.x);
-   Int x() override A;
+class A {
+	new(Int A.x);
+	Int x() override A;
 }
 
-A m = A.of(I3.of());
-m.SET_x(I2.of());
+A m = new A(new I3());
+m.SET_x(new I2());
 m.x()
