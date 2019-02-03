@@ -1,0 +1,21 @@
+class Int {}
+class I1  extends Int { new(); }
+class I2  extends Int { new(); }
+class I3  extends Int { new(); }
+
+class A {
+	Int x() override A;
+}
+
+class B {
+	Int x() override B;
+}
+
+class C extends A, B {
+	new(Int C.x);
+	Int x() override C;
+}
+
+C c = new C(new I1());
+c
+
