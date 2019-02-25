@@ -37,8 +37,8 @@ object Main {
 //    run("Test5")
 //    println("----------------------------------\nTest6:\n")
 //    run("Test6")
-//    println("----------------------------------\nTest7:\n")
-//    run("Test7")
+    println("----------------------------------\nTest7:\n")
+    run("Test7")
     println("----------------------------------\nTest8:\n")
     run("Test8")
   }

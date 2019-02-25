@@ -48,9 +48,9 @@ class OfficeClerk extends Located, Employee {
 	}
 }
 
-OfficeClerk alice = new OfficeClerk(new Alice(), new I27(), new Manager(), new I1(), (Point p1 = new Point(new I2(), new I3());p1));
-OfficeClerk bob = new OfficeClerk(new Bob(), new I45(), new Director(), new I2(), (Point p2 = new Point(new I2(), new I4());p2));
+OfficeClerk alice = new OfficeClerk(new Alice(), new I27(), new Manager(), new I1(), new I2(), (Point p1 = new Point(new I2(), new I3());p1));
+OfficeClerk bob = new OfficeClerk(new Bob(), new I45(), new Director(), new I2(), new I3(), (Point p2 = new Point(new I2(), new I4());p2));
 Title p3 = new Officer();
 OfficeClerk a2b = alice.moveTo(bob);
 ((Employee)a2b).SET_position(p3);
-a2b
+a2b.id()

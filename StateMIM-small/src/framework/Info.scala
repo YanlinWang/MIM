@@ -81,6 +81,7 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
       set.size == 1 && dispatch(set.head, m, j).exists(meth => meth.returnExpr.isDefined)
     }))
   }
+  /*
   def collectFieldsAndOthers(i: String): (Set[Field], Set[String]) = {
     val op = (p: (Set[Field], Set[String]), m: MethDef) => {
       if (m.paras.size == 0 && m.returnExpr.isEmpty) (p._1 + AST.Field(m.returnType, i, m.name), p._2)
@@ -92,6 +93,27 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
       (p._1 ++ q._1, p._2 ++ q._2)
     }
     typeMap(i).foldLeft(res)(op2)
+  }
+  * 
+  */
+  def collectFieldsAndOthers(i: String): (Set[Field], Set[String]) = {
+    val op = (p: (Set[Field], Set[String]), m: MethDef) => {
+      if (m.paras.size == 0 && m.returnExpr.isEmpty) (p._1 + AST.Field(m.returnType, i, m.name), p._2)
+      else (p._1, p._2 + m.name)
+    }
+    val res: (Set[Field], Set[String]) = methodMap(i).foldLeft((Set[Field](), Set[String]()))(op)
+    val op2 = (p: (Set[Field], Set[String]), x: String) => {
+      val q = collectFieldsAndOthers(x)
+      (p._1 ++ q._1, p._2 ++ q._2)
+    }
+    val pruneField = (x: Set[Field]) => {
+      x.filter { i => !x.exists { j => j.name.equals(i.name) &&
+                                       j.fieldType.equals(i.fieldType) &&
+                                       !j.path.equals(i.path) &&
+                                       subType(j.path, i.path) } }
+    }
+    val result = typeMap(i).foldLeft(res)(op2)
+    (pruneField(result._1), result._2)
   }
   def isField(info: Info, name: String, t: String) : Option[String] = {
     val mbody = info.mbody(name, t, t)
