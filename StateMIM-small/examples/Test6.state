@@ -1,16 +1,3 @@
-class Int {}
-class I1  extends Int { new(); }
-class I2  extends Int { new(); }
-class I3  extends Int { new(); }
-class I4  extends Int { new(); }
-class I5  extends Int { new(); }
-class I27 extends Int { new(); }
-class I45 extends Int { new(); }
-
-class String {}
-class Alice    extends String { new(); }
-class Bob      extends String { new(); }
-
 class Title {}
 class Manager  extends Title  { new(); }
 class Director extends Title  { new(); }
@@ -45,8 +32,8 @@ class OfficeClerk extends Located, Employee {
 	}
 }
 
-OfficeClerk alice = new OfficeClerk(new Alice(), new I27(), new Manager(), new I1(), (Point p1 = new Point(new I2(), new I3());p1));
-OfficeClerk bob = new OfficeClerk(new Bob(), new I45(), new Director(), new I2(), (Point p2 = new Point(new I2(), new I4());p2));
+OfficeClerk alice = new OfficeClerk("Alice", 27, new Manager(), 1, (Point p1 = new Point(2, 3);p1));
+OfficeClerk bob = new OfficeClerk("Bob", 45, new Director(), 2, (Point p2 = new Point(2, 4);p2));
 Title p3 = new Officer();
 OfficeClerk a2b = alice.moveTo(bob);
 ((Employee)a2b).SET_position(p3);

@@ -1,0 +1,11 @@
+class A {
+	new(Int A.x);
+	Int x() override A;
+}
+class B extends A {
+	new(Int A.x);
+}
+
+B b = new B(3);
+b.SET_x(2);
+b.x()

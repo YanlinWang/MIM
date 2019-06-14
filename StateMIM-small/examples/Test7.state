@@ -1,56 +1,6 @@
-class Int {}
-class I1  extends Int { new(); }
-class I2  extends Int { new(); }
-class I3  extends Int { new(); }
-class I4  extends Int { new(); }
-class I5  extends Int { new(); }
-class I27 extends Int { new(); }
-class I45 extends Int { new(); }
-
-class String {}
-class Alice    extends String { new(); }
-class Bob      extends String { new(); }
-
-class Title {}
-class Manager  extends Title  { new(); }
-class Director extends Title  { new(); }
-class Officer  extends Title  { new(); }
-
-class Point {
-	new(Int Point.x, Int Point.y);
-	Int x() override Point;
-	Int y() override Point;
+class A {
+ 	new(String A.x);
+	String x() override A;
 }
 
-class Located {
-	Point position() override Located;
-	Int id() override Located;
-}
-
-class Employee {
-	Title position() override Employee;
-	Int age() override Employee;
-	String name() override Employee;
-	Int id() override Employee;
-}
-
-class OfficeClerk extends Located, Employee {
-	new(String Employee.name, Int Employee.age, Title Employee.position, Int OfficeClerk.deskNumber, Int OfficeClerk.id, Point Located.position);
-	Int id() override OfficeClerk;
-	Int deskNumber() override OfficeClerk;
-	OfficeClerk moveTo(OfficeClerk c) override OfficeClerk {
-		return (
-			Point p4 = ((Located)c).position();
-			((Located)this).SET_position(p4);
-			this.SET_deskNumber(c.deskNumber());
-			this
-		);
-	}
-}
-
-OfficeClerk alice = new OfficeClerk(new Alice(), new I27(), new Manager(), new I1(), new I2(), (Point p1 = new Point(new I2(), new I3());p1));
-OfficeClerk bob = new OfficeClerk(new Bob(), new I45(), new Director(), new I2(), new I3(), (Point p2 = new Point(new I2(), new I4());p2));
-Title p3 = new Officer();
-OfficeClerk a2b = alice.moveTo(bob);
-((Employee)a2b).SET_position(p3);
-a2b.id()
+new A("abc").x()

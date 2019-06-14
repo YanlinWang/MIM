@@ -1,15 +1,8 @@
-class Int {}
-class I2 extends Int {
-	new();
-}
-class I3 extends Int {
-	new();
-}
 class A {
 	new(Int A.x);
 	Int x() override A;
 }
 
-A m = new A(new I3());
-m.SET_x(new I2());
+A m = new A(3);
+m.SET_x(2);
 m.x()

@@ -1,10 +1,6 @@
-class Int {}
-class I3 extends Int {
-	new();
-}
 class A {
  	new(Int A.x);
 	Int x() override A;
 }
 
-new A(new I3()).x()
+new A(3).x()

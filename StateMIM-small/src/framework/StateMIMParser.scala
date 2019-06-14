@@ -39,11 +39,14 @@ object StateMIMParser extends StandardTokenParsers with PackratParsers {
       ("(" ~> ucid <~ ")") ~ pE ^^ { case i ~ e => AnnoExpr(i, e) } |||
       lcid ^^ Var ||| "(" ~> pE <~ ")" ||| 
       ("new" ~> ucid) ~ ("(" ~> repsep(pE, ",") <~ ")") ^^
-        { case t ~ args => InvkStatic(t, args) }
+        { case t ~ args => InvkStatic(t, args) } |||
+      numericLit ^^ { x => new Value(x.toInt) } |||
+      stringLit ^^ { x => new Value(x) }
+        
   }
   
   def parse(in: String): Either[String, Program] = {
-    val prelude = "class Void {new();}"
+    val prelude = "class Void {new();} class Int {} class String {}"
     phrase(Parser.pP)(new lexical.Scanner(prelude + in)) match {
       case t if t.successful => Right(t.get)
       case t                 => Left(t.toString)

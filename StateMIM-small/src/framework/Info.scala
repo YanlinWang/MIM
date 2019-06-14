@@ -81,21 +81,6 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
       set.size == 1 && dispatch(set.head, m, j).exists(meth => meth.returnExpr.isDefined)
     }))
   }
-  /*
-  def collectFieldsAndOthers(i: String): (Set[Field], Set[String]) = {
-    val op = (p: (Set[Field], Set[String]), m: MethDef) => {
-      if (m.paras.size == 0 && m.returnExpr.isEmpty) (p._1 + AST.Field(m.returnType, i, m.name), p._2)
-      else (p._1, p._2 + m.name)
-    }
-    val res: (Set[Field], Set[String]) = methodMap(i).foldLeft((Set[Field](), Set[String]()))(op)
-    val op2 = (p: (Set[Field], Set[String]), x: String) => {
-      val q = collectFieldsAndOthers(x)
-      (p._1 ++ q._1, p._2 ++ q._2)
-    }
-    typeMap(i).foldLeft(res)(op2)
-  }
-  * 
-  */
   def collectFieldsAndOthers(i: String): (Set[Field], Set[String]) = {
     val op = (p: (Set[Field], Set[String]), m: MethDef) => {
       if (m.paras.size == 0 && m.returnExpr.isEmpty) (p._1 + AST.Field(m.returnType, i, m.name), p._2)

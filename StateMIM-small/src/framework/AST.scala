@@ -104,7 +104,6 @@ object AST {
     def isValue: Boolean = false
     def checkType(info: Info, env: Map[String, String]): String
     def subst(x: String, v: Value): Expr // warning: trivial subst. not capture avoiding.
-    // override def toString() = Pretty.pretty(this) // TODO
   }
   
   case class Var(x: String) extends Expr {
@@ -183,10 +182,32 @@ object AST {
     def subst(s: String, v: Value) = LetExpr(t, x, e1.subst(s, v), e2.subst(s, v))
   }
   
-  case class Value(t: String, id: OId) extends Expr {
+  case class Value(caseID: Int, lit: Int, str: String, t: String, id: OId) extends Expr {
+    def this(lit: Int)           = this(1, lit, "NULL", "NULL", Int.MinValue)
+    def this(str: String)        = this(2, Int.MinValue, str, "NULL", Int.MinValue)
+    def this(t: String, id: OId) = this(3, Int.MinValue, "NULL", t, id)
+    def checkType(info: Info, env: Map[String, String]) = caseID match {
+      case 1 => "Int"
+      case 2 => "String"
+      case 3 => throw Buggy
+    }
+    def subst(x: String, v: Value) = this
     override def isValue = true
-    def checkType(info: Info, env: Map[String, String]) = throw Buggy
-    def subst(x: String, v: Value) = Value(t, id)
+    def toStringWithH(h: H) = caseID match {
+      case 1 => lit.toString
+      case 2 => "\"" + str + "\""
+      case 3 => h.lookup(id).get.pretty(h)
+    }
+    def substType(t: String) = caseID match {
+      case 1 if t == "Int"    => new Value(lit)
+      case 2 if t == "String" => new Value(str)
+      case 3                  => new Value(t, id)
+    }
+    override def toString = caseID match {
+      case 1 => "Num(" + lit + ")"
+      case 2 => "Str(\"" + str + "\")"
+      case 3 => "Object(" + t + "," + id + ")"
+    }
   }
   
 }

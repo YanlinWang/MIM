@@ -1,0 +1,10 @@
+class Verify {
+	Int num() override Verify;
+}
+class Verify1 extends Verify {}
+class Verify2 extends Verify {}
+class Verify3 extends Verify1, Verify2 {
+	new (Int Verify.num);
+}
+
+new Verify3(3)

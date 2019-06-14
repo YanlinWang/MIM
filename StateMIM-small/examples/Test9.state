@@ -3,15 +3,9 @@ class A {
 	Int x() override A;
 }
 
-class B {
+class B extends A {
 	new (Int B.x);
 	Int x() override B;
 }
 
-class C extends A, B {
-	new (Int C.x);
-	Int x() override C;
-}
-
-C c = new C(1);
-c
+new B(1)
