@@ -22,7 +22,7 @@ object StateMIMParser extends StandardTokenParsers with PackratParsers {
       ("class" ~> ucid) ~ ("extends" ~> repsep(ucid, ",") | success(List())) ~ ("{" ~> ((pMC ^^ {case x => Some(x)} | success(None)) ~ rep(pMD)) <~ "}") ^^
         { case n ~ sups ~ (constr ~ ms) => new TypeDef(n, sups, ms, constr) }
     val pMD : PackratParser[MethDef] =
-      ucid ~ lcid ~ ("(" ~> repsep(pParameter, ",") <~ ")") ~
+      ucid ~ (lcid | ucid) ~ ("(" ~> repsep(pParameter, ",") <~ ")") ~
         ("override" ~> ucid) ~ ("{" ~> ("return" ~> pE <~ ";") <~ "}" ^^ { case pE => Some(pE) } | ";" ^^^ None) ^^
           { case t ~ m ~ paras ~ update ~ e => new MethDef(t, m, paras, update, e) }
     val pE : PackratParser[Expr] =

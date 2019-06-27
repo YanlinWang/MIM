@@ -75,7 +75,8 @@ object AST {
         assert(info.table.contains(para.fieldType), TypeNotFound(para.fieldType))
         assert(info.table.contains(para.path), TypeNotFound(para.path))
       }
-      assert(info.canInstantiate(thisType, this), Message("Invalid constructor of " + thisType + "."))
+      val canInst = info.canInstantiate(thisType, this);
+      assert(canInst, Message("Invalid constructor of " + thisType + "."))
     }
   }
   

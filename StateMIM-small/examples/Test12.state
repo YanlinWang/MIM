@@ -1,0 +1,9 @@
+class A {
+	new(Int A.x);
+	Int x() override A;
+	Void SET_x(Int x) override A;
+}
+
+A m = new A(3);
+m.SET_x(2);
+m.x()

@@ -84,6 +84,7 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
   def collectFieldsAndOthers(i: String): (Set[Field], Set[String]) = {
     val op = (p: (Set[Field], Set[String]), m: MethDef) => {
       if (m.paras.size == 0 && m.returnExpr.isEmpty) (p._1 + AST.Field(m.returnType, i, m.name), p._2)
+      else if (m.name.startsWith("SET_")) (p._1, p._2) 
       else (p._1, p._2 + m.name)
     }
     val res: (Set[Field], Set[String]) = methodMap(i).foldLeft((Set[Field](), Set[String]()))(op)
