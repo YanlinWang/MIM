@@ -6,7 +6,9 @@ class Officer  extends Title  { new(); }
 class Point {
 	new(Int Point.x, Int Point.y);
 	Int x() override Point;
+	Void SET_x(Int x) override Point;
 	Int y() override Point;
+	Void SET_y(Int y) override Point;
 }
 
 class Located {
@@ -18,7 +20,9 @@ class Employee {
 	Title position() override Employee;
 	Void SET_position(Title x) override Employee;
 	Int age() override Employee;
+	Void SET_age(Int age) override Employee;
 	String name() override Employee;
+	Void SET_name(String name) override Employee;
 }
 
 class OfficeClerk extends Located, Employee {
