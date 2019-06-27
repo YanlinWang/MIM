@@ -1,6 +1,7 @@
 class A {
 	new(Int A.x);
 	Int x() override A;
+	Void SET_x(Int x) override A;
 	Int m() override A { return x(); }
 }
 

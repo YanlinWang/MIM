@@ -7,5 +7,4 @@ class B extends A {
 }
 
 B b = new B(3);
-b.SET_x(2);
 b.x()

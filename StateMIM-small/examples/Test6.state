@@ -11,10 +11,12 @@ class Point {
 
 class Located {
 	Point position() override Located;
+	Void SET_position(Point x) override Located;
 }
 
 class Employee {
 	Title position() override Employee;
+	Void SET_position(Title x) override Employee;
 	Int age() override Employee;
 	String name() override Employee;
 }
@@ -22,6 +24,7 @@ class Employee {
 class OfficeClerk extends Located, Employee {
 	new(String Employee.name, Int Employee.age, Title Employee.position, Int OfficeClerk.deskNumber, Point Located.position);
 	Int deskNumber() override OfficeClerk;
+	Void SET_deskNumber(Int x) override OfficeClerk;
 	OfficeClerk moveTo(OfficeClerk c) override OfficeClerk {
 		return (
 			Point p4 = ((Located)c).position();

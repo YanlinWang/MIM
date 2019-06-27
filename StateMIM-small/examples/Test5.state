@@ -1,6 +1,7 @@
 class A5 {
 	new(Int A5.x);
 	Int x() override A5;
+	Void SET_x(Int x) override A5;
 }
 class B5 {
 	new(Int B5.x);
