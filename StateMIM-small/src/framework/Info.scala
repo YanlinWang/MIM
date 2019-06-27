@@ -108,6 +108,14 @@ case class Info(table: List[String], typeMap: Map[String, List[String]],
     if (mbody.get._3._2.isDefined) return None
     Some(mbody.get._3._1) //return field type
   }
+  def isFieldSetter(info: Info, name: String, t: String) : Option[String] = {
+    
+    val mbody = info.mbody(name, t, t)
+    if (mbody.isEmpty) return None
+    if (mbody.get._2.size != 0) return None
+    if (mbody.get._3._2.isDefined) return None
+    val setMethod = info.methodMap.get(t).get.find(x => x.name == "SET_" + name && x.update == t); 
+    if (setMethod.isEmpty) return None
+    Some(mbody.get._3._1) //return field type
+  }
 }
-      
-     

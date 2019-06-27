@@ -160,8 +160,8 @@ object AST {
       //e:eT
       val eT = e.checkType(info, env)
       //check fieldName is a field method from mbody(fieldName, eT, eT)
-      val fieldType = info.isField(info, fieldName, eT)
-      assert(fieldType.isDefined, Message(fieldName + " not a field in " + eT))
+      val fieldType = info.isFieldSetter(info, fieldName, eT)
+      assert(fieldType.isDefined, Message(fieldName + " setter not declared in " + eT))
       // fieldName:efT, check paraT <: efT 
       assert(info.subType(para.checkType(info, env), fieldType.get), Message("para type <: " + fieldType.get + "does not hold"))
       "Void"
