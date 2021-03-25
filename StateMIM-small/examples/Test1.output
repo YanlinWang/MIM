@@ -1,0 +1,27 @@
+----------------------------------
+Test1:
+
+class A {
+    new();
+}
+
+A x = new A();
+x
+
+Program(List(TypeDef(Void,List(),List(),Some(Constructor(List()))), TypeDef(Int,List(),List(),None), TypeDef(String,List(),List(),None), TypeDef(A,List(),List(),Some(Constructor(List())))),LetExpr(A,x,InvkStatic(A,List()),Var(x)))
+
+Type check: ==> A
+==> Config(H(Map(),1),LetExpr(A,x,InvkStatic(A,List()),Var(x)))
+==> Config(H(Map(1 -> A),2),LetExpr(A,x,Object(A,1),Var(x)))
+==> Config(H(Map(1 -> A),2),Object(A,1))
+(type = A,res = A[])
+
+Program(
+    List(
+        TypeDef(Void,List(),List(),Some(Constructor(List()))), 
+        TypeDef(Int,List(),List(),None), 
+        TypeDef(String,List(),List(),None), 
+        TypeDef(A,List(),List(),Some(Constructor(List())))
+    ),
+    LetExpr(A,x,InvkStatic(A,List()),Var(x))
+)

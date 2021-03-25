@@ -1,0 +1,36 @@
+----------------------------------
+Test2:
+
+class Verify {
+    Int num() override Verify;
+}
+class Verify1 extends Verify {}
+class Verify2 extends Verify {}
+class Verify3 extends Verify1, Verify2 {
+    new (Int Verify.num);
+}
+
+new Verify3(3)
+
+Program(List(TypeDef(Void,List(),List(),Some(Constructor(List()))), TypeDef(Int,List(),List(),None), TypeDef(String,List(),List(),None), TypeDef(A,List(),List(MethDef(Int,x,List(),A,None)),Some(Constructor(List(Field(Int,A,x)))))),Invk(InvkStatic(A,List(Num(3))),x,List()))
+
+Type check: ==> Int
+==> Config(H(Map(),1),Invk(InvkStatic(A,List(Num(3))),x,List()))
+==> Config(H(Map(1 -> A),2),Invk(Object(A,1),x,List()))
+==> Config(H(Map(1 -> A),2),Num(3))
+(type = Int,res = 3)
+
+Program(
+    List(
+        TypeDef(Void,List(),List(),Some(Constructor(List()))), 
+        TypeDef(Int,List(),List(),None), 
+        TypeDef(String,List(),List(),None), 
+        TypeDef(
+            A,
+            List(),
+            List(MethDef(Int,x,List(),A,None)),
+            Some(Constructor(List(Field(Int,A,x))))
+        )
+    ),
+    Invk(InvkStatic(A,List(Num(3))),x,List())
+)

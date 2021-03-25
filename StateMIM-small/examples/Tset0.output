@@ -1,0 +1,24 @@
+----------------------------------
+Test0:
+
+class A {
+    new();
+}
+new A()
+
+Program(List(TypeDef(Void,List(),List(),Some(Constructor(List()))), TypeDef(Int,List(),List(),None), TypeDef(String,List(),List(),None), TypeDef(A,List(),List(),Some(Constructor(List())))),InvkStatic(A,List()))
+
+Type check: ==> A
+==> Config(H(Map(),1),InvkStatic(A,List()))
+==> Config(H(Map(1 -> A),2),Object(A,1))
+(type = A,res = A[])
+
+Program(
+    List(
+        TypeDef(Void,List(),List(),Some(Constructor(List()))), 
+        TypeDef(Int,List(),List(),None), 
+        TypeDef(String,List(),List(),None), 
+        TypeDef(A,List(),List(),Some(Constructor(List())))
+    ),
+    InvkStatic(A,List())
+)
