@@ -22,3 +22,31 @@ Program(
     ),
     InvkStatic(A,List())
 )
+
+parsed:
+Right(
+Program(
+    List(
+        TypeDef(Void,List(),List(),Some(Constructor(List()))), 
+        TypeDef(Int,List(),List(),None), 
+        TypeDef(String,List(),List(),None), 
+        TypeDef(A,List(),List(),Some(Constructor(List())))
+    ),
+    InvkStatic(A,List())
+)
+)
+
+info:
+Info(
+    List(Void, Int, String, A),
+    Map(Void -> List(), Int -> List(), String -> List(), A -> List()),
+    Map(Void -> List(), Int -> List(), String -> List(), A -> List()),
+    Map(Void -> TypeDef(Void,List(),List(),Some(Constructor(List()))), 
+        Int -> TypeDef(Int,List(),List(),None), 
+        String -> TypeDef(String,List(),List(),None), 
+        A -> TypeDef(A,List(),List(),Some(Constructor(List())))),
+    Map(Void -> Some(Constructor(List())), 
+        Int -> None, 
+        String -> None, 
+        A -> Some(Constructor(List())))
+)

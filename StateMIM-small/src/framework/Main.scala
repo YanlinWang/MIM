@@ -12,14 +12,13 @@ object Main {
       val p: Program = parsed.right.get
       val pretty = p.toString
       println(pretty + "\n")
-        val info: Info = p.collectInfo.get
+      val info: Info = p.collectInfo.get
       try {
         val typeCheck = p.programCheck(info)
-        println("Type check: ==> " + typeCheck)
-        val eval = parsed.right.get.eval()
-        println(eval)
+        println("Type check: ==> " + typeCheck + "\n")
+        val eval = p.eval()
+        println("\n" + eval)
       } catch {case error: Throwable => Error.printError(error)}
-      
     }
   }     
   def main(args : Array[String]) = {    
