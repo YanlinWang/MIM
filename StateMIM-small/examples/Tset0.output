@@ -50,3 +50,22 @@ Info(
         String -> None, 
         A -> Some(Constructor(List())))
 )
+
+Info(
+    table: 
+        List(Void, Int, String, A),
+    typeMap: 
+        Map(Void -> List(), Int -> List(), String -> List(), A -> List()),
+    methodMap: 
+        Map(Void -> List(), Int -> List(), String -> List(), A -> List()),
+    typeDefMap: 
+        Map(Void -> TypeDef(Void,List(),List(),Some(Constructor(List()))), 
+            Int -> TypeDef(Int,List(),List(),None), 
+            String -> TypeDef(String,List(),List(),None), 
+            A -> TypeDef(A,List(),List(),Some(Constructor(List())))),
+    constructorMap: 
+        Map(Void -> Some(Constructor(List())), 
+            Int -> None, 
+            String -> None, 
+            A -> Some(Constructor(List())))
+)
